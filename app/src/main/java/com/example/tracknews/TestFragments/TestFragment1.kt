@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
-import com.example.tracknews.DataModel
+import com.example.tracknews.ViewModel
 import com.example.tracknews.databinding.FragmentTest1Binding
 
 class TestFragment1 : Fragment() {
@@ -16,7 +16,7 @@ class TestFragment1 : Fragment() {
 
     var nState = 0
 
-    private val dataModel: DataModel by activityViewModels()
+    private val vm: ViewModel by activityViewModels()
 
     /*//сохранение состояния
     val vm: DataModel.SavedStateViewModel by viewModels()
@@ -47,20 +47,20 @@ class TestFragment1 : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.fragTest1EditTextDate.setText(nState.toString())
-        binding.fragTest1EditTextTitle.setText(dataModel.nState.toString())
-        binding.fragTest1EditTextLink.setText("${dataModel.counterB}")
-        dataModel.messagePortrait.observe(activity as LifecycleOwner) {
+        binding.fragTest1EditTextTitle.setText(vm.nState.toString())
+        binding.fragTest1EditTextLink.setText("${vm.counterB}")
+        vm.messagePortrait.observe(activity as LifecycleOwner) {
             binding.fragTest1EditTextList.text = it
         }
         binding.fragTest1buttonSave.setOnClickListener {
             nState++
-            dataModel.nState++
-            dataModel.counterB++
+            vm.nState++
+            vm.counterB++
 
             binding.fragTest1EditTextDate.setText("fragment = $nState")
-            binding.fragTest1EditTextTitle.setText("dataModel = ${dataModel.nState}")
-            dataModel.messagePortrait.value = "true + $nState"
-            binding.fragTest1EditTextLink.setText("${dataModel.counterB}")
+            binding.fragTest1EditTextTitle.setText("dataModel = ${vm.nState}")
+            vm.messagePortrait.value = "true + $nState"
+            binding.fragTest1EditTextLink.setText("${vm.counterB}")
 
             //saveToDb()
         }

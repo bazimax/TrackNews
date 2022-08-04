@@ -8,10 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
-import com.example.tracknews.DataModel
+import com.example.tracknews.ViewModel
 import com.example.tracknews.MainActivity
 import com.example.tracknews.R
 import com.example.tracknews.WebsiteFragment
@@ -34,7 +33,7 @@ class NewsTodayFragment : Fragment() {
     private lateinit var bindingActivity: ActivityMainBinding
     lateinit var bindingWebsite: WebsiteFragment
     lateinit var bindingWeb: FragmentWebsiteBinding
-    private val dataModel: DataModel by activityViewModels()
+    private val vm: ViewModel by activityViewModels()
 
     private val siteURL = "https://yandex.ru/"
 
@@ -54,7 +53,7 @@ class NewsTodayFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        dataModel.messageFact.observe(activity as LifecycleOwner) {
+        vm.messageFact.observe(activity as LifecycleOwner) {
             binding.factTv.text = it
         }
 
@@ -103,7 +102,7 @@ class NewsTodayFragment : Fragment() {
     }
 
     private fun loadWebsite() {
-        if (dataModel.statusLandscape.value == "true") {
+        if (vm.statusLandscape.value == "true") {
             //загрузка интернет страницы
             //2й вариант - замена одного фрагмента на другой - WebSiteFragment
             activity!!.supportFragmentManager
@@ -184,7 +183,7 @@ class NewsTodayFragment : Fragment() {
                 runOnUiThread {
                     binding.progressBar.visibility = View.GONE
                     //dataModel.messageFact.value = Html.fromHtml(txt).toString()
-                    dataModel.messageFact.value = "Good"
+                    vm.messageFact.value = "Good"
                 }
             }
         })

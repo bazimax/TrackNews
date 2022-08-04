@@ -5,17 +5,23 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.example.tracknews.classes.NewsItem
 import com.example.tracknews.databinding.ActivityMainBinding
 import com.example.tracknews.db.MainDbManager
 
-open class DataModel : ViewModel() {
+open class ViewModel : ViewModel() {
 
     /*init {
         Log.d("TAG1", "ViewModel created")
     }*/
 
-    //val mainDbManager = MainDbManager(MainActivity)
-    //val dataList = mainDbManager.readDbData()
+    val newsItem: MutableLiveData<ArrayList<NewsItem>> by lazy {
+        MutableLiveData<ArrayList<NewsItem>>()
+    }
+    val newsItemTemp: MutableLiveData<NewsItem> by lazy {
+        MutableLiveData<NewsItem>()
+    }
+
     val testViewToSQLite: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }

@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
-import com.example.tracknews.DataModel
+import com.example.tracknews.ViewModel
 import com.example.tracknews.databinding.FragmentNewsWeekBinding
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -22,7 +22,6 @@ import java.net.URL
 import java.nio.charset.StandardCharsets
 import javax.net.ssl.HttpsURLConnection
 import kotlinx.coroutines.*
-import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 
 
@@ -45,7 +44,7 @@ class NewsWeekFragment : Fragment() {
     var n = 0
 
 
-    private val dataModel: DataModel by activityViewModels()
+    private val vm: ViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,11 +58,11 @@ class NewsWeekFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        dataModel.webSiteData.observe(activity as LifecycleOwner) {
+        vm.webSiteData.observe(activity as LifecycleOwner) {
             binding.fragNewsWeekText.text = it
         }
 
-        dataModel.webSiteData.value = "0000"
+        vm.webSiteData.value = "0000"
 
         //dataModel.url.value = "124"
 
@@ -204,22 +203,22 @@ class NewsWeekFragment : Fragment() {
         }
         main()
         Thread.sleep(500L)
-        dataModel.webSiteData.value = line
-        Log.d("TAG1", "Hello: ${dataModel.webSiteData.value}")
+        vm.webSiteData.value = line
+        Log.d("TAG1", "Hello: ${vm.webSiteData.value}")
 
     }
 
     private fun initReactiveX(){
         Log.d("TAG1", "Start - initReactiveX")
         o.subscribe({
-            dataModel.messageFact.value = if (it == "check_OK") "Ok" else "Failed"
-            dataModel.webSiteData.value = "124"
+            vm.messageFact.value = if (it == "check_OK") "Ok" else "Failed"
+            vm.webSiteData.value = "124"
         },{
-            dataModel.messageFact.value = "Failed"
-            dataModel.webSiteData.value = "125"
+            vm.messageFact.value = "Failed"
+            vm.webSiteData.value = "125"
         })
 
-        dataModel.webSiteData.value = line
+        vm.webSiteData.value = line
 
         if (line != "") parseHTML()
     }

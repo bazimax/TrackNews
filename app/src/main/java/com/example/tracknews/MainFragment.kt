@@ -1,32 +1,25 @@
 package com.example.tracknews
 
 //import android.R
-import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.example.tracknews.databinding.FragmentMainBinding
 
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import com.example.tracknews.TestFragments.TestFragment1
 import com.example.tracknews.TestFragments.TestFragment2
 import com.example.tracknews.TestFragments.TestFragment3
 import com.example.tracknews.TestFragments.TestFragment4
-import com.example.tracknews.databinding.FragmentNewsBinding
-import com.example.tracknews.databinding.FragmentTest1Binding
 
 
 class MainFragment : Fragment() {
 
     lateinit var binding: FragmentMainBinding
-    private val dataModel: DataModel by activityViewModels()
+    private val vm: ViewModel by activityViewModels()
     //private val dataModel: DataModel by viewModels()
 
     override fun onCreateView(
@@ -50,16 +43,16 @@ class MainFragment : Fragment() {
 
         // 1- проверка на поворот экрана. Работает от обратного.
         if (binding.frameLayoutMainFragmentLand != null) {
-            dataModel.statusLandscape.value = "false"
+            vm.statusLandscape.value = "false"
         }
-        else dataModel.statusLandscape.value = "true"
+        else vm.statusLandscape.value = "true"
         // 1- конец проверки
 
         // > тестовые поля для проверок, удалить после окончания разработки
-        dataModel.url.observe(activity as LifecycleOwner) {
+        vm.url.observe(activity as LifecycleOwner) {
             binding.fragMainTextView?.text = it
         }
-        dataModel.url.observe(activity as LifecycleOwner) {
+        vm.url.observe(activity as LifecycleOwner) {
             binding.fragMainLandTextView?.text = it
         }
         binding.fragMainButtonTest1?.setOnClickListener {

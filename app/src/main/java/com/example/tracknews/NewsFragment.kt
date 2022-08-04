@@ -9,9 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import com.example.tracknews.News.*
-import com.example.tracknews.databinding.ActivityMainBinding
 import com.example.tracknews.databinding.FragmentNewsBinding
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
 class NewsFragment : Fragment() {
@@ -29,7 +27,7 @@ class NewsFragment : Fragment() {
     )
     private lateinit var binding: FragmentNewsBinding
     //lateinit var bindingActivityMainBinding: ActivityMainBinding
-    private val dataModel: DataModel by activityViewModels()
+    private val vm: ViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,7 +41,7 @@ class NewsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        dataModel.url2 = "0001" //не работает почему-то
+        vm.url2 = "0001" //не работает почему-то
 
         binding.fragNewsButtonShow.setOnClickListener {
             //раскрываем общую группу запросов/закладок/поисков/сохраненных поисков
