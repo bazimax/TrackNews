@@ -19,9 +19,11 @@ class NewsItemAdapter: RecyclerView.Adapter<NewsItemAdapter.NewsItemHolder>() {
         //val binding = RecyclerViewNewsItemBinding.bind(item) //использует cardView
         val binding = RecyclerViewNewsItemV2Binding.bind(item) //использует linearLayout
         fun bind(newsItem: NewsItem) = with (binding){
+            newsItemTextViewDate.text = newsItem.date
+            newsItemTextViewImg.text = newsItem.img
             newsItemTextViewTitle.text = newsItem.title
             newsItemTextViewContent.text = newsItem.content
-            newsItemTextViewLink.text = "new@yandex.ru"
+            newsItemTextViewLink.text = newsItem.link
         }
         /*//без with (binding)
         fun bind2(newsItem: NewsItem){

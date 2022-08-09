@@ -7,10 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
-import com.example.tracknews.R
 import com.example.tracknews.ViewModel
 import com.example.tracknews.databinding.FragmentTest3Binding
-import java.util.zip.Inflater
 
 class TestFragment3 : Fragment() {
     private val vm: ViewModel by activityViewModels()
@@ -28,9 +26,9 @@ class TestFragment3 : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.fragTest3TextViewText.text = vm.newsItem.value.toString()
+        binding.fragTest3TextViewText.text = vm.newsItemArray.value.toString()
         vm.newsItemTemp.observe(activity as LifecycleOwner){
-            binding.fragTest3TextViewText.text = vm.newsItem.value.toString()
+            binding.fragTest3TextViewText.text = vm.newsItemArray.value.toString()
         }
     }
 

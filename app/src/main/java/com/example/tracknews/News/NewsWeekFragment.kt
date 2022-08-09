@@ -43,7 +43,6 @@ class NewsWeekFragment : Fragment() {
     var i = 1245
     var n = 0
 
-
     private val vm: ViewModel by activityViewModels()
 
     override fun onCreateView(

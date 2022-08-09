@@ -9,8 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.tracknews.R
 import com.example.tracknews.ViewModel
 import com.example.tracknews.classes.NewsItem
 import com.example.tracknews.classes.NewsItemAdapter
@@ -20,7 +18,7 @@ import com.example.tracknews.databinding.FragmentTest2Binding
 class TestFragment2 : Fragment() {
     lateinit var binding: FragmentTest2Binding
     private val newsItemAdapter = NewsItemAdapter()
-    private var index = 0
+    //private var index = 0
     private val vm: ViewModel by activityViewModels()
 
     //private var recyclerView: RecyclerView? = null //для fun init2()
@@ -37,10 +35,10 @@ class TestFragment2 : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        vm.newsItem.value?.let { newsItemAdapter.addAllNews(it) }
+        vm.newsItemArray.value?.let { newsItemAdapter.addAllNews(it) }
 
-        vm.newsItem.observe(activity as LifecycleOwner) {
-            vm.newsItem.value?.let { it1 -> newsItemAdapter.addAllNews(it1) }
+        vm.newsItemArray.observe(activity as LifecycleOwner) {
+            vm.newsItemArray.value?.let { it1 -> newsItemAdapter.addAllNews(it1) }
         }
     }
 
@@ -73,7 +71,7 @@ class TestFragment2 : Fragment() {
                 //Log.d("TAG1", "click addNewsItem: $title + ${fragTest2TextViewTitle.text}")
                 val content = if (fragTest2TextViewContent.text != null) fragTest2TextViewContent.text else "///"
                 val link = if (fragTest2TextViewLink.text != null) fragTest2TextViewLink.text else "0000@ji.ru"
-                val newsItem = NewsItem(title.toString(), content.toString(), link.toString())
+                val newsItem = NewsItem("", title.toString(), content.toString(), link.toString())
                 newsItemAdapter.addNewsItem(newsItem)
                 vm.newsItemTemp.value = newsItem
 
@@ -84,7 +82,7 @@ class TestFragment2 : Fragment() {
                 //vm.newsItem.value?.let { it1 -> newsItemAdapter.addAllNews(it1) }
 
                 Log.d("TAG1", "AddNewsItem > newsItemTemp: $newsItem")
-                Log.d("TAG1", "AddNewsItem > newsItem value: ${vm.newsItem.value}")
+                Log.d("TAG1", "AddNewsItem > newsItem value: ${vm.newsItemArray.value}")
                 Log.d("TAG1", "AddNewsItem > newsItemTemp value: ${vm.newsItemTemp.value}")
                 Log.d("TAG1", "AddNewsItem > button AddNewsItem click ------------END")
             }

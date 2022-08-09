@@ -15,10 +15,16 @@ open class ViewModel : ViewModel() {
         Log.d("TAG1", "ViewModel created")
     }*/
 
-    val newsItem: MutableLiveData<ArrayList<NewsItem>> by lazy {
+    val newsItemArray: MutableLiveData<ArrayList<NewsItem>> by lazy {
+        MutableLiveData<ArrayList<NewsItem>>()
+    }
+    val newsItemTempYa: MutableLiveData<ArrayList<NewsItem>> by lazy {
         MutableLiveData<ArrayList<NewsItem>>()
     }
     val newsItemTemp: MutableLiveData<NewsItem> by lazy {
+        MutableLiveData<NewsItem>()
+    }
+    val newsItemTempGoo: MutableLiveData<NewsItem> by lazy {
         MutableLiveData<NewsItem>()
     }
 

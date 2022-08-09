@@ -7,10 +7,8 @@ import androidx.activity.viewModels
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.example.tracknews.News.NewsTodayFragment
-import com.example.tracknews.classes.NewsItem
 import com.example.tracknews.databinding.*
 import com.example.tracknews.db.MainDbManager
-import com.example.tracknews.parseSite.ParserSites
 
 
 class MainActivity : AppCompatActivity() {
@@ -22,9 +20,9 @@ class MainActivity : AppCompatActivity() {
     //lateinit var binding2: FragmentMainBinding
     //lateinit var bindingNews: FragmentNewsBinding
     //lateinit var bindingToolbar: FragmentToolbarBinding
-    lateinit var bindingTest1: FragmentTest1Binding
+    //lateinit var bindingTest1: FragmentTest1Binding
     private val vm: ViewModel by viewModels()
-    val aram = ParserSites("https://habr.com/ru/post/538534/")
+    //val param = ParserSites("https://habr.com/ru/post/538534/")
 
     private val mainDbManager = MainDbManager(this)
 
@@ -37,8 +35,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root) // ^ привязка
 
+        Log.d("TAG1", "Activity >f mainDbManager.openDb")
         mainDbManager.openDb() //создаем базу данных SQLite
+        Log.d("TAG1", "Activity >f viewModelToSQLite")
         viewModelToSQLite() // подключаем observe
+        Log.d("TAG1", "Activity >f loadSQLiteToViewModel")
         loadSQLiteToViewModel() // загружаем БД во viewModel
 
         loadFragment(R.id.frameLayoutToolbar, ToolbarFragment.newInstance())
@@ -63,7 +64,7 @@ class MainActivity : AppCompatActivity() {
             //testReadDbToTextView()
             readDbToTextView()
             loadSQLiteToViewModel()
-            Log.d("TAG1", "end Button2 clear ==============")
+            //Log.d("TAG1", "end Button2 clear ==============")
         }
         binding.actMainDrLayoutButton3.setOnClickListener {
             /*vm.testViewToSQLite.value = binding.actMainDrLayoutEditText.text.toString()
@@ -75,18 +76,18 @@ class MainActivity : AppCompatActivity() {
 
         binding.actMainButtonDrawer.setOnClickListener {
             //выдвигаем меню настроек
-            Log.d("TAG1", "mDrawer Button Click")
+            //Log.d("TAG1", "mDrawer Button Click")
             binding.actMainDrawer.openDrawer(GravityCompat.START)
 
-            testReadDbToTextView()
-            readDbToTextView()
-            Log.d("TAG1", "end mDrawer Button ==============")
+            //testReadDbToTextView()
+            //readDbToTextView()
+            //Log.d("TAG1", "end mDrawer Button ==============")
         }
         /*dataModel.messagePortrait.observe(this) {
 
         }*/
 
-        Log.d("TAG1", "Close program --------")
+        //Log.d("TAG1", "Close program --------")
     }
 
     override fun onDestroy() {
@@ -118,39 +119,59 @@ class MainActivity : AppCompatActivity() {
         //следим за изменениями в DataModel(ViewModel) и передаем их в SQLite
         //mainDbManager.openDb()
         vm.testViewToSQLite.observe(this) {
-            Log.d("TAG1", "Activity >f viewModelToSQLite > testViewToSQLite.OBSERVE ======START")
+            //Log.d("TAG1", "Activity >f viewModelToSQLite > testViewToSQLite.OBSERVE ======START")
             mainDbManager.testInsertToDb(
                 binding.actMainDrLayoutEditText.text.toString())
             //binding.actMainDrLayoutText.text = it
             //readDbToTextView()
         }
         vm.newsItemTemp.observe(this){
-            Log.d("TAG1", "Activity >f viewModelToSQLite > newsItemTemp.OBSERVE ======START")
+            //Log.d("TAG1", "Activity >f viewModelToSQLite > newsItemTemp.OBSERVE ======START")
+            val search = vm.newsItemTemp.value?.search.toString()
+            val img = vm.newsItemTemp.value?.img.toString()
+            val date = vm.newsItemTemp.value?.date.toString()
             val title= vm.newsItemTemp.value?.title.toString()
             val content = vm.newsItemTemp.value?.content.toString()
             val link = vm.newsItemTemp.value?.link.toString()
-            mainDbManager.insertToDb(title, content, link)
+            mainDbManager.insertToDb(search ,img, date, title, content, link)
             loadSQLiteToViewModel()
 
             //Log.d("TAG1", "Activity >f viewModelToSQLite > newsItem value: ${vm.newsItem.value}")
-            //Log.d("TAG1", "Activity >f viewModelToSQLite > newsItemTemp value: ${vm.newsItemTemp.value}")
+            Log.d("TAG1", "Activity >f viewModelToSQLite > newsItemTemp value: ${vm.newsItemTemp.value}")
             Log.d("TAG1", "Activity >f viewModelToSQLite > newsItemTemp.OBSERVE ------------END")
         }
 
-        /*vm.newsItem.observe(this){
-            vm.newsItem.value = mainDbManager.readDbData()
-        }*/
-        /*dataModel.testViewToSQLite.observe(this, {
-            binding.actMainDrLayoutText.text = it
-        })*/
+        vm.newsItemTempYa.observe(this){
+            Log.d("TAG1", "Activity >f viewModelToSQLite > newsItemTempYa.OBSERVE ======START")
+            if (vm.newsItemTempYa.value != null) {
+                vm.newsItemTempYa.value!!.forEach {
+                    val search = it.search
+                    val img = it.img
+                    val date = it.date
+                    val title = it.title
+                    val content = it.content
+                    val link = it.link
+                    mainDbManager.insertToDb(search ,img, date, title, content, link)
+                    //loadSQLiteToViewModel()
+                }
+                //loadSQLiteToViewModel()
+            }
+            else mainDbManager.clearAllDataInDb()
+
+            //Log.d("TAG1", "Activity >f viewModelToSQLite > newsItem value: ${vm.newsItem.value}")
+            Log.d("TAG1", "Activity >f viewModelToSQLite > newsItemTempYa value: ${vm.newsItemTempYa.value}")
+            Log.d("TAG1", "Activity >f viewModelToSQLite > newsItemTempYa.OBSERVE ------------END")
+            loadSQLiteToViewModel()
+        }
         Log.d("TAG1", "Activity >f viewModelToSQLite > ------------END")
     }
+
     private fun readDbToTextView(){
         //читаем базу данных и записываем в TextView
 
         val dataList = mainDbManager.readDbData() //создаем лист данных для тестового отображения
         //val dataList2 = mainDbManager.testReadDbData() //создаем лист данных для тестового отображения
-        //Log.d("TAG1", "dataList: $dataList")
+        Log.d("TAG1", "Activity >f readDbToTextView> dataList: $dataList")
         binding.actMainDrLayoutText.text = ""
         for (item in dataList){
             binding.actMainDrLayoutText.append("${item.title} + ${item.content} + ${item.link}")
@@ -158,9 +179,15 @@ class MainActivity : AppCompatActivity() {
         }
         //return dataList
     }
+
     private fun loadSQLiteToViewModel(){
         Log.d("TAG1", "Activity >f loadSQLiteToViewModel > testCount1: $testCount1 ======START")
-        vm.newsItem.value = mainDbManager.readDbData()
+        /*if (vm.newsItemArray.value != null) {
+            vm.newsItemArray.value = mainDbManager.readDbData()
+        }*/
+        Log.d("TAG1", "Activity >f loadSQLiteToViewModel > testCount1: $testCount1 ======START")
+        vm.newsItemArray.value = mainDbManager.readDbData()
+        Log.d("TAG1", "Activity >f loadSQLiteToViewModel > vm.newsItemArray: ${vm.newsItemArray.value}")
         testCount1++
         Log.d("TAG1", "Activity >f loadSQLiteToViewModel > ------------END")
     }
