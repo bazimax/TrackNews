@@ -3,19 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+
     android:layout_height="100dp">
 
     <LinearLayout
+
         android:layout_width="match_parent"
         android:layout_height="96dp"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/newsItemTextViewDate"
+            style="@style/Theme.BackgroundPrimary"
             android:layout_width="60dp"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="00:00 вчера" />
+            android:text="@string/newsItemDate" />
 
         <TextView
             android:id="@+id/newsItemTextViewImg"
@@ -23,13 +26,17 @@
             android:layout_height="match_parent"
             android:background="#FAFAFA"
             android:gravity="center"
-            android:text="Источник" />
+            android:text="Источник"
+            android:visibility="gone"
+            tools:visibility="gone" />
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                style="@style/Theme.BackgroundBase"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#FFFFFF">
@@ -42,7 +49,6 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="4dp"
-                    android:background="#FFFFFF"
                     android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/view"
@@ -55,16 +61,34 @@
                         android:layout_height="20dp"
                         android:layout_marginBottom="4dp"
                         android:fontFamily="sans-serif-black"
-                        android:text="Title"
+                        android:text="@string/newsItemTitle"
                         android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/newsItemTextViewContent"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
-                        android:layout_marginBottom="4dp"
-                        android:text="Content"
-                        android:textSize="12sp" />
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/newsItemTextViewContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="4dp"
+                            android:layout_weight="1"
+                            android:text="@string/newsItemContent"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/textView4"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:gravity="center"
+                            android:rotation="180"
+                            android:text="^"
+                            android:textSize="20sp"
+                            android:visibility="invisible" />
+
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/newsItemTextViewLink"
@@ -72,7 +96,7 @@
                         android:layout_height="16dp"
                         android:layout_marginBottom="4dp"
                         android:fontFamily="sans-serif-light"
-                        android:text="link"
+                        android:text="@string/newsItemLink"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -84,13 +108,42 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
                     android:background="#D5D5D5"
-                    android:visibility="gone"
+                    android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <Button
+                style="@style/Theme.BackgroundBase"
+                android:id="@+id/newsItemButtonSave"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/round_button"
+                app:icon="@drawable/ic_arrow_bottom"
+                app:iconGravity="top"
+                app:iconTint="@color/baseColorOnPrimary" />
+
+            <Button
+                style="@style/Theme.BackgroundSecondary"
+                android:id="@+id/newsItemButtonExpand"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/button_transparent"
+                app:icon="@drawable/ic_arrow_bottom"
+                app:iconGravity="top"
+                app:iconTint="@color/baseColorOnPrimary" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

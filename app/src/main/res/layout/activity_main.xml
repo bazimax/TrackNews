@@ -7,65 +7,229 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/frameLayoutSuperMain"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="#3F51B5"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/actMainButtonDrawer"
-                android:layout_width="60dp"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="="
-                android:textColor="#F4F1F1" />
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fontFamily="sans-serif-medium"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dp"
-                android:text="TrackNews"
-                android:textColor="#FFFFFF"
-                android:textSize="21sp" />
-        </LinearLayout>
-
-        <FrameLayout
-            android:id="@+id/frameLayoutToolbar"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:visibility="gone">
-
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/frameLayoutActivityMain"
+            android:id="@+id/actMainLinearLayout"
+            style="@style/Theme.BackgroundBase"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </LinearLayout>
+            android:orientation="vertical">
+
+            <LinearLayout
+                style="@style/Theme.BackgroundPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:elevation="5dp"
+                android:orientation="horizontal"
+                android:stateListAnimator="@null"
+                android:translationZ="5dp">
+
+                <Button
+                    android:id="@+id/buttonHamburger"
+                    android:layout_width="44dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/button_transparent"
+                    android:text="back"
+                    app:icon="@drawable/ic_hamburger"
+                    app:iconGravity="top"
+                    app:iconTint="@color/baseColorOnPrimary" />
+
+
+                <TextView
+                    android:id="@+id/textViewProjectName"
+                    style="@style/Theme.BackgroundPrimary"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:text="TrackNews"
+                    android:textColor="@color/baseColorOnPrimary"
+                    android:textSize="18sp" /> <!--android:textColor:="?android:textColorSecondary"-->
+
+                <Button
+                    android:id="@+id/buttonSavedSearches"
+                    android:layout_width="44dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/button_transparent"
+                    android:text="saved searches"
+                    app:icon="@drawable/ic_arrow_bottom"
+                    app:iconGravity="top"
+                    app:iconTint="@color/baseColorOnPrimary" />
+
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/frameLayoutSavedSearches"
+                style="@style/Theme.BackgroundPrimaryVariant"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewSavedSearches"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_margin="4dp" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/frameLayoutActivityMain"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabButtonSearch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:clickable="true"
+                    android:contentDescription="@string/news_today"
+                    android:elevation="8dp"
+                    android:stateListAnimator="@null"
+                    android:theme="@style/Theme.BackgroundSecondary"
+                    android:translationZ="10dp"
+                    app:srcCompat="?android:attr/actionModeWebSearchDrawable"
+                    tools:visibility="visible" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/testFabButtonSearch2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="150dp"
+                    android:clickable="true"
+                    android:contentDescription="@string/news_all"
+                    android:elevation="8dp"
+                    android:stateListAnimator="@null"
+                    android:theme="@style/Theme.BackgroundSecondary"
+                    android:translationZ="10dp"
+                    android:visibility="gone"
+                    app:srcCompat="?android:attr/actionModeWebSearchDrawable" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabButtonGO"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:clickable="true"
+                    android:elevation="8dp"
+                    android:stateListAnimator="@null"
+                    android:translationZ="8dp"
+                    android:visibility="invisible"
+                    app:srcCompat="@drawable/ic_arrow_forward" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/testCardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="100dp"
+                    android:animateLayoutChanges="true"
+                    android:background="@drawable/round_button"
+                    android:clipToOutline="true"
+                    android:elevation="2dp"
+                    android:stateListAnimator="@null"
+                    android:translationZ="2dp"
+                    android:visibility="gone"
+                    app:cardCornerRadius="28dp" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="bottom"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:animateLayoutChanges="true"
+                    android:background="@drawable/round_button"
+                    android:clipToOutline="true"
+                    android:elevation="2dp"
+                    android:stateListAnimator="@null"
+                    android:translationZ="2dp"
+                    android:visibility="visible"
+                    app:cardBackgroundColor="@color/baseColorSecondary"
+                    app:cardCornerRadius="28dp">
+
+                    <Button
+                        android:id="@+id/buttonSave"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/round_button"
+                        android:elevation="4dp"
+                        android:stateListAnimator="@null"
+                        android:text="$"
+                        android:theme="@style/Theme.BackgroundSecondary"
+                        android:translationZ="4dp"
+                        app:icon="@drawable/ic_bookmark_border" /> <!--android:background="@drawable/round_button"-->
+
+                    <EditText
+                        android:id="@+id/editTextSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="56dp"
+                        android:layout_marginRight="56dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/baseColorOnPrimary"
+                        android:ems="10"
+                        android:gravity="center"
+                        android:hapticFeedbackEnabled="false"
+                        android:hint="@string/search"
+                        android:inputType="textPersonName"
+                        android:textColor="@color/baseColorOnPrimary"
+                        android:textColorHint="@color/baseColorOnPrimary" />
+
+                    <Button
+                        android:id="@+id/buttonGO"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="end"
+                        android:background="@drawable/round_button"
+                        android:elevation="4dp"
+                        android:stateListAnimator="@null"
+                        android:text="$"
+                        android:theme="@style/Theme.BackgroundSecondary"
+                        android:translationZ="4dp"
+                        app:icon="@drawable/ic_arrow_forward" />
+
+                </androidx.cardview.widget.CardView>
+
+            </FrameLayout>
+        </LinearLayout>
+    </FrameLayout>
 
     <LinearLayout
+        style="@style/Theme.BackgroundBase"
         android:id="@+id/activityMainDrawerLayout"
         android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#3F51B5"
         android:orientation="vertical">
 
 
-        <EditText
+        <!--<EditText
             android:id="@+id/actMainDrLayoutEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -73,17 +237,17 @@
             android:hint="text test"
             android:inputType="textPersonName"
             android:textColor="#FAF5F5"
-            android:textColorHint="#76A3E8" />
+            android:textColorHint="#76A3E8" />-->
 
-        <TextView
+        <!--<TextView
             android:id="@+id/actMainDrLayoutText"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:text="XXXX"
-            android:textColor="#FFFDFD" />
+            android:textColor="#FFFDFD" />-->
 
         <Button
-            android:id="@+id/actMainDrLayoutButton1"
+            android:id="@+id/actMainDrLayoutButtonSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Button 1" />
@@ -99,6 +263,46 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Button 3" />
+
+        <RadioGroup
+            android:id="@+id/themeGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            app:layout_constraintTop_toBottomOf="@id/title">
+
+            <RadioButton
+                android:id="@+id/themeDark"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/light_theme" /><!--style="@style/SecondaryText"-->
+
+            <RadioButton
+                android:id="@+id/themeLight"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dark_theme" /> <!--style="@style/SecondaryText"-->
+
+            <RadioButton
+                android:id="@+id/themeBattery"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/battery_saver_theme" /><!--style="@style/SecondaryText"-->
+
+            <RadioButton
+                android:id="@+id/themeSystem"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/system_theme" /><!--style="@style/SecondaryText"-->
+
+        </RadioGroup>
     </LinearLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

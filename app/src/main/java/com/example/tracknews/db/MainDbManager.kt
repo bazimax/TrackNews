@@ -3,7 +3,6 @@ package com.example.tracknews.db
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import android.icu.text.StringSearch
 import android.util.Log
 import com.example.tracknews.classes.NewsItem
 
@@ -13,24 +12,15 @@ class MainDbManager(context: Context) {
     private var db : SQLiteDatabase? = null //через mainDbHelper работает с БД
 
     fun openDb(){
-        Log.d("TAG1", "MainDbManager >f openDb")
+        //открываем-запускаем Базу Данных
+        Log.d("TAG1", "MainDbManager >f openDb ======START")
         db = mainDbHelper.writableDatabase
+        Log.d("TAG1", "MainDbManager >f openDb - OK")
     }
 
-    fun testInsertToDb(title: String) {
-        //Log.d("TAG1", "SQL title: $title")
-        val values = ContentValues().apply {
-            //put(MainDbNameObject.COLUMN_NAME_DATE, date)
-            put(MainDbNameObject.COLUMN_NAME_TITLE, title)
-            //put(MainDbNameObject.COLUMN_NAME_CONTENT, content)
-            //put(MainDbNameObject.COLUMN_NAME_LINK, link)
-        }
-        //Log.d("TAG1", "SQL values: $values")
-        db?.insert(MainDbNameObject.TABLE_NAME, null, values)
-        //Log.d("TAG1", "SQL db: $db, ${db.toString()}")
-    }
-
-    fun insertToDb(search: String, img: String, date: String, title: String, content: String, link: String) {
+    fun insertToDb(search: String, img: String, date: String, title: String, content: String, link: String, statusSaved: String) {
+        //добавляем данные в Базу Данных
+        Log.d("TAG1", "MainDbManager >f insertToDB ======START")
         //Log.d("TAG1", "insertToDB > SQL title...: $title, $content, $link")
         val values = ContentValues().apply {
             put(MainDbNameObject.COLUMN_NAME_SEARCH, search)
@@ -39,28 +29,22 @@ class MainDbManager(context: Context) {
             put(MainDbNameObject.COLUMN_NAME_TITLE, title)
             put(MainDbNameObject.COLUMN_NAME_CONTENT, content)
             put(MainDbNameObject.COLUMN_NAME_LINK, link)
+            put(MainDbNameObject.COLUMN_NAME_STATUS_SAVED, statusSaved)
         }
         //Log.d("TAG1", "SQL values: $values")
         db?.insert(MainDbNameObject.TABLE_NAME, null, values)
         //Log.d("TAG1", "SQL db: $db, ${db.toString()}")
+        Log.d("TAG1", "MainDbManager >f insertToDB - OK")
     }
 
     fun testReadDbData() : ArrayList<String>{
         val dataList = ArrayList<String>()
-        Log.d("TAG1", "SQL create dataList: $dataList")
+        //Log.d("TAG1", "SQL create dataList: $dataList")
         val cursor = db?.query(MainDbNameObject.TABLE_NAME, null, null, null, null, null, null)
-        /*with(cursor){
-            while (this?.moveToNext()!!){
-                val dataText = cursor?.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_TITLE))
-                dataList.add(dataText.toString())
-            }
-        }*/
-        //Log.d("TAG1", "SQL cursor: $cursor")
-        //Log.d("TAG1", "readDbData > cursor columnCount: ${cursor?.columnCount}")
-        //Log.d("TAG1", "readDbData > cursor count: ${cursor?.count}")
+
         while (cursor?.moveToNext()!!){
             val dataText = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_TITLE))
-            Log.d("TAG1", "SQL dataText: $dataText")
+            //Log.d("TAG1", "SQL dataText: $dataText")
             dataList.add(dataText.toString())
         }
         cursor.close()
@@ -68,43 +52,61 @@ class MainDbManager(context: Context) {
     }
 
     fun readDbData() : ArrayList<NewsItem>{
-        Log.d("TAG1", "readDbData > ======START")
+        //чтение Базы Данных
+        Log.d("TAG1", "MainDbManager >f readDbData ======START")
+        //Log.d("TAG1", "readDbData > ======START")
         val dataList = ArrayList<NewsItem>()
         val cursor = db?.query(MainDbNameObject.TABLE_NAME, null, null, null, null, null, null)
-        Log.d("TAG1", "readDbData > SQL cursor: $cursor")
-        Log.d("TAG1", "readDbData > cursor columnCount: ${cursor?.columnCount}")
-        Log.d("TAG1", "readDbData > cursor count: ${cursor?.count}")
+        //Log.d("TAG1", "readDbData > SQL cursor: $cursor")
+        //Log.d("TAG1", "readDbData > cursor columnCount: ${cursor?.columnCount}")
+        //Log.d("TAG1", "readDbData > cursor count: ${cursor?.count}")
         while (cursor?.moveToNext()!!){
 
-            Log.d("TAG1", "readDbData > Start while")
+            //Log.d("TAG1", "readDbData > Start while")
             val search = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_SEARCH)).toString()
-            Log.d("TAG1", "readDbData > val 1")
+            //Log.d("TAG1", "readDbData > val 1")
             val img = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_IMG)).toString()
-            Log.d("TAG1", "readDbData > val 2")
+            //Log.d("TAG1", "readDbData > val 2")
             val date = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_DATE)).toString()
-            Log.d("TAG1", "readDbData > val 3")
+            //Log.d("TAG1", "readDbData > val 3")
             val title = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_TITLE)).toString()
-            Log.d("TAG1", "readDbData > val 4")
+            //Log.d("TAG1", "readDbData > val 4")
             val content = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_CONTENT)).toString()
-            Log.d("TAG1", "readDbData > val 5")
+            //Log.d("TAG1", "readDbData > val 5")
             val link = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_LINK)).toString()
 
-            val newsItem = NewsItem(search, img, date, title, content, link)
+            val statusSaved = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_STATUS_SAVED)).toString()
+
+            //val id = cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_STATUS_SAVED).toString()
+            val id: Int = cursor.position
+            //Log.d("TAG1", "readDbData > INDEX > ${cursor.position}")
+
+            val newsItem = NewsItem(id, search, img, date, title, content, link, statusSaved)
             dataList.add(newsItem)
-            Log.d("TAG1", "readDbData > while ------------END ??")
+            //Log.d("TAG1", "readDbData > while ------------END ??")
         }
 
         cursor.close()
-        Log.d("TAG1", "readDbData >  ------------END")
+        //Log.d("TAG1", "readDbData >  ------------END")
+        Log.d("TAG1", "MainDbManager >f readDbData - OK")
         return dataList
     }
 
     fun closeDb(){
+        //закрытие Базы Данных
         mainDbHelper.close()
     }
 
     fun clearAllDataInDb(){
-        db?.delete(MainDbNameObject.TABLE_NAME, null, null);
+        //очистка всей Базы Данных
+        db?.delete(MainDbNameObject.TABLE_NAME, null, null)
+        Log.d("TAG1", "MainDbManager >f clearAllDataInDb - OK")
+    }
+
+    fun deleteDbElement(link: String){
+        //удаляем элемент/строку из Базы Данных
+        Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $link")
+        //db?.delete(MainDbNameObject.TABLE_NAME,"name=?", arrayOf(link))
     }
 
 

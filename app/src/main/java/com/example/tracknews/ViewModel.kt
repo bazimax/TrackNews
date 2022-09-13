@@ -14,16 +14,27 @@ open class ViewModel : ViewModel() {
     /*init {
         Log.d("TAG1", "ViewModel created")
     }*/
-
+    //данные?
     val newsItemArray: MutableLiveData<ArrayList<NewsItem>> by lazy {
         MutableLiveData<ArrayList<NewsItem>>()
     }
+
+    //временные данные из яндекса?
     val newsItemTempYa: MutableLiveData<ArrayList<NewsItem>> by lazy {
         MutableLiveData<ArrayList<NewsItem>>()
     }
+
+    //временные данные?
     val newsItemTemp: MutableLiveData<NewsItem> by lazy {
         MutableLiveData<NewsItem>()
     }
+
+    //изменение элемента в SQLite
+    val newsItemChanged: MutableLiveData<NewsItem> by lazy {
+        MutableLiveData<NewsItem>()
+    }
+
+    //данные из гугла
     val newsItemTempGoo: MutableLiveData<NewsItem> by lazy {
         MutableLiveData<NewsItem>()
     }
@@ -32,6 +43,7 @@ open class ViewModel : ViewModel() {
         MutableLiveData<String>()
     }
 
+    //поворот экрана
     val statusLandscape: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
@@ -41,7 +53,7 @@ open class ViewModel : ViewModel() {
     val messageLand: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
-    val messageFact: MutableLiveData<String> by lazy {
+    val messageLoadWebsite: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
     val url: MutableLiveData<String> by lazy {
@@ -50,9 +62,38 @@ open class ViewModel : ViewModel() {
     var url2 = "https://yandex.ru/"
     var nState = 0
     var counterB: Int = 0
+    var sizeFAButton: Int = -99
+    var statusSavedSearchesView: Boolean = false //статус кнопки сохранённых поисков
+    var statusSearchButton: Boolean = false //
     val webSiteData: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
+
+    //отслеживаем элемент поиска (скрыт или нет)
+    val statusSearchMutable: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
+    }
+
+    var tempWebsiteLink = MutableLiveData<String>()
+    var newsItemDeleted = MutableLiveData<String>()
+    init {
+        //запускать init в activity или fragment не надо?
+        tempWebsiteLink.value = "-1"
+        newsItemDeleted.value = "-1"
+    }
+
+    /*
+    // надо протестировать
+    var count1 = 0
+    var count2 = MutableLiveData<Int>()
+    init {
+        //запускать init в activity или fragment не надо?
+        count2.value = 0
+    }
+    fun updateCount(){
+        ++count1
+        count2.value = (count2.value)?.plus(1)
+    }*/
     /*class SavedStateViewModel(private val state: SavedStateHandle) : ViewModel() {
         //сохранение состояния
     }*/

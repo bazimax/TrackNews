@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Базовые цвета или универсальные-->
+
+    <color name="baseWhite">#FFFFFF</color>
+    <color name="baseNewsItemButton">#9C8F9B</color>
+
+    <!--Светлая тема-->
+    <color name="baseColorPrimary">#C65A5A</color>
+    <color name="baseColorPrimaryVariant">#FF9494</color>
+    <color name="baseColorPrimaryVariant2">#FFE2E2</color>
+    <color name="baseColorOnPrimary">#FFFAF7</color>
+    <color name="baseColorText">#0B0908</color>
+    <color name="baseColorBackground">@color/baseColorOnPrimary</color>
+
+    <color name="baseColorTextAccent">@color/baseWhite</color>
+    <color name="baseColorAccent">#FA6A6A</color>
+
+    <color name="baseColorSecondary">#B14646</color>
+    <color name="baseColorSecondaryVariant">#D13F3F</color>
+    <color name="baseColorOnSecondary">@color/baseColorOnPrimary</color>
+
+    <!--Текст в NewsItem-->
+    <color name="baseColorTextDate">#FF9494</color>
+    <color name="baseColorTextTitle">#201818</color>
+    <color name="baseColorTextContent">#6C6262</color>
+    <color name="baseColorTextLink">#CA9595</color>
+
+    <!--Темная тема-->
+    <color name="darkColorPrimary">#30133D</color>
+    <color name="darkColorPrimaryVariant">#3A1949</color>
+    <color name="darkColorOnPrimary">@color/baseColorOnPrimary</color>
+    <color name="darkColorText">#DED9E8</color>
+    <color name="darkColorBackground">#200C29</color>
+
+    <color name="darkColorTextAccent">@color/baseColorTextAccent</color>
+    <color name="darkColorAccent">@color/baseColorAccent</color>
+    <color name="darkColorAccent2">#7A3398</color>
+
+    <color name="darkColorSecondary">@color/baseColorSecondary</color>
+    <color name="darkColorSecondaryVariant">@color/baseColorSecondaryVariant</color>
+    <color name="darkColorOnSecondary">@color/baseColorOnSecondary</color>
+
+    <!--Текст в NewsItem-->
+    <color name="darkColorPrimary2">#30133D</color>
+    <color name="darkColorNewsItemBackground">#15071B</color>
+    <color name="darkColorTextDate">#50435C</color>
+    <color name="darkColorTextTitle">#EAE2F8</color>
+    <color name="darkColorTextContent">#867D98</color>
+    <color name="darkColorTextLink">#6C5A80</color>
+
+    <!--test-->
+    <color name="green_200">#98d5b0</color>
+    <color name="green_light">#e5f5eb</color>
+    <color name="green_500">#18ad62</color>
+    <color name="green_700">#008c4c</color>
+
+    <!--Secondary brand color of the application-->
+    <color name="red_200">#eb8baf</color>
+    <color name="red_700">#b31058</color>
+
+    <!--Other surface colors and red for error color-->
+    <color name="red">#B00020</color>
+</resources>

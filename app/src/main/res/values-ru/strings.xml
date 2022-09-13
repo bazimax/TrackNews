@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">TrackNews</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="search">Поиск</string>
+
+    <!--cardView-->
+    <string name="newsItemDate">00:00 вчера</string>
+    <string name="newsItemTitle">Заголовок</string>
+    <string name="newsItemContent">Текст</string>
+    <string name="newsItemLink">ссылка</string>
+
+    <!--tabLayout-->
+    <string name="news_today">Сегодня</string>
+    <string name="news_week">За неделю</string>
+    <string name="news_all">Все</string>
+    <string name="news_saved">Важное</string>
+
+    <!--theme-->
+    <string name="theme_title">Темы:</string>
+    <string name="light_theme">Темная</string>
+    <string name="dark_theme">Светлая</string>
+    <string name="system_theme">Системная</string>
+    <string name="battery_saver_theme">Энергосберегающая</string>
+
+    <!--load Website\ProgressBar-->
+    <string name="loadWebsiteFail">Сайт не отвечает. Проверьте интернет соединение.</string>
+
+    <!--Exit App-->
+    <string name="exitApp">Нажмите еще раз для выхода</string>
+</resources>

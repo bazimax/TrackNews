@@ -28,20 +28,8 @@ import javax.net.ssl.HttpsURLConnection
 class NewsAllFragment : Fragment() {
 
     lateinit var binding: FragmentNewsAllBinding
-
-    /*var urlYaRu = "https://ya.ru/"
-    var testUrlYaSearch = "https://ya.ru/"
-    var urlYandexSearch = ""
-    var urlGoogleSearch = ""
-    var line: String = ""
-    //lateinit var docYaRu: Document
-    private val newsItemAdapter = NewsItemAdapter()*/
-
-    private val vm: ViewModel by activityViewModels()
-
-    private var parserSites = ParserSites()
-
-    //var newsItemListParser = ArrayList<NewsItem>()
+    //private val vm: ViewModel by activityViewModels()
+    //private var parserSites = ParserSites()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,17 +43,6 @@ class NewsAllFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.webSiteData.value = "!!0000"
-        vm.webSiteData.observe(activity as LifecycleOwner) {
-            binding.testFragNewsAllTextView.text = it
-        }
-
-        binding.testFragNewsAllButton.setOnClickListener{
-            Log.d("TAG1", "Click - Button")
-            vm.newsItemTempYa.value = parserSites.parse(binding.testFragNewsAllEditText.text.toString())
-            Log.d("TAG1", "vm.newsItemTempYa: ${vm.newsItemTempYa.value}")
-            Log.d("TAG1", "End button click -----")
-        }
     }
 
     companion object {

@@ -19,20 +19,26 @@ class NewsFragment : Fragment() {
         NewsAllFragment.newInstance(),
         NewsSavedFragment.newInstance()
     )
-    private val fragListTitles = listOf(
+    /*private var fragListTitles = listOf(
+        //getString(R.string.news_today),
+        *//*getString(R.string.news_today),
+        getString(R.string.news_week),
+        getString(R.string.news_all),
+        getString(R.string.news_saved)*//*
         "Today",
         "Week",
         "All Time",
         "Saved"
-    )
+    )*/
+
+
     private lateinit var binding: FragmentNewsBinding
-    //lateinit var bindingActivityMainBinding: ActivityMainBinding
-    private val vm: ViewModel by activityViewModels()
+    //private val vm: ViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentNewsBinding.inflate(inflater)
         return binding.root
@@ -40,42 +46,21 @@ class NewsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        //Log.d("TAG1", "R string: ${getString(R.string.news_today)}")
 
-        vm.url2 = "0001" //не работает почему-то
-
-        binding.fragNewsButtonShow.setOnClickListener {
-            //раскрываем общую группу запросов/закладок/поисков/сохраненных поисков
-            Log.d("TAG1", "mMainFrag = ${binding.fragNewsTableLayout.visibility}")
-            Log.d("TAG1", "-------------------")
-            Toast.makeText(context,"123",Toast.LENGTH_SHORT).show()
-            if (binding.fragNewsTableLayout.visibility == View.VISIBLE) {
-                binding.fragNewsTableLayout.visibility = View.GONE
-            }
-            else {
-                binding.fragNewsTableLayout.visibility = View.VISIBLE
-            }
-        }
+        val fragListTitles = listOf(
+            //getString(R.string.news_today),
+            getString(R.string.news_today),
+            getString(R.string.news_week),
+            getString(R.string.news_all),
+            getString(R.string.news_saved)
+        )
 
         val adapter = ViewPager2Adapter(this, fragList)
         binding.fragNewsViewPager2.adapter = adapter
         TabLayoutMediator(binding.fragNewsTab, binding.fragNewsViewPager2) {
             tab, pos -> tab.text = fragListTitles[pos]
         }.attach()
-
-        /*binding.fragNewsTab.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                if (tab != null) {
-                    parentFragmentManager.beginTransaction().replace(R.id.fragNewsPlaceHolder, fragList[tab.position]).commit() //смена фрагментов в зависимости от TabLayout
-                }
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                //TODO("Not yet implemented")
-            }
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                //TODO("Not yet implemented")
-            }
-        })*/
-
     }
 
     companion object {

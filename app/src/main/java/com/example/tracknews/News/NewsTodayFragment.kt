@@ -53,7 +53,7 @@ class NewsTodayFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        vm.messageFact.observe(activity as LifecycleOwner) {
+        vm.messageLoadWebsite.observe(activity as LifecycleOwner) {
             binding.factTv.text = it
         }
 
@@ -77,7 +77,7 @@ class NewsTodayFragment : Fragment() {
             })*/
 
 
-            Log.d("TAG1", "Test 111")
+            //Log.d("TAG1", "Test 111")
             //dataModel.messageFact.value = "1234"
             //dataModel.url2 = "0001"
 
@@ -179,11 +179,11 @@ class NewsTodayFragment : Fragment() {
 
                 //binding.factTv.text = Html.fromHtml(txt)
                 //binding.factTv.text = "123"
-                //dataModel.messageFact.value = "123"
+                //dataModel.messageLoadWebsite.value = "123"
                 runOnUiThread {
                     binding.progressBar.visibility = View.GONE
                     //dataModel.messageFact.value = Html.fromHtml(txt).toString()
-                    vm.messageFact.value = "Good"
+                    vm.messageLoadWebsite.value = "Good"
                 }
             }
         })

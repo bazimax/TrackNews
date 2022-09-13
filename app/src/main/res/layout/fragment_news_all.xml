@@ -5,51 +5,61 @@
     android:layout_height="match_parent"
     tools:context=".News.NewsAllFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <LinearLayout
+        style="@style/Theme.BackgroundBase"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/testFragNewsAllEditText"
-            android:layout_width="match_parent"
+        <View android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="#00BCD4"
+            android:layout_margin="5dp"
+            android:id="@+id/box2" />
+        <Button android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Поисковый запрос"
-            android:inputType="textPersonName"
-            android:text="witcher" />
+            android:text="normal"
+            android:id="@+id/normal_button" />
 
-        <Button
-            android:id="@+id/testFragNewsAllButton"
-            android:layout_width="match_parent"
+        <Button android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Button" />
+            android:text="borderless"
+            android:id="@+id/borderless_button"
+            style="@style/Widget.AppCompat.Button.Borderless" />
 
-        <TextView
-            android:id="@+id/testFragNewsAllTextViewItem"
-            android:layout_width="match_parent"
+        <Button android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:text="colored"
+            android:id="@+id/colored_button"
+            style="@style/Widget.AppCompat.Button.Colored" />
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <CheckBox android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="New CheckBox"
+            android:id="@+id/checkBox" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+        <RadioButton android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="New RadioButton"
+            android:id="@+id/radioButton" />
 
-                <TextView
-                    android:id="@+id/testFragNewsAllTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="All" />
-            </LinearLayout>
-        </ScrollView>
+        <Switch android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="New Switch"
+            android:id="@+id/switchButton" />
 
+        <SeekBar android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar" />
+
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/textView" />
+
+        <EditText android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editText"
+            android:hint="Input" />
     </LinearLayout>
-
 </FrameLayout>

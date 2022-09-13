@@ -3,13 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="102dp"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/newsItemCardView"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:background="#A64949"
+        app:cardCornerRadius="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -17,79 +19,135 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="#FFE4E4"
-            android:orientation="horizontal">
+            android:layout_height="96dp"
+            android:orientation="horizontal"
+            android:theme="@style/Theme.BackgroundNewsItemText">
 
             <TextView
                 android:id="@+id/newsItemTextViewDate"
-                android:layout_width="120dp"
-                android:layout_height="96dp"
-                android:background="#FFFFFF"
+                style="@style/Theme.BackgroundNewsItemDate"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="Image News" />
+                android:text="@string/newsItemDate"
+                android:textColor="@color/baseNewsItemButton" />
+
+            <TextView
+                android:id="@+id/newsItemTextViewImg"
+                android:layout_width="12dp"
+                android:layout_height="match_parent"
+                android:background="#FAFAFA"
+                android:gravity="center"
+                android:visibility="gone"
+                tools:visibility="gone" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#B37D43">
+                android:layout_weight="1"
+                android:theme="@style/Theme.BackgroundNewsItemText">
 
                 <LinearLayout
                     android:id="@+id/linearLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="8dp"
+                    android:layout_height="0dp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="#B3CF67"
+                    android:layout_marginBottom="4dp"
                     android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/view"
-                    app:layout_constraintStart_toEndOf="@+id/view"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
                         android:id="@+id/newsItemTextViewTitle"
+                        style="@style/BackgroundNewsItemTextTitle"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="20dp"
                         android:layout_marginBottom="4dp"
                         android:fontFamily="sans-serif-black"
-                        android:text="Title"
-                        android:textSize="20sp" />
+                        android:text="@string/newsItemTitle"
+                        android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/newsItemTextViewContent"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dp"
-                        android:text="Content" />
+                        android:layout_height="46dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/newsItemTextViewContent"
+                            style="@style/BackgroundNewsItemTextContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="4dp"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:scrollHorizontally="true"
+                            android:text="@string/newsItemContent"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/newsItemTextViewLink"
+                        style="@style/BackgroundNewsItemTextLink"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="16dp"
                         android:layout_marginBottom="4dp"
                         android:fontFamily="sans-serif-light"
-                        android:text="link" />
+                        android:autoLink="web"
+                        android:text="@string/newsItemLink"
+                        android:textSize="12sp" />
 
                 </LinearLayout>
 
                 <View
                     android:id="@+id/view"
                     android:layout_width="0dp"
-                    android:layout_height="4dp"
+                    android:layout_height="2dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
-                    android:background="#3E3E3E"
-                    app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+                    android:background="#D5D5D5"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+                    app:layout_constraintStart_toStartOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <LinearLayout
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/newsItemButtonSave"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_transparent"
+                    android:theme="@style/Theme.BackgroundBaseButton"
+                    app:icon="@drawable/ic_star_unselect"
+                    app:iconGravity="top"
+                    app:iconTint="@color/baseNewsItemButton" />
+
+                <Button
+                    android:id="@+id/newsItemButtonExpand"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_transparent"
+                    android:gravity="center"
+                    android:theme="@style/Theme.BackgroundBaseButton"
+                    android:visibility="invisible"
+                    app:icon="@drawable/ic_arrow_bottom"
+                    app:iconGravity="top"
+                    app:iconTint="@color/baseNewsItemButton" />
+
+            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>

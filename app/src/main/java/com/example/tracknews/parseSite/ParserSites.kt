@@ -16,13 +16,7 @@ import java.nio.charset.StandardCharsets
 import javax.net.ssl.HttpsURLConnection
 
 class ParserSites {
-    //val search = search
-    //var urlYaSearch = "https://newssearch.yandex.ru/news/search?text=$search&flat=1"
-    //var urlGooSearch = ""
-    //private val newsItemAdapter = NewsItemAdapter()
-    //lateinit var vm: ViewModel
-
-    val newsItemList = ArrayList<NewsItem>()
+    private val newsItemList = ArrayList<NewsItem>()
 
     fun parse(search: String): ArrayList<NewsItem>{
         parseYa(search)
@@ -31,11 +25,11 @@ class ParserSites {
     }
 
     fun test(str: String){
-        Log.d("TAG1", "$str")
+        //Log.d("TAG1", "$str")
     }
 
     private fun initFromParseHTML(url: String): String {
-        Log.d("TAG1", "Start - initFromParseHTML")
+        //Log.d("TAG1", "Start - initFromParseHTML")
         var siteTemp = ""
         //coroutines
         GlobalScope.launch { // запуск новой сопрограммы в фоне
@@ -63,23 +57,23 @@ class ParserSites {
                 else Log.d("TAG1", "Connection - Failed")
             }catch (e: IOException) {
                 e.printStackTrace()
-                Log.d("TAG1", "$e")
+                //Log.d("TAG1", "$e")
             }finally {
                 urlConnection.disconnect()
-                Log.d("TAG1", "Disconnect")
+                //Log.d("TAG1", "Disconnect")
             }
-            Log.d("TAG1", "!!Global:: : $siteTemp")
+            //Log.d("TAG1", "!!Global:: : $siteTemp")
         }
         Thread.sleep(2000L)
         //Log.d("TAG1", "!!Return:: : $siteTemp")
         return siteTemp
     }
     private fun parseYa(search: String) {
-        var correctSearch = search.replace(" ", "+", true)
-        Log.d("TAG1", "Start parseYa")
+        val correctSearch = search.replace(" ", "+", true)
+        //Log.d("TAG1", "Start parseYa")
         val url = "https://newssearch.yandex.ru/news/search?text=$correctSearch&flat=1&sortby=date"
-        Log.d("TAG1", "parseYa url: $url")
-        var siteTemp = initFromParseHTML(url)
+        //Log.d("TAG1", "parseYa url: $url")
+        val siteTemp = initFromParseHTML(url)
 
         val doc = Jsoup.parse(siteTemp)
         val item = doc.select("article")
@@ -88,6 +82,7 @@ class ParserSites {
         //Log.d("TAG1", ":::: item: ${doc.select("article").first()}")
         //Log.d("TAG1", "item size: ${item.size}")
         item.forEach {
+            //для каждого новостного элемента
             //Log.d("TAG1", "forEach val 1")
             val img = it.select("span[class=mg-snippet-source-info__agency-name]").text() ?: "Img Error"
             //Log.d("TAG1", "forEach val 2")
@@ -102,8 +97,12 @@ class ParserSites {
             //else val content = ""
             //Log.d("TAG1", "forEach val 5")
             val link = it.select("h3, a").attr("href") ?: "Link Error"
+            val statusSaved = "false"
 
-            val newsItem = NewsItem(search ,img, date, title, content, link)
+            val id = 0
+
+
+            val newsItem = NewsItem(id, search ,img, date, title, content, link, statusSaved)
             //Log.d("TAG1", "forEach newsItem: $newsItem")
             //Log.d("TAG1", "forEach newsItemList: $newsItemList")
             newsItemList.add(newsItem)
@@ -114,7 +113,7 @@ class ParserSites {
     }
     private fun parseGoo(search: String){
         val url = "https://newssearch.yandex.ru/news/search?text=$search&flat=1" //......
-        var siteTemp = initFromParseHTML(url)
+        val siteTemp = initFromParseHTML(url)
 
         val doc = Jsoup.parse(siteTemp)
         val item = doc.select("article") //......

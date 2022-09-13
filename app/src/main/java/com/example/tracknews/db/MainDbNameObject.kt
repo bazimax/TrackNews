@@ -10,8 +10,9 @@ object MainDbNameObject : BaseColumns {
     const val COLUMN_NAME_TITLE = "title"
     const val COLUMN_NAME_CONTENT = "content"
     const val COLUMN_NAME_LINK = "link"
+    const val COLUMN_NAME_STATUS_SAVED = "statusSaved"
 
-    const val DATABASE_VERSION = 4
+    const val DATABASE_VERSION = 5
     const val DATABASE_NAME = "NewsDB.db"
 
     const val SQL_CREATE_TABLE =
@@ -22,7 +23,8 @@ object MainDbNameObject : BaseColumns {
                 "$COLUMN_NAME_DATE TEXT," +
                 "$COLUMN_NAME_TITLE TEXT," +
                 "$COLUMN_NAME_CONTENT TEXT," +
-                "$COLUMN_NAME_LINK TEXT)"
+                "$COLUMN_NAME_LINK TEXT," +
+                "$COLUMN_NAME_STATUS_SAVED)"
 
     const val SQL_DELETE_TABLE = "DROP TABLE IF EXISTS $TABLE_NAME"
 }

@@ -9,11 +9,6 @@ import androidx.fragment.app.Fragment
 import com.example.tracknews.databinding.FragmentMainBinding
 
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.LifecycleOwner
-import com.example.tracknews.TestFragments.TestFragment1
-import com.example.tracknews.TestFragments.TestFragment2
-import com.example.tracknews.TestFragments.TestFragment3
-import com.example.tracknews.TestFragments.TestFragment4
 
 
 class MainFragment : Fragment() {
@@ -32,11 +27,11 @@ class MainFragment : Fragment() {
         //return inflater.inflate(R.layout.fragment_main, container, false) //вместо binding
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    /*override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //retainInstance = true
 
-    }
+    }*/
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //Log.d("TAG1", "0 - MainFrag ${parentFragmentManager}")
@@ -48,28 +43,16 @@ class MainFragment : Fragment() {
         else vm.statusLandscape.value = "true"
         // 1- конец проверки
 
-        // > тестовые поля для проверок, удалить после окончания разработки
-        vm.url.observe(activity as LifecycleOwner) {
-            binding.fragMainTextView?.text = it
-        }
-        vm.url.observe(activity as LifecycleOwner) {
-            binding.fragMainLandTextView?.text = it
-        }
-        binding.fragMainButtonTest1?.setOnClickListener {
-            loadFragmentToActivity(TestFragment1.newInstance())
-        }
-        binding.fragMainButtonTest2?.setOnClickListener {
-            loadFragmentToActivity(TestFragment2.newInstance())
-        }
-        binding.fragMainButtonTest3?.setOnClickListener {
-            loadFragmentToActivity(TestFragment3.newInstance())
-        }
-        binding.fragMainButtonTest4?.setOnClickListener {
-            loadFragmentToActivity(TestFragment4.newInstance())
-        }
-
-
-        // ^ тестовые поля для проверок, удалить после окончания разработки
+//        // > тестовые поля для проверок, удалить после окончания разработки
+//        vm.url.observe(activity as LifecycleOwner) {
+//            binding.fragMainTextView?.text = it
+//        }
+//        vm.url.observe(activity as LifecycleOwner) {
+//            binding.fragMainLandTextView?.text = it
+//        }
+//
+//
+//        // ^ тестовые поля для проверок, удалить после окончания разработки
 
     }
 
