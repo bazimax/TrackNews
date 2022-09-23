@@ -20,7 +20,7 @@ class MainDbManager(context: Context) {
 
     fun insertToDb(search: String, img: String, date: String, title: String, content: String, link: String, statusSaved: String) {
         //добавляем данные в Базу Данных
-        Log.d("TAG1", "MainDbManager >f insertToDB ======START")
+        //Log.d("TAG1", "MainDbManager >f insertToDB ======START")
         //Log.d("TAG1", "insertToDB > SQL title...: $title, $content, $link")
         val values = ContentValues().apply {
             put(MainDbNameObject.COLUMN_NAME_SEARCH, search)
@@ -34,7 +34,7 @@ class MainDbManager(context: Context) {
         //Log.d("TAG1", "SQL values: $values")
         db?.insert(MainDbNameObject.TABLE_NAME, null, values)
         //Log.d("TAG1", "SQL db: $db, ${db.toString()}")
-        Log.d("TAG1", "MainDbManager >f insertToDB - OK")
+        //Log.d("TAG1", "MainDbManager >f insertToDB - OK")
     }
 
     fun testReadDbData() : ArrayList<String>{
@@ -78,7 +78,7 @@ class MainDbManager(context: Context) {
             val statusSaved = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_STATUS_SAVED)).toString()
 
             //val id = cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_STATUS_SAVED).toString()
-            val id: Int = cursor.position
+            val id: Int = cursor.position //записываем id
             //Log.d("TAG1", "readDbData > INDEX > ${cursor.position}")
 
             val newsItem = NewsItem(id, search, img, date, title, content, link, statusSaved)
@@ -103,11 +103,42 @@ class MainDbManager(context: Context) {
         Log.d("TAG1", "MainDbManager >f clearAllDataInDb - OK")
     }
 
-    fun deleteDbElement(link: String){
+    fun deleteDbElement(whereClause: String, whereArgs: String){
         //удаляем элемент/строку из Базы Данных
-        Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $link")
+
+        //Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $link")
+        val a = db?.delete(MainDbNameObject.TABLE_NAME, "$whereClause = ?", arrayOf(whereArgs))
+        //Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $a")
+    }
+
+    fun updateDbElementStatusSaved(statusSaved: String, id: Int){
+        //обновляем элемент/строку из Базы Данных
+
+        //Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $link")
+        val values = ContentValues().apply {
+            //put(MainDbNameObject.COLUMN_NAME_LINK, "-1")
+            if (statusSaved == true.toString()) {
+                put(MainDbNameObject.COLUMN_NAME_LINK, "${false}")
+                put(MainDbNameObject.COLUMN_NAME_STATUS_SAVED, "${false}")
+                Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > statusSaved True > False")
+            }
+            else {
+                put(MainDbNameObject.COLUMN_NAME_LINK, "${true}")
+                put(MainDbNameObject.COLUMN_NAME_STATUS_SAVED, "${true}")
+                Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > statusSaved False > True")
+            }
+        }
+
+        val idCorrect = (id + 1).toString()
+        Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > values: $values")
+        Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > id: $id")
+        Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > id: ${arrayOf(idCorrect)}")
+        db?.update(MainDbNameObject.TABLE_NAME, values, "_ID = ?", arrayOf(idCorrect))
+        //Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $a")
         //db?.delete(MainDbNameObject.TABLE_NAME,"name=?", arrayOf(link))
     }
 
-
+    fun deleteDbElement(search: String){
+        db?.delete(MainDbNameObject.TABLE_NAME,"search=?", arrayOf(search))
+    }
 }

@@ -16,9 +16,11 @@ import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.example.tracknews.News.NewsTodayFragment
 import com.example.tracknews.classes.AnimationView
+import com.example.tracknews.classes.NewsItem
 import com.example.tracknews.databinding.ActivityMainBinding
 import com.example.tracknews.db.MainDbManager
 import com.example.tracknews.parseSite.ParserSites
+import okhttp3.Request
 
 const val PREFS_NAME = "theme_prefs"
 const val KEY_THEME = "prefs.theme"
@@ -47,28 +49,27 @@ class MainActivity : AppCompatActivity() {
         setTheme(R.style.Theme_TrackNews) //убираем сплешскрин - меняем тему установленную в манифесте на нужную до super.onCreate
         //Log.d("TAG1", "Activity created ==============")
         super.onCreate(savedInstanceState)
-        //vm.url.value = "0000"
-
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root) // ^ привязка
 
-        init() //стартовые функции, запуск БД и ViewModel, отслеживание изменений в них
+        //init() //стартовые функции, запуск БД и ViewModel, отслеживание изменений в них
 
+        //Загружаем фрагменты
         //loadFragment(R.id.frameLayoutToolbar, ToolbarFragment.newInstance())
         loadFragment(R.id.frameLayoutActivityMain, MainFragment.newInstance())
         loadFragment(R.id.frameLayoutMainFragment, NewsFragment.newInstance())
         loadFragment(R.id.fragNewsPlaceHolder, NewsTodayFragment.newInstance())
 
-        //temp
-        Log.d("TAG1", "activityMain > vm.tempUrl: ${vm.tempWebsiteLink.value}")
-
+        //temp >
+        /*Log.d("TAG1", "activityMain > vm.tempUrl: ${vm.tempWebsiteLink.value}")
         vm.tempWebsiteLink.observe(this){
             Log.d("TAG1", "activityMain > observe > vm.tempUrl: ${vm.tempWebsiteLink.value}")
-        }
+        }*/
+        //temp ^
 
-        /*if (vm.statusLandscape.value == "true") {
-            //криво определяем повернут телефон или нет
+        /*//криво определяем повернут телефон или нет
+        if (vm.statusLandscape.value == "true") {
             loadFragment(R.id.frameLayoutMainFragmentLand, WebsiteFragment.newInstance())
         }*/
 
@@ -96,8 +97,6 @@ class MainActivity : AppCompatActivity() {
 
         cardView.alpha = 0F
 
-        //vm.statusSearchMutable.value = false.toString()
-
         cardViewVisibility(cardView, buttonSearch) //отслеживаем видимость cardView
 
 
@@ -109,6 +108,7 @@ class MainActivity : AppCompatActivity() {
         }
         //Log.d("TAG1", "screenDisplayWidth: $screenDisplayWidth")*/
 
+        //Delete
         binding.testFabButtonSearch2.setOnClickListener {
             if (vm.sizeFAButton == -99) {
                 vm.sizeFAButton = buttonSearch.width
@@ -139,7 +139,20 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        //Раскрываем меню поиска
         buttonSearch.setOnClickListener {
+            //delete >
+            vm.newsItemTempYa.value = null
+            //проверка интернета
+            //val testRequest: Request = Request.Builder().url("https://www.ya.ru/").build()
+            //запускаем парсинг новостных сайтов/сайта
+            val newsItem = parserSites.parse("witcher")
+            vm.newsItemTempYa.value = newsItem.list
+            vm.testParserSitesString.value = newsItem.statusEthernet
+            Log.d("TAG1", "Main Activity > buttonSearch > newsItem.statusEthernet ${newsItem.statusEthernet}")
+            //delete^
+
+
             //Log.d("TAG1", "buttonSearch - START -------")
             //val animationView = AnimationView()
             if (vm.sizeFAButton == -99) {
@@ -156,16 +169,33 @@ class MainActivity : AppCompatActivity() {
             //Log.d("TAG1", "buttonSearch - END -------")
         }
 
+        //GO - Поиск новостей
         buttonGo.setOnClickListener {
             //Log.d("TAG1", "buttonGo - START -------")
 
             //Log.d("TAG1", "vm.newsItemTempYa: ${vm.newsItemTempYa.value}")
+            /*if (binding.editTextSearch.text.toString() != "") {
+                vm.newsItemTempYa.value = null
+                //запускаем парсинг новостных сайтов/сайта
+                val newsItem = parserSites.parse(binding.editTextSearch.text.toString()).list
+                //полученные данные отправляем в ViewModel
+                vm.newsItemTempYa.value = newsItem
+            }*/
+
             if (binding.editTextSearch.text.toString() != "") {
                 vm.newsItemTempYa.value = null
+                //проверка интернета
+                //val testRequest: Request = Request.Builder().url("https://www.ya.ru/").build()
                 //запускаем парсинг новостных сайтов/сайта
                 val newsItem = parserSites.parse(binding.editTextSearch.text.toString())
                 //полученные данные отправляем в ViewModel
-                vm.newsItemTempYa.value = newsItem
+                vm.newsItemTempYa.value = newsItem.list
+                //если парсинг не удался
+                if (newsItem.statusEthernet == false.toString()) {
+                    val messageLoadWebsite = resources.getString(com.example.tracknews.R.string.loadWebsiteFail)
+                    Toast.makeText(this, messageLoadWebsite, Toast.LENGTH_SHORT).show()
+                }
+
             }
 
             /*//animation
@@ -178,6 +208,7 @@ class MainActivity : AppCompatActivity() {
             //Log.d("TAG1", "buttonGo - END -------")
         }
 
+        //временные кнопки >
         binding.actMainDrLayoutButtonSettings.setOnClickListener {
         }
         binding.actMainDrLayoutButton2.setOnClickListener {
@@ -188,17 +219,20 @@ class MainActivity : AppCompatActivity() {
         }
         binding.actMainDrLayoutButton3.setOnClickListener {
             Log.d("TAG1", "setThemeDark ---------------------------")
-            setTheme(AppCompatDelegate.MODE_NIGHT_YES, THEME_DARK)
+            //setTheme(AppCompatDelegate.MODE_NIGHT_YES, THEME_DARK)
             Log.d("TAG1", "setTheme")
         }
+        //временные кнопки ^
 
+        //выдвигаем меню настроек
         binding.buttonHamburger.setOnClickListener {
-            //выдвигаем меню настроек
+
             //Log.d("TAG1", "mDrawer Button Click")
             binding.actMainDrawer.openDrawer(GravityCompat.START)
             //Log.d("TAG1", "end mDrawer Button ==============")
         }
 
+        //раскрываем сохраннеые результаты поисков
         btnSavedSearches.setOnClickListener {
             frameLayoutSavedSearches.layoutParams = frameLayoutSavedSearches.layoutParams
             //binding.frameLayoutSavedSearches.layoutParams = binding.frameLayoutSavedSearches.layoutParams
@@ -258,9 +292,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-
-
-
         /*//скрываем/показываем кнопку поиска при возвращении с сайта
         if (binding.fabButtonSearch.visibility == View.GONE) {
             binding.fabButtonSearch.visibility = View.VISIBLE
@@ -308,7 +339,7 @@ class MainActivity : AppCompatActivity() {
                     val title = it.title
                     val content = it.content
                     val link = it.link
-                    val statusSaved = it.link
+                    val statusSaved = it.statusSaved
                     mainDbManager.insertToDb(search ,img, date, title, content, link, statusSaved)
                 }
             }
@@ -337,13 +368,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun deleteElementOfSQLite(){
         //удалем элемент/строку из Базы Данных
-        vm.newsItemDeleted.observe(this) {
-            val link = vm.newsItemDeleted.value
-            if (link != "-1") {
-                if (link != null) {
-                    mainDbManager.deleteDbElement(link)
+        vm.newsItemUpdateItem.observe(this) {
+            val statusSaved = vm.newsItemUpdateItem.value?.statusSaved
+            val id = vm.newsItemUpdateItem.value?.id
+            if (statusSaved != null) {
+                //mainDbManager.deleteDbElement(link, "link")
+                if (id != null) {
+                    mainDbManager.updateDbElementStatusSaved(statusSaved, id)
                 }
             }
+            Toast.makeText(this, statusSaved, Toast.LENGTH_SHORT).show()
+            loadSQLiteToViewModel()
         }
     }
     // //Функции выше ^ - работа с Базой Данных

@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.tracknews.classes.NewsItem
+import com.example.tracknews.classes.NewsItemWork
 import com.example.tracknews.databinding.ActivityMainBinding
 import com.example.tracknews.db.MainDbManager
 
@@ -76,10 +77,20 @@ open class ViewModel : ViewModel() {
 
     var tempWebsiteLink = MutableLiveData<String>()
     var newsItemDeleted = MutableLiveData<String>()
+    //var newsItemWorkId = MutableLiveData<Int>()
+    //var newsItemWork = MutableLiveData<String>()
+    var newsItemDeleted2 = MutableLiveData("Moroz")
+    var testParserSitesString = MutableLiveData("Site")
+
+    var newsItemUpdateItem = MutableLiveData<NewsItem>()
+
     init {
         //запускать init в activity или fragment не надо?
         tempWebsiteLink.value = "-1"
-        newsItemDeleted.value = "-1"
+        newsItemDeleted.value = "false"
+        newsItemUpdateItem.value?.id = 0
+        //newsItemWork.value = "false"
+        //newsItemWorkId.value = -1
     }
 
     /*

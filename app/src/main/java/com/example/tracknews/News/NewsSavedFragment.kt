@@ -50,6 +50,11 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
         val v1 = binding.fragNewsSavedRecyclerView
         startRecyclerView(v1)
 
+        Log.d("TAG1", "test: ${vm.testParserSitesString.value}")
+        vm.testParserSitesString.observe(activity as LifecycleOwner) {
+            binding.testFragNewsSavedTextView.text = vm.testParserSitesString.value
+        }
+
         /*binding.testFragNewsSavedGO.setOnClickListener {
             //Log.d("TAG1", "Click - Button")
             vm.newsItemTempYa.value = null
@@ -77,17 +82,16 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
     }
 
     @SuppressLint("ClickableViewAccessibility") //для setOnTouchListener
-    private fun startRecyclerView(view1: View){
+    private fun startRecyclerView(view: View){
         //Подключаем RecyclerView и отображаем данные из SQLite
         binding.apply {
             //fragTest2RecyclerView.setHasFixedSize(true) //для оптимизации?
-            fragNewsSavedRecyclerView.layoutManager = LinearLayoutManager(view?.context)
+            fragNewsSavedRecyclerView.layoutManager = LinearLayoutManager(view.context) //проверить
             fragNewsSavedRecyclerView.adapter = newsItemAdapter
         }
 
-        /*view.setOnTouchListener { v, event ->*/
-        view1.setOnTouchListener { _, event ->
-            //Отслеживаем движение по экрану, чтобы скрывать поиск
+        //Отслеживаем движение по экрану, чтобы скрывать поиск
+        view.setOnTouchListener { _, event ->
             return@setOnTouchListener when (MotionEventCompat.getActionMasked(event)) {
                 MotionEvent.ACTION_DOWN -> {
 
@@ -112,9 +116,30 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
 
     override fun changeStatusSaved(newsItem: NewsItem) {
         //сохраняем новость
-        //пока тестово удаляем
-        vm.newsItemDeleted.value = newsItem.link
-        Toast.makeText(view?.context, newsItem.statusSaved, Toast.LENGTH_SHORT).show()
+        // //пока тестово удаляем
+        // //пока тестово меняем ссылку(link)
+        /*vm.newsItemWorkId.value = newsItem.id
+        vm.newsItemWork.value = newsItem.statusSaved*/
+        //Log.d("TAG1", "fragNewsSaved >f loadWebsite > updateItem: ${vm.newsItemUpdateItem.value}")
+        //var a = NewsItem()
+        //a.id = newsItem.id
+        vm.newsItemUpdateItem.value = newsItem
+
+        //vm.newsItemUpdateItem.value?.id = newsItem.id
+        //vm.newsItemUpdateItem.value?.statusSaved = newsItem.statusSaved
+        //Log.d("TAG1", "fragNewsSaved >f loadWebsite > updateItem: ${vm.newsItemUpdateItem.value}")
+
+        //передаем статус
+        /*if (newsItem.statusSaved == false.toString()) {
+            vm.newsItemWork.value = true.toString()
+            Log.d("TAG1", "fragNewsSaved >f loadWebsite > url: ${vm.newsItemWork.value}")
+        }
+        else {
+            vm.newsItemWork.value = false.toString()
+            Log.d("TAG1", "fragNewsSaved >f loadWebsite > url: ${vm.newsItemWork.value}")
+        }*/
+        //vm.newsItemDeleted.value = newsItem.statusSaved
+        //Toast.makeText(view?.context, newsItem.statusSaved, Toast.LENGTH_SHORT).show()
     }
     override fun expandContent(newsItem: NewsItem) {
         //показываем полный текст

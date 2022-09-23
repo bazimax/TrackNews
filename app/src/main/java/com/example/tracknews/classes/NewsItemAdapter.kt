@@ -88,9 +88,9 @@ class NewsItemAdapter(val listener: Listener): RecyclerView.Adapter<NewsItemAdap
         notifyDataSetChanged()
     }
 
-    fun addAllNews(list: List<NewsItem>){
+    fun addAllNews(listNewsItem: List<NewsItem>){
         newsItemList.clear()
-        newsItemList.addAll(list)
+        newsItemList.addAll(listNewsItem)
         notifyDataSetChanged()
     }
 

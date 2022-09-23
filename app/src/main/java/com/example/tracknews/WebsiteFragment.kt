@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
@@ -69,12 +70,13 @@ class WebsiteFragment : Fragment() {
         val url = vm.tempWebsiteLink.value.toString()
         //Log.d("TAG1", "fragWebsite >f loadWebsite > url: $url")
         //Log.d("TAG1", "fragWebsite >f loadWebsite > vm.tempUrl: ${vm.tempWebsiteLink.value}")
-        val messageLoadWebsite = resources.getString(R.string.loadWebsiteFail)
+        val messageLoadWebsite = resources.getString(com.example.tracknews.R.string.loadWebsiteFail)
 
         runOnUiThread {
             binding.fragWebsiteProgressBar.visibility = View.VISIBLE
         }
 
+        val testRequest: Request = Request.Builder().url("https://www.google.com/").build()
         val request: Request = Request.Builder().url(url).build()
 
         okHttpClient.newCall(request).enqueue(object: Callback {
@@ -83,6 +85,7 @@ class WebsiteFragment : Fragment() {
                 binding.fragWebsiteProgressBar.visibility = View.GONE
                 binding.fragWebsiteTextView.text = messageLoadWebsite
                 binding.fragWebsiteTextView.visibility = View.VISIBLE
+                Toast.makeText(view?.context, "Bad connection", Toast.LENGTH_SHORT).show()
                 //vm.messageFact.value = "Fail"
             }
 
@@ -92,6 +95,7 @@ class WebsiteFragment : Fragment() {
                     binding.fragWebsiteWebView.loadUrl(url)
                     //dataModel.messageFact.value = Html.fromHtml(txt).toString()
                     //vm.messageLoadWebsite.value = "Good"
+                    //Toast.makeText(view?.context, "website load", Toast.LENGTH_SHORT).show()
                 }
             }
         })
