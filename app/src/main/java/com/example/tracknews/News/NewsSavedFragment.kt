@@ -50,10 +50,12 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
         val v1 = binding.fragNewsSavedRecyclerView
         startRecyclerView(v1)
 
-        Log.d("TAG1", "test: ${vm.testParserSitesString.value}")
+        Log.d("TAG1", "NewsSavedFragment > test: ${vm.testParserSitesString.value}")
         vm.testParserSitesString.observe(activity as LifecycleOwner) {
             binding.testFragNewsSavedTextView.text = vm.testParserSitesString.value
         }
+
+        //binding.fragNewsSavedRecyclerView.setOnTouchListener { _, event -> onTouch(event)}
 
         /*binding.testFragNewsSavedGO.setOnClickListener {
             //Log.d("TAG1", "Click - Button")
@@ -88,11 +90,17 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
             //fragTest2RecyclerView.setHasFixedSize(true) //для оптимизации?
             fragNewsSavedRecyclerView.layoutManager = LinearLayoutManager(view.context) //проверить
             fragNewsSavedRecyclerView.adapter = newsItemAdapter
+
+
         }
 
+        //Отслеживаем движение по экрану, чтобы скрывать форму поиска
+        view.setOnTouchListener { _, event -> onTouch(event)}
+
         //Отслеживаем движение по экрану, чтобы скрывать поиск
-        view.setOnTouchListener { _, event ->
+        /*view.setOnTouchListener { _, event ->
             return@setOnTouchListener when (MotionEventCompat.getActionMasked(event)) {
+                //MotionEventCompat.getActionMasked(event)
                 MotionEvent.ACTION_DOWN -> {
 
                     // Make a Toast when movements captured on the sub-class
@@ -104,10 +112,60 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
                 }
                 else -> false
             }
-        }
+        }*/
     }
 
+    //Отслеживаем движение по экрану, чтобы скрывать поиск
+    private fun onTouch(event: MotionEvent): Boolean {
+
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {}
+            MotionEvent.ACTION_MOVE -> {
+                if (vm.statusSearchMutable.value == true.toString()) {
+                    vm.statusSearchMutable.value = false.toString()
+                }
+            }
+            MotionEvent.ACTION_UP -> {}
+            MotionEvent.ACTION_CANCEL -> {}
+        }
+        return false //если поставить true, то скролл перестает работать
+    }
+
+    /*private fun onTouchZapas(event: MotionEvent): Boolean {
+        var x = event.x//event.getX()
+        var y = event.y//event.getY()
+
+        var sDown = ""
+        var sMove = ""
+        var sUp = ""
+
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                sDown = "Down: $x,$y"
+                sMove = ""
+                sUp = ""
+                if (vm.statusSearchMutable.value == true.toString()) {
+                    vm.statusSearchMutable.value = false.toString()
+                }
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (vm.statusSearchMutable.value == true.toString()) {
+                    vm.statusSearchMutable.value = false.toString()
+                }
+                //sMove = "Move: $x,$y";
+            }
+            MotionEvent.ACTION_UP -> {}
+            MotionEvent.ACTION_CANCEL -> {
+                sMove = "";
+                sUp = "Up: $x,$y";
+            }
+        }
+        //binding.testFragNewsSavedTextView.text = sDown + "\n" + sMove + "\n" + sUp
+        return true
+    }*/
+
     override fun runWebsite(newsItem: NewsItem) {
+        //При клике на элемент > загрузка интеренет страницы
         //vm.tempWebsiteLink.value = newsItem.link
         //loadProgressBar(newsItem.link) //прогрессбар
         loadWebsite(newsItem.link) //загрузка интеренет страницы
@@ -115,15 +173,17 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
     }
 
     override fun changeStatusSaved(newsItem: NewsItem) {
-        //сохраняем новость
+        //сохраняем новость (отмечаем звездочкой)
         // //пока тестово удаляем
         // //пока тестово меняем ссылку(link)
+
         /*vm.newsItemWorkId.value = newsItem.id
         vm.newsItemWork.value = newsItem.statusSaved*/
         //Log.d("TAG1", "fragNewsSaved >f loadWebsite > updateItem: ${vm.newsItemUpdateItem.value}")
         //var a = NewsItem()
         //a.id = newsItem.id
         vm.newsItemUpdateItem.value = newsItem
+
 
         //vm.newsItemUpdateItem.value?.id = newsItem.id
         //vm.newsItemUpdateItem.value?.statusSaved = newsItem.statusSaved
@@ -143,6 +203,7 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
     }
     override fun expandContent(newsItem: NewsItem) {
         //показываем полный текст
+        //"в работе"
         Toast.makeText(view?.context, newsItem.content, Toast.LENGTH_SHORT).show()
     }
 

@@ -1,9 +1,7 @@
 package com.example.tracknews.parseSite
 
 import android.util.Log
-import com.example.tracknews.ViewModel
 import com.example.tracknews.classes.NewsItem
-import com.example.tracknews.classes.NewsItemAdapter
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
@@ -12,7 +10,6 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import java.nio.charset.StandardCharsets
 import javax.net.ssl.HttpsURLConnection
 
 class ParserSites {
@@ -30,6 +27,16 @@ class ParserSites {
         //parseYa(search)
         //parseGoo(search)
         parseP(search)
+        return ResultParse(newsItemList, statusEthernet)
+    }
+    fun testParse(search: String, site: String): ResultParse{
+        //parseYa(search)
+        //parseGoo(search)
+        //Log.d("TAG1", "ParserSites >f testParse > site: $site")
+        if (site == "") {
+            parseP(search)
+        }
+        else testParseP(site)
         return ResultParse(newsItemList, statusEthernet)
     }
 
@@ -50,14 +57,16 @@ class ParserSites {
                 urlConnection.connect()
 
                 if(urlConnection.responseCode == HttpURLConnection.HTTP_OK) {
+                    //val isr = InputStreamReader(conn.getInputStream(), "windows-1251")
+                    //val br = BufferedReader(isr)
                     Log.d("TAG1", "Connection - Good")
                     val br = BufferedReader(
                         InputStreamReader(
                             urlConnection.inputStream,
-                            StandardCharsets.UTF_8
+                            "windows-1251"
+                            //StandardCharsets.UTF_8
                         )
                     )
-
                     br.lineSequence().forEach {
                         //Log.d("TAG1", "1+ $siteTemp")
                         siteTemp += it
@@ -134,20 +143,23 @@ class ParserSites {
         return statusEthernet
     }
 
-    private fun parseGoo(search: String) {}
-
-    private fun parseP(search: String):String {
-        val correctSearch = search.replace(" ", "%20", true)
+    private fun parseGoo(search: String) {
         //https://news.google.com/search?q=witcher&hl=ru&gl=RU&ceid=RU%3Aru //Ru
         //https://news.google.com/search?q=witcher&hl=en-US&gl=US&ceid=US%3Aen //En USA
         //val url = "https://www.google.ru/search?q=$correctSearch" //......
         //https://www.google.ru/search?q=witcher
+        //val url = "https://news.google.com/search?q=$correctSearch&hl=ru&gl=RU&ceid=RU%3Aru" //......
+        //val urlEn = "https://news.google.com/search?q=$correctSearch&hl=en-US&gl=US&ceid=US%3Aen" //......
+    }
+
+    private fun parseP(search: String):String {
+        val correctSearch = search.replace(" ", "%20", true)
+
         //https://pikabu.ru/search?q=witcher&st=3&d=5347&D=5378
         val url = "https://pikabu.ru/search?q=$correctSearch&st=3&d=5347&D=5378" //......
-        //val url = "https://news.google.com/search?q=$correctSearch&hl=ru&gl=RU&ceid=RU%3Aru" //......
-        val urlEn = "https://news.google.com/search?q=$correctSearch&hl=en-US&gl=US&ceid=US%3Aen" //......
 
-        Log.d("TAG1", "parseGo url: $url")
+
+        //Log.d("TAG1", "parseP url: $url")
         val siteTemp = initFromParseHTML(url)
         //Log.d("TAG1", "ParserSite >f parseP > siteTemp: $siteTemp")
 
@@ -156,62 +168,40 @@ class ParserSites {
             statusEthernet = false.toString() //"bad"
         }
 
-
-
         val doc = Jsoup.parse(siteTemp)
         val item = doc.select("article") //начали парсить
         newsItemList.clear()
 
         //delete>
         //statusEthernet = doc.toString() //test
-        statusEthernet = ""//doc.toString() //test
+        statusEthernet = siteTemp//doc.toString() //test
+        Log.d("TAG1", "ParserSites >f parseP > statusEthernet: $statusEthernet")
         //delete^
 
         //var testCount = 0
         //Log.d("TAG1", ":::: item 1: ${doc.select("story__main").first()}")
         //Log.d("TAG1", ":::: item 2: ${item}")
-        Log.d("TAG1", "item size: ${item.size}")
+        Log.d("TAG1", "ParserSites >f parseP > item size: ${item.size}")
         item.forEach {
-            var a = it.select("div.story-block_type_text")
-            //Log.d("TAG1", "!! a size: ${a.size}") //
-            a.forEach{
-                Log.d("TAG1", "== ${a}") //
-            }
-            Log.d("TAG1", "!! it0 size: ${it.select("div.story__content-inner").size}") //
-            //Log.d("TAG1", "!! it0: ${it.select("div.story__content-inner")}") //
+            /*Log.d("TAG1", "!! it0 size: ${it.select("div.story__content-inner").size}") //
             Log.d("TAG1", "!! it0-1 size: ${it.select("div.story-block_type_text").size}") //
-            Log.d("TAG1", "!! it0-1: ${it.select("div.story-block_type_text").text()}") //
-            //Log.d("TAG1", "!! it0-2: ${it.select("div.story__content-inner").select("div.story-block")}") //
-            //Log.d("TAG1", "!! it0-3: ${it.select("div.story__content-inner").select("div.story-block_type_text").first()}") //
+            */
 
-            Log.d("TAG1", "!! it1: ${it.select("time").text()}") //time text
-            Log.d("TAG1", "!! it1-1: ${it.select("time").attr("datetime")}") //time
-            //Log.d("TAG1", "!! it1: ${it.select("div[class=story-block story-block_type_text]").first().text()} \n") //
-            //Log.d("TAG1", "!! it2: ${it.select("div[class=story__content-inner]").text()} \n") //
-            Log.d("TAG1", "!! it3: ${it.select("header.story__header").text()}") //title
-            Log.d("TAG1", "!! it4: ${it.select("header.story__header").select("a").attr("href")}") //link
-            //Log.d("TAG1", "!! it4: ${it.select("header[class=story__header]")} ") //
-            //Log.d("TAG1", "!! it5: ${it.select("header[class=story__header]").text()}") //
-            //Log.d("TAG1", "!! it2: ${it.select("h2[class=mg-snippet-source-info__agency-name]").text()} \n") //
-            //Log.d("TAG1", "!! it2: ${it.select("span[role=text]")[0].text()} \n") //
-            //Log.d("TAG1", "!! it2-1: ${it.select("span[role=text]")[1].text()} \n") //
-            //Log.d("TAG1", "!! it1: ${it.select("span").first().attr("aria-label")} \n") //
-            //Log.d("TAG1", "!! it4: ${it.select("h2").attr("href")} \n") //
-           // Log.d("TAG1", "!! it3: ${it.select("class").size} \n")
             //для каждого новостного элемента
             //Log.d("TAG1", "forEach val 1")
             val img = ""//it.select("href").first().toString() ?: "Img Error"
             //Log.d("TAG1", "forEach val 2: $img")
-            val date = ""//it.select("span[class=mg-snippet-source-info__time]").text() ?: "Date Error"
+            val date = it.select("time").attr("datetime") ?: "Date Error" //time (full)
+            //Log.d("TAG1", "!! it1: ${it.select("time").text()}") //time text
             //Log.d("TAG1", "forEach val 3")
-            val title = ""//it.select("span[role=text]")[0].text() ?: "Title Error"
+            val title = it.select("header.story__header").text() ?: "Title Error" //title
             //Log.d("TAG1", "forEach val 4")
             var content = ""
-            /*if (it.select("span[role=text]").size > 1) {
-                content = it.select("span[role=text]")[1].text() ?: "Content Error"
-            }*/
+            if (it.select("div.story-block_type_text").size > 0) {
+                content = it.select("div.story-block_type_text").text() ?: "Content Error" // content
+            }
             //Log.d("TAG1", "forEach val 5")
-            val link = ""//it.select("h3, a").attr("href") ?: "Link Error"
+            val link = it.select("header.story__header").select("a").attr("href") ?: "Link Error" //link
 
             val statusSaved = false.toString()
             val id = 0
@@ -230,6 +220,44 @@ class ParserSites {
 
     private fun baidu(){
         //https://www.baidu.com/s?ie=utf-8&f=3&rsv_bp=1&rsv_idx=1&tn=baidu&wd=witcher3
+    }
+
+    private fun testParseP(site: String):String {
+        //чтобы при тестах лишний раз не парсить
+        statusEthernet = true.toString() //"good"
+        if (site == "") {
+            statusEthernet = false.toString() //"bad"
+        }
+        statusEthernet = site
+
+        val doc = Jsoup.parse(site)
+        val item = doc.select("article") //начали парсить
+        newsItemList.clear()
+
+        //Log.d("TAG1", "item size: ${item.size}")
+        item.forEach {
+            //для каждого новостного элемента
+            val img = ""//it.select("href").first().toString() ?: "Img Error"
+            val date = it.select("time").attr("datetime") ?: "Date Error"
+            val title = it.select("header.story__header").text() ?: "Title Error"
+            var content = ""
+            if (it.select("div.story-block_type_text").size > 0) {
+                content = it.select("div.story-block_type_text").text() ?: "Content Error"
+            }
+            val link = it.select("header.story__header").select("a").attr("href") ?: "Link Error"
+
+            val statusSaved = false.toString()
+            val id = 0
+            val search = "123"
+
+
+            val newsItem = NewsItem(id, search ,img, date, title, content, link, statusSaved)
+
+            newsItemList.add(newsItem)
+
+        }
+        Log.d("TAG1", "==================================================================") //
+        return statusEthernet
     }
 }
 

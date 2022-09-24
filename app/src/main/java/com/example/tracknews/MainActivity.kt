@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     private var parserSites = ParserSites()
     private val sharedPrefs by lazy {getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)}
 
+
     //второстепенные переменные
 
 
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root) // ^ привязка
 
-        //init() //стартовые функции, запуск БД и ViewModel, отслеживание изменений в них
+
 
         //Загружаем фрагменты
         //loadFragment(R.id.frameLayoutToolbar, ToolbarFragment.newInstance())
@@ -73,6 +74,7 @@ class MainActivity : AppCompatActivity() {
             loadFragment(R.id.frameLayoutMainFragmentLand, WebsiteFragment.newInstance())
         }*/
 
+        init() //стартовые функции, запуск БД и ViewModel, отслеживание изменений в них
         initThemeListener() //работаем с темой
         initTheme() //работаем с темой
 
@@ -82,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         viewModelToSQLite() // подключаем observe
         //Log.d("TAG1", "Activity >f loadSQLiteToViewModel")
         loadSQLiteToViewModel() // загружаем БД во viewModel
-        deleteElementOfSQLite() // отслеживаем и удаляем элементы БД
+        updateElementOfSQLite() // отслеживаем и удаляем элементы БД
 
         val buttonSearch = binding.fabButtonSearch
         val buttonSave = binding.buttonSave
@@ -146,10 +148,15 @@ class MainActivity : AppCompatActivity() {
             //проверка интернета
             //val testRequest: Request = Request.Builder().url("https://www.ya.ru/").build()
             //запускаем парсинг новостных сайтов/сайта
-            val newsItem = parserSites.parse("witcher")
+            //..val newsItem = parserSites.parse("witcher")
+            //Delete >>
+            val newsItem = parserSites.testParse("witcher", vm.testSiteString.value.toString())
+            vm.testSiteString.value = newsItem.statusEthernet
+            //Delete^^
             vm.newsItemTempYa.value = newsItem.list
-            vm.testParserSitesString.value = newsItem.statusEthernet
-            Log.d("TAG1", "Main Activity > buttonSearch > newsItem.statusEthernet ${newsItem.statusEthernet}")
+            //..vm.testParserSitesString.value = newsItem.statusEthernet
+
+            //Log.d("TAG1", "Main Activity > buttonSearch > newsItem.statusEthernet ${newsItem.statusEthernet}")
             //delete^
 
 
@@ -161,8 +168,8 @@ class MainActivity : AppCompatActivity() {
 
             cardView.alpha = 0f
             cardView.animate().alpha(1F).withEndAction(Runnable {
-                animationView.scaleWidth(cardView, -1)
-                animationView.swapButton(buttonSearch, cardView, 700, 200)
+                animationView.scaleWidth(cardView, -1) //раскрываем на всю ширину
+                animationView.swapButton(buttonSearch, cardView, 700, 200) //меняем кнопки
                 //animationView.swapButton(buttonSearch, buttonGo, 200, 200,true, -120F)
             })
             vm.statusSearchMutable.value = true.toString()
@@ -292,6 +299,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
+
+        //сохранение сайта (backUp)
+        val sharedPrefsInit = getSharedPreferences("init", Context.MODE_PRIVATE)
+        //Log.d("TAG1", "Main Activity > Init > site: ${vm.testSiteString.value.toString()}")
+        //Log.d("TAG1", "Main Activity > Init > shared: ${sharedPrefsInit.getString("testSite", "Error")}")
+        if (sharedPrefsInit.getString("testSite", "Error") != "true") {
+            vm.testSiteString.value = sharedPrefsInit.getString("testSite", "Error")
+        }
+        vm.testSiteString.observe(this){
+            sharedPrefsInit.edit().putString("testSite", vm.testSiteString.value.toString()).apply()
+        }
+
         /*//скрываем/показываем кнопку поиска при возвращении с сайта
         if (binding.fabButtonSearch.visibility == View.GONE) {
             binding.fabButtonSearch.visibility = View.VISIBLE
@@ -321,7 +340,7 @@ class MainActivity : AppCompatActivity() {
             val title= vm.newsItemTemp.value?.title.toString()
             val content = vm.newsItemTemp.value?.content.toString()
             val link = vm.newsItemTemp.value?.link.toString()
-            val statusSaved = vm.newsItemTemp.value?.link.toString()
+            val statusSaved = vm.newsItemTemp.value?.statusSaved.toString()
             mainDbManager.insertToDb(search ,img, date, title, content, link, statusSaved)
             loadSQLiteToViewModel()
 
@@ -366,8 +385,8 @@ class MainActivity : AppCompatActivity() {
         //Log.d("TAG1", "Activity >f loadSQLiteToViewModel > ------------END")
     }
 
-    private fun deleteElementOfSQLite(){
-        //удалем элемент/строку из Базы Данных
+    private fun updateElementOfSQLite(){
+        //обновляем статус у новости (сохранено или нет) //удалем элемент/строку из Базы Данных
         vm.newsItemUpdateItem.observe(this) {
             val statusSaved = vm.newsItemUpdateItem.value?.statusSaved
             val id = vm.newsItemUpdateItem.value?.id
@@ -378,7 +397,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             Toast.makeText(this, statusSaved, Toast.LENGTH_SHORT).show()
-            loadSQLiteToViewModel()
+            loadSQLiteToViewModel() //reload
         }
     }
     // //Функции выше ^ - работа с Базой Данных

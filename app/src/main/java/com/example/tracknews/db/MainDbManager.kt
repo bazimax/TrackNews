@@ -118,12 +118,12 @@ class MainDbManager(context: Context) {
         val values = ContentValues().apply {
             //put(MainDbNameObject.COLUMN_NAME_LINK, "-1")
             if (statusSaved == true.toString()) {
-                put(MainDbNameObject.COLUMN_NAME_LINK, "${false}")
+                //put(MainDbNameObject.COLUMN_NAME_LINK, "${false}")
                 put(MainDbNameObject.COLUMN_NAME_STATUS_SAVED, "${false}")
                 Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > statusSaved True > False")
             }
             else {
-                put(MainDbNameObject.COLUMN_NAME_LINK, "${true}")
+                //put(MainDbNameObject.COLUMN_NAME_LINK, "${true}")
                 put(MainDbNameObject.COLUMN_NAME_STATUS_SAVED, "${true}")
                 Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > statusSaved False > True")
             }

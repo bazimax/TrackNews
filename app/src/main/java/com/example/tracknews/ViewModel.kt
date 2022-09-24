@@ -81,6 +81,7 @@ open class ViewModel : ViewModel() {
     //var newsItemWork = MutableLiveData<String>()
     var newsItemDeleted2 = MutableLiveData("Moroz")
     var testParserSitesString = MutableLiveData("Site")
+    var testSiteString = MutableLiveData("")
 
     var newsItemUpdateItem = MutableLiveData<NewsItem>()
 
@@ -89,6 +90,7 @@ open class ViewModel : ViewModel() {
         tempWebsiteLink.value = "-1"
         newsItemDeleted.value = "false"
         newsItemUpdateItem.value?.id = 0
+        testSiteString.value = ""
         //newsItemWork.value = "false"
         //newsItemWorkId.value = -1
     }
