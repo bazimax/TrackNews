@@ -4,6 +4,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="search">Search</string>
+    <string name="defaultTextView">///</string>
 
     <!--cardView-->
     <string name="newsItemDate">00:00 00.00</string>
@@ -16,6 +17,10 @@
     <string name="news_week">Week</string>
     <string name="news_all">All</string>
     <string name="news_saved">Saved</string>
+
+    <!--searchItem-->
+    <string name="searchItemDelete">Delete all selected Item</string>
+    <string name="searchItemCancel">Cancel</string>
 
     <!--theme-->
     <string name="theme_title">Themes:</string>

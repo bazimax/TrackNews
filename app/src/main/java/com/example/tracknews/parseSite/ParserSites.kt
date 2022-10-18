@@ -1,6 +1,7 @@
 package com.example.tracknews.parseSite
 
 import android.util.Log
+import com.example.tracknews.classes.Constants
 import com.example.tracknews.classes.NewsItem
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -13,6 +14,13 @@ import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
 class ParserSites {
+    //КОНСТАНТЫ
+    companion object {
+        //log
+        const val TAG = Constants.TAG
+        const val TAG_DEBUG = Constants.TAG_DEBUG
+    }
+
     private val newsItemList = ArrayList<NewsItem>()
     private var statusEthernet = ""
 
@@ -51,6 +59,7 @@ class ParserSites {
         GlobalScope.launch { // запуск новой сопрограммы в фоне
             //delay(1000L) // неблокирующая задержка на 1 секунду
 
+
             val urlConnection = URL(url).openConnection() as HttpsURLConnection
 
             try {
@@ -59,7 +68,7 @@ class ParserSites {
                 if(urlConnection.responseCode == HttpURLConnection.HTTP_OK) {
                     //val isr = InputStreamReader(conn.getInputStream(), "windows-1251")
                     //val br = BufferedReader(isr)
-                    Log.d("TAG1", "Connection - Good")
+                    Log.d(TAG, "Connection - Good")
                     val br = BufferedReader(
                         InputStreamReader(
                             urlConnection.inputStream,
@@ -73,7 +82,7 @@ class ParserSites {
                     }
                     br.close()
                 }
-                else Log.d("TAG1", "Connection - Failed")
+                else Log.d(TAG, "Connection - Failed")
             }catch (e: IOException) {
                 e.printStackTrace()
                 //Log.d("TAG1", "$e")
@@ -94,9 +103,9 @@ class ParserSites {
         //старая ссылка на яндекс-новости "https://newssearch.yandex.ru/news/search?text=$correctSearch&flat=1&sortby=date"
         //val url = "https://newssearch.yandex.ru/news/search?text=$correctSearch&flat=1&sortby=date"
         val url = "https://dzen.ru/news/search?issue_tld=ru&text=$correctSearch"
-        Log.d("TAG1", "parseYa url: $url")
+        Log.d(TAG, "parseYa url: $url")
         val siteTemp = initFromParseHTML(url)
-        Log.d("TAG1", "ParserSite >f parseYa > siteTemp: $siteTemp")
+        Log.d(TAG, "ParserSite >f parseYa > siteTemp: $siteTemp")
 
         statusEthernet = true.toString() //"good"
         if (siteTemp == "") {
@@ -111,13 +120,13 @@ class ParserSites {
         val item = doc.select("article") //начали парсить
         newsItemList.clear()
         //var testCount = 0
-        Log.d("TAG1", ":::: item: ${doc.select("article").first()}")
-        Log.d("TAG1", "item size: ${item.size}")
+        Log.d(TAG, ":::: item: ${doc.select("article").first()}")
+        Log.d(TAG, "item size: ${item.size}")
         item.forEach {
             //для каждого новостного элемента
             //Log.d("TAG1", "forEach val 1")
             val img = it.select("span[class=mg-snippet-source-info__agency-name]").text() ?: "Img Error"
-            Log.d("TAG1", "forEach val 2: $img")
+            //Log.d("TAG1", "forEach val 2: $img")
             val date = it.select("span[class=mg-snippet-source-info__time]").text() ?: "Date Error"
             //Log.d("TAG1", "forEach val 3")
             val title = it.select("span[role=text]")[0].text() ?: "Title Error"
@@ -175,13 +184,13 @@ class ParserSites {
         //delete>
         //statusEthernet = doc.toString() //test
         statusEthernet = siteTemp//doc.toString() //test
-        Log.d("TAG1", "ParserSites >f parseP > statusEthernet: $statusEthernet")
+        Log.d(TAG, "ParserSites >f parseP > statusEthernet: $statusEthernet")
         //delete^
 
         //var testCount = 0
         //Log.d("TAG1", ":::: item 1: ${doc.select("story__main").first()}")
         //Log.d("TAG1", ":::: item 2: ${item}")
-        Log.d("TAG1", "ParserSites >f parseP > item size: ${item.size}")
+        Log.d(TAG, "ParserSites >f parseP > item size: ${item.size}")
         item.forEach {
             /*Log.d("TAG1", "!! it0 size: ${it.select("div.story__content-inner").size}") //
             Log.d("TAG1", "!! it0-1 size: ${it.select("div.story-block_type_text").size}") //
@@ -214,7 +223,7 @@ class ParserSites {
             //Log.d("TAG1", "forEach Count: $testCount")
             //testCount++
         }
-        Log.d("TAG1", "==================================================================") //
+        Log.d(TAG, "==================================================================") //
         return statusEthernet
     }
 
@@ -234,7 +243,7 @@ class ParserSites {
         val item = doc.select("article") //начали парсить
         newsItemList.clear()
 
-        //Log.d("TAG1", "item size: ${item.size}")
+        //Log.d(TAG, "item size: ${item.size}")
         item.forEach {
             //для каждого новостного элемента
             val img = ""//it.select("href").first().toString() ?: "Img Error"
@@ -256,7 +265,7 @@ class ParserSites {
             newsItemList.add(newsItem)
 
         }
-        Log.d("TAG1", "==================================================================") //
+        Log.d(TAG, "ParserSites >f testParseP ==================================================================") //
         return statusEthernet
     }
 }

@@ -1,5 +1,9 @@
 package com.example.tracknews.classes
 
+data class NewsItemArrayList(
+    val list: ArrayList<NewsItem>
+)
+
 data class NewsItem(
     var id: Int = 0,
     val search: String = "",
@@ -11,5 +15,4 @@ data class NewsItem(
     var statusSaved: String = "false")
 
 fun init(){
-
 }

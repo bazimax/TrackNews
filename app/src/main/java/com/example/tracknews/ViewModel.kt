@@ -7,6 +7,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.tracknews.classes.NewsItem
 import com.example.tracknews.classes.NewsItemWork
+import com.example.tracknews.classes.SearchItem
+import com.example.tracknews.classes.SearchItemWorker
 import com.example.tracknews.databinding.ActivityMainBinding
 import com.example.tracknews.db.MainDbManager
 
@@ -15,9 +17,19 @@ open class ViewModel : ViewModel() {
     /*init {
         Log.d("TAG1", "ViewModel created")
     }*/
-    //данные?
+    //данные по новостям
     val newsItemArray: MutableLiveData<ArrayList<NewsItem>> by lazy {
         MutableLiveData<ArrayList<NewsItem>>()
+    }
+
+    //список сохраненных поисков для чтения
+    val searchItemList: MutableLiveData<List<SearchItem>> by lazy {
+        MutableLiveData<List<SearchItem>>()
+    }
+
+    //список сохраненных поисков для записи
+    val searchItemArrayTemp: MutableLiveData<Array<String>> by lazy {
+        MutableLiveData<Array<String>>()
     }
 
     //временные данные из яндекса?
@@ -60,12 +72,17 @@ open class ViewModel : ViewModel() {
     val url: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
+
+
     var url2 = "https://yandex.ru/"
     var nState = 0
     var counterB: Int = 0
     var sizeFAButton: Int = -99
-    var statusSavedSearchesView: Boolean = false //статус кнопки сохранённых поисков
+    var statusChannelNotification = false
+    var statusSavedSearchesView: Boolean = false //статус кнопки сохранённых поисков (показывает скрыт ли список "сохранённых поисков")
+    var statusUpdateWorker: Boolean = false //есть ли обновления для SQLite от Worker
     var statusSearchButton: Boolean = false //
+
     val webSiteData: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
@@ -75,6 +92,8 @@ open class ViewModel : ViewModel() {
         MutableLiveData<String>()
     }
 
+
+    var searchItemDeleteCount = MutableLiveData<Int>() //счетчик элементов searchItem на удаление (если счетчик = 0, то кнопки для удаления скрываются)
     var tempWebsiteLink = MutableLiveData<String>()
     var newsItemDeleted = MutableLiveData<String>()
     //var newsItemWorkId = MutableLiveData<Int>()
@@ -87,6 +106,8 @@ open class ViewModel : ViewModel() {
 
     init {
         //запускать init в activity или fragment не надо?
+
+        searchItemDeleteCount.value = 0
         tempWebsiteLink.value = "-1"
         newsItemDeleted.value = "false"
         newsItemUpdateItem.value?.id = 0

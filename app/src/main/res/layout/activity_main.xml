@@ -73,11 +73,81 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewSavedSearches"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_margin="4dp" />
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/actMainRecyclerViewSavedSearches"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_margin="4dp"
+                        android:layout_weight="1">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                    <Button
+                        android:id="@+id/razdelitel"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@drawable/round_button"
+                        android:theme="@style/Theme.BackgroundBaseButton"
+                        android:visibility="gone" />
+
+                    <LinearLayout
+                        android:id="@+id/actMainSearchItemDelete"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="16dp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <Button
+                            android:id="@+id/newsItemButtonUnSave2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginBottom="2dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/round_button"
+                            android:text="@string/searchItemDelete"
+                            android:textSize="11sp"
+                            android:theme="@style/Theme.BackgroundSearchButton" />
+
+                        <Button
+                            android:id="@+id/newsItemButtonUnSave"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_marginBottom="2dp"
+                            android:layout_weight="0.3"
+                            android:background="@drawable/round_button"
+                            android:text="@string/searchItemCancel"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/razdelitel2"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/round_button"
+                        android:theme="@style/Theme.BackgroundBaseButton"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
             </FrameLayout>
 
             <FrameLayout
@@ -179,7 +249,6 @@
                         android:background="@drawable/round_button"
                         android:elevation="4dp"
                         android:stateListAnimator="@null"
-                        android:text="$"
                         android:theme="@style/Theme.BackgroundSecondary"
                         android:translationZ="4dp"
                         app:icon="@drawable/ic_bookmark_border" /> <!--android:background="@drawable/round_button"-->
@@ -209,7 +278,6 @@
                         android:background="@drawable/round_button"
                         android:elevation="4dp"
                         android:stateListAnimator="@null"
-                        android:text="$"
                         android:theme="@style/Theme.BackgroundSecondary"
                         android:translationZ="4dp"
                         app:icon="@drawable/ic_arrow_forward" />
@@ -263,6 +331,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Button 3" />
+
+        <Button
+            android:id="@+id/actMainDrLayoutButton4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Button 4" />
+
+        <Button
+            android:id="@+id/actMainDrLayoutButton5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Button 5" />
 
         <RadioGroup
             android:id="@+id/themeGroup"

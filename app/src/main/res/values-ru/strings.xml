@@ -3,6 +3,7 @@
     <string name="hello_blank_fragment">Hellot</string>
 
     <string name="search">Поиск</string>
+    <string name="defaultTextView">///</string>
 
     <!--cardView-->
     <string name="newsItemDate">00:00 вчера</string>
@@ -15,6 +16,10 @@
     <string name="news_week">За неделю</string>
     <string name="news_all">Все</string>
     <string name="news_saved">Важное</string>
+
+    <!--searchItem-->
+    <string name="searchItemDelete">Удалить выбранные элементы</string>
+    <string name="searchItemCancel">Отмена</string>
 
     <!--theme-->
     <string name="theme_title">Темы:</string>

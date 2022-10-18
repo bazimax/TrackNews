@@ -4,18 +4,20 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
+import com.example.tracknews.classes.Constants
 import com.example.tracknews.classes.NewsItem
 
 class MainDbManager(context: Context) {
+
 
     private val mainDbHelper = MainDbHelper(context) //может открывать БД и ид
     private var db : SQLiteDatabase? = null //через mainDbHelper работает с БД
 
     fun openDb(){
         //открываем-запускаем Базу Данных
-        Log.d("TAG1", "MainDbManager >f openDb ======START")
+        //Log.d("TAG1", "MainDbManager >f openDb ======START")
         db = mainDbHelper.writableDatabase
-        Log.d("TAG1", "MainDbManager >f openDb - OK")
+        //Log.d("TAG1", "MainDbManager >f openDb - OK")
     }
 
     fun insertToDb(search: String, img: String, date: String, title: String, content: String, link: String, statusSaved: String) {
@@ -54,7 +56,6 @@ class MainDbManager(context: Context) {
     fun readDbData() : ArrayList<NewsItem>{
         //чтение Базы Данных
         Log.d("TAG1", "MainDbManager >f readDbData ======START")
-        //Log.d("TAG1", "readDbData > ======START")
         val dataList = ArrayList<NewsItem>()
         val cursor = db?.query(MainDbNameObject.TABLE_NAME, null, null, null, null, null, null)
         //Log.d("TAG1", "readDbData > SQL cursor: $cursor")
@@ -87,7 +88,6 @@ class MainDbManager(context: Context) {
         }
 
         cursor.close()
-        //Log.d("TAG1", "readDbData >  ------------END")
         Log.d("TAG1", "MainDbManager >f readDbData - OK")
         return dataList
     }
@@ -111,8 +111,63 @@ class MainDbManager(context: Context) {
         //Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $a")
     }
 
+    fun findItemInDb(columnSearch: String, search: String): ArrayList<NewsItem>{
+        //Ищем совпадения в БД
+        //Log.d("TAG1", "MainDbManager >f findItemInDb ======START")
+        val dataList = ArrayList<NewsItem>()
+
+        val tableName = MainDbNameObject.TABLE_NAME
+        val columns = arrayOf(MainDbNameObject.COLUMN_NAME_SEARCH, MainDbNameObject.COLUMN_NAME_LINK)
+        val selection =  "$columnSearch LIKE '%' || ? || '%'"
+        val selectionArgs = arrayOf("$search")//arrayOf("9422089")
+
+        /*//тоже работает
+        val selectQuery5 = "SELECT * FROM $tableName WHERE $column LIKE '%' || :string || '%'"
+        val selectQuery1 = "SELECT  * FROM $tableName WHERE $column LIKE ?" //"SELECT  * FROM $tableName WHERE $column = ?"
+        val cursor4 = db?.rawQuery(selectQuery1, selectionArgs)
+        val cursor5 = db?.rawQuery(selectQuery5, selectionArgs)
+        //id
+        val cursor3 = db?.query(tableName,null,"_ID<=?", arrayOf("3"),null,null,null)
+        val cursor1 = db?.query(tableName,null,"link LIKE 'pi%'", null,null,null,null)
+
+        val selectQuery6 = "SELECT * FROM $tableName WHERE $column LIKE '%' || ? || '%'"
+        val cursor6 = db?.rawQuery(selectQuery6, selectionArgs)*/
+
+        //val iName = cursor?.getColumnIndex(MainDbNameObject.COLUMN_NAME_SEARCH)
+        //Log.d("TAG1", "MainDbManager >f findItemInDb > iName: $iName")
+        val cursor = db?.query(tableName, columns, selection, selectionArgs, null, null, null)
+        //Log.d("TAG1", "MainDbManager >f findItemInDb > cursor: $cursor")
+        //Log.d("TAG1", "MainDbManager >f findItemInDb > cursor2: $cursor2")
+        while (cursor?.moveToNext()!!){
+
+            //Log.d("TAG1", "readDbData > Start while")
+            val search = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_SEARCH)).toString()
+            //Log.d("TAG1", "MainDbManager >f findItemInDb > val 1: $search")
+            val img = ""//cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_IMG)).toString()
+            val date = ""//cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_DATE)).toString()
+            val title = ""//cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_TITLE)).toString()
+            val content = ""//cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_CONTENT)).toString()
+            val link = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_LINK)).toString()
+            //Log.d("TAG1", "MainDbManager >f findItemInDb > link: $link")
+
+            val statusSaved = ""//cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_STATUS_SAVED)).toString()
+
+            //val id = cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_STATUS_SAVED).toString()
+            val id: Int = cursor.position //записываем id
+            //Log.d("TAG1", "MainDbManager >f findItemInDb > id: $id")
+            //Log.d("TAG1", "MainDbManager >f findItemInDb > INDEX > ${cursor.position}")
+
+            val newsItem = NewsItem(id, search, img, date, title, content, link, statusSaved)
+            dataList.add(newsItem)
+            //Log.d("TAG1", "MainDbManager >f findItemInDb > while ------------END")
+        }
+        cursor.close()
+        //Log.d("TAG1", "MainDbManager >f findItemInDb ------------END")
+        return dataList
+    }
+
     fun updateDbElementStatusSaved(statusSaved: String, id: Int){
-        //обновляем элемент/строку из Базы Данных
+        //обновляем элемент/строку из Базы Данных (статус сохранения новости)
 
         //Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $link")
         val values = ContentValues().apply {
@@ -132,7 +187,7 @@ class MainDbManager(context: Context) {
         val idCorrect = (id + 1).toString()
         Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > values: $values")
         Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > id: $id")
-        Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > id: ${arrayOf(idCorrect)}")
+        Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > idCorrect: ${arrayOf(idCorrect)}")
         db?.update(MainDbNameObject.TABLE_NAME, values, "_ID = ?", arrayOf(idCorrect))
         //Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $a")
         //db?.delete(MainDbNameObject.TABLE_NAME,"name=?", arrayOf(link))

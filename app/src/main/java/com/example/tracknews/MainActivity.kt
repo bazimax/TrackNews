@@ -14,31 +14,64 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.work.*
 import com.example.tracknews.News.NewsTodayFragment
-import com.example.tracknews.classes.AnimationView
-import com.example.tracknews.classes.NewsItem
+import com.example.tracknews.Services.WorkerFindNews
+import com.example.tracknews.Services.WorkerFindNewsFun
+import com.example.tracknews.classes.*
+import com.example.tracknews.classes.FilesWorker
 import com.example.tracknews.databinding.ActivityMainBinding
 import com.example.tracknews.db.MainDbManager
+import com.example.tracknews.db.MainDbNameObject
 import com.example.tracknews.parseSite.ParserSites
-import okhttp3.Request
+import com.google.gson.Gson
+import org.json.JSONException
+import org.json.JSONObject
+import java.io.*
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 
-const val PREFS_NAME = "theme_prefs"
-const val KEY_THEME = "prefs.theme"
-const val THEME_UNDEFINED = -1
-const val THEME_LIGHT = 0
-const val THEME_DARK = 1
-const val THEME_SYSTEM = 2
-const val THEME_BATTERY = 3
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
+
+    //КОНСТАНТЫ
+    companion object {
+        //log
+        const val TAG = Constants.TAG
+        const val TAG_DEBUG = Constants.TAG_DEBUG
+
+        //notification
+        const val NOTIFICATION_ID = 101
+        const val CHANNEL_ID = "channelID"
+
+        //theme
+        const val PREFS_NAME = "theme_prefs"
+        const val KEY_THEME = "prefs.theme"
+        const val THEME_UNDEFINED = -1
+        const val THEME_LIGHT = 0
+        const val THEME_DARK = 1
+        const val THEME_SYSTEM = 2
+        const val THEME_BATTERY = 3
+
+        //SharedPreferences
+        const val SEARCH_ITEM = "search"
+
+        //Имена файлов
+        const val FILE_SEARCH_ITEM = "searchItems.json"
+    }
 
     //важные переменные
     private lateinit var binding: ActivityMainBinding
     //var testCount1 = 0
     private val vm: ViewModel by viewModels()
-    private val mainDbManager = MainDbManager(this)
-    private var parserSites = ParserSites()
+    private val searchItemAdapter = SearchItemAdapter(this) //Список сохраненных поисков
+    private val mainDbManager = MainDbManager(this) //База Данных (БД)
+    private var parserSites = ParserSites() //парсинг
     private val sharedPrefs by lazy {getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)}
+    private val filesWorker = FilesWorker(this) //работа с файлами (чтение и запись)
 
 
     //второстепенные переменные
@@ -53,8 +86,6 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root) // ^ привязка
-
-
 
         //Загружаем фрагменты
         //loadFragment(R.id.frameLayoutToolbar, ToolbarFragment.newInstance())
@@ -217,17 +248,104 @@ class MainActivity : AppCompatActivity() {
 
         //временные кнопки >
         binding.actMainDrLayoutButtonSettings.setOnClickListener {
+
+            WorkerFindNewsFun().timeDiff()
+            //Worker - работа в фоне и отправка уведомлений
+            workerFindNews()
         }
         binding.actMainDrLayoutButton2.setOnClickListener {
-            mainDbManager.clearAllDataInDb()
+            Log.d(TAG, "Main Activity > button 2 > -------------------")
+            workerJSON()
+            //!!!! очистить всю БД
+            /*mainDbManager.clearAllDataInDb()
             //readDbToTextView()
-            loadSQLiteToViewModel()
+            loadSQLiteToViewModel()*/
             //Log.d("TAG1", "end Button2 clear ==============")
         }
         binding.actMainDrLayoutButton3.setOnClickListener {
-            Log.d("TAG1", "setThemeDark ---------------------------")
+            Log.d(TAG, "Main Activity >f button3 - Clear all Work by tag ---------------")
+            WorkManager.getInstance(this).cancelAllWorkByTag(WorkerFindNews.WORKER_TAG_PARSER)
+            WorkManager.getInstance(this).cancelUniqueWork(WorkerFindNews.WORKER_UNIQUE_NAME_PARSER)
+            //WorkManager.getInstance(this).cancelAllWork()
+
+            /*val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+            if (!vm.statusChannelNotification) {
+                Log.d("TAG1", "create Channel")
+                //создаем канал для уведомлений (если еще не создан)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val channel = NotificationChannel(
+                        CHANNEL_ID, "My channel",
+                        NotificationManager.IMPORTANCE_HIGH
+                    )
+                    channel.description = "My channel description"
+                    channel.enableLights(true)
+                    channel.lightColor = Color.RED
+                    channel.enableVibration(false)
+                    notificationManager.createNotificationChannel(channel)
+                    vm.statusChannelNotification = true
+                }
+            }
+
+            // Создаём уведомление
+            val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_dark_mode)
+                .setContentTitle("Напоминание")
+                .setContentText("Пора покормить кота")
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+            //val notificationManager = NotificationManagerCompat.from(this)
+            //notificationManager.notify(NOTIFICATION_ID, builder.build())
+
+            // или
+            with(NotificationManagerCompat.from(this)) {
+                notify(NOTIFICATION_ID, builder.build()) // посылаем уведомление
+            }*/
+
+            /*Log.d("TAG1", "setThemeDark ---------------------------")
             //setTheme(AppCompatDelegate.MODE_NIGHT_YES, THEME_DARK)
-            Log.d("TAG1", "setTheme")
+            Log.d("TAG1", "setTheme")*/
+        }
+        binding.actMainDrLayoutButton4.setOnClickListener {
+            //записываем данные
+            Log.d(TAG, "Main Activity >f writeJSON ======START")
+            var stringItem = "name%20:witcher%20:Moscow%20:Columbia%20:Washington%20:Bali%20:Kin"
+            val dataListWorker = ArrayList<SearchItemWorker>()
+            val arrayItem = stringItem.split("%20:").toTypedArray() //разбиваем цельную строку на массив будущих элементов searchItem
+            arrayItem.forEach {
+                //каждый элемент массива записываем в список как объекты SearchItem
+                val searchItem = SearchItem(it)
+                val searchItemWorker = SearchItemWorker(searchItem, 0)
+                dataListWorker.add(searchItemWorker)
+            }
+            val data = SearchItemArrayList(dataListWorker)
+            Log.d(TAG, "Main Activity >f writeJSON > dataList: $dataListWorker")
+
+            //сериализация
+            //val gson = Gson()
+            //val newsItemArrayList = SearchItemArrayList(dataListWorker)
+            /*val json4 = gson.toJson(newsItemArrayList)
+
+            filesWorker.writeToFile(json4, FILE_SEARCH_ITEM, this)
+
+            Log.d(TAG, "Main Activity >f writeJSON > json4: $json4")*/
+
+            filesWorker.writeJSON(data, FILE_SEARCH_ITEM, this)
+            Log.d(TAG, "Main Activity >f writeJSON > -------------------")
+            //writeJSON()
+        }
+        binding.actMainDrLayoutButton5.setOnClickListener {
+            //читаем данные из JSON
+            /*val data = filesWorker.readJSONSearchItemArrayList(FILE_SEARCH_ITEM, this)
+
+            data.list.forEach {
+                //Log.d(TAG, "Main Activity >f writeJSON > json4: ${it.counterNewNews}")
+                Log.d(TAG, "Main Activity >f writeJSON > json4: ${it.searchItem.search}")
+            }
+            Log.d(TAG, "Main Activity >f writeJSON > json4: ${data.list}")*/
+            val findNewsItem = mainDbManager.findItemInDb(MainDbNameObject.COLUMN_NAME_LINK, "someb") //Ищем напрямую в БД
+            Log.d(TAG, "Main Activity > witcher: $findNewsItem")
         }
         //временные кнопки ^
 
@@ -239,7 +357,7 @@ class MainActivity : AppCompatActivity() {
             //Log.d("TAG1", "end mDrawer Button ==============")
         }
 
-        //раскрываем сохраннеые результаты поисков
+        //раскрываем сохранненые результаты поисков
         btnSavedSearches.setOnClickListener {
             frameLayoutSavedSearches.layoutParams = frameLayoutSavedSearches.layoutParams
             //binding.frameLayoutSavedSearches.layoutParams = binding.frameLayoutSavedSearches.layoutParams
@@ -249,6 +367,7 @@ class MainActivity : AppCompatActivity() {
             //frameLayoutSavedSearches.layoutTransition.getAnimator(0)
             //Log.d("TAG1", "save: 1 ")
             if (vm.statusSavedSearchesView) {
+                //startService(Intent(this, FindNews::class.java)) //запуск службы
                 //Log.d("TAG1", "save: 2 ")
                 //binding.frameLayoutSavedSearches.visibility = View.GONE
                 //animationView.scaleHeight(binding.frameLayoutSavedSearches, 0)
@@ -260,6 +379,8 @@ class MainActivity : AppCompatActivity() {
                 //Log.d("TAG1", "save: 4 ")
             }
             else {
+                vm.searchItemDeleteCount.value = 0 //обновляем RcView с SearchItem
+                searchItemAdapter.notifyDataSetChanged() //обновляем RcView с SearchItem
                 //Log.d("TAG1", "save: 5 ")
                 // -1 math_parent
                 // -2 wrap_content
@@ -279,7 +400,7 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onDestroy() {
         super.onDestroy()
-        mainDbManager.closeDb()
+        mainDbManager.closeDb() //закрываем БД (доступ к БД?)
     }
 
     private var backPressed: Long = 0
@@ -300,6 +421,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun init() {
 
+        val rcView = binding.actMainRecyclerViewSavedSearches
+        startRecyclerViewActMain(rcView)
+
+        observeVM()
+
         //сохранение сайта (backUp)
         val sharedPrefsInit = getSharedPreferences("init", Context.MODE_PRIVATE)
         //Log.d("TAG1", "Main Activity > Init > site: ${vm.testSiteString.value.toString()}")
@@ -317,16 +443,423 @@ class MainActivity : AppCompatActivity() {
         }*/
     }
 
+    //searchItemList для RcView
+    private fun observeVM(){
+        vm.searchItemList.value?.let { searchItemAdapter.addAllSearch(it) }
+        vm.searchItemList.observe(this) {
+            vm.searchItemList.value?.let { it1 -> searchItemAdapter.addAllSearch(it1) }
+            searchItemAdapter.notifyDataSetChanged()
+        }
+        //searchItemCount для кнопок удалить выделенные searchItem
+        vm.searchItemDeleteCount.observe(this){
+            if(vm.searchItemDeleteCount.value == 0) {
+                binding.actMainSearchItemDelete.visibility = View.GONE
+            }
+            else binding.actMainSearchItemDelete.visibility = View.VISIBLE
+        }
+    }
+
+    //Загружаем фрагмент
     private fun loadFragment(idFrameLayoutFragment: Int, fragment: Fragment){
-        //Загружаем фрагмент
         supportFragmentManager
             .beginTransaction()
             .replace(idFrameLayoutFragment, fragment)
             .commit()
     }
 
+    //Worker - работа в фоне и отправка уведомлений
+    private fun workerFindNews() {
+        //Log.d(TAG, "Main Activity >f workerFindNews ======START")
+
+        //Критерии
+        val constraints = Constraints.Builder()
+            .setRequiresBatteryNotLow(true) //уровень батареи не ниже критического
+            .setRequiredNetworkType(NetworkType.CONNECTED) //наличие интернета - только WiFi
+            .build()
+        //Log.d(TAG, "Main Activity >f workerFindNews > constraints")
+
+        //writeToFile(vm.testSiteString.value.toString(), "testSite.txt", this)
+
+        //подготавливаем данные
+        val dataForWorker = Data.Builder()
+            .putBoolean(WorkerFindNews.WORKER_PUT_STATUS_UPDATE, false) //статус - есть ли новые новости - новых нет
+            .build()
+
+        //определяем время запуска
+        val timeDiff =  WorkerFindNewsFun().timeDiff()
 
 
+
+        //Сборка Задачи
+        val  myWorkRequest = OneTimeWorkRequestBuilder<WorkerFindNews>()
+            .addTag(WorkerFindNews.WORKER_TAG_PARSER)
+            .setInitialDelay(timeDiff)
+            .setConstraints(constraints)
+            .setInputData(dataForWorker)
+            .build()
+        //Log.d(TAG, "Main Activity >f workerFindNews > myWorkRequest")
+
+        //Запускаем новую Задачу
+        WorkManager.getInstance(this)
+            .enqueueUniqueWork(WorkerFindNews.WORKER_UNIQUE_NAME_PARSER, ExistingWorkPolicy.REPLACE, myWorkRequest) //для единоразового запуска
+        //WorkManager.getInstance(this).enqueue(myWorkRequest) //почему-то запускается несколько раз
+        //Log.d(TAG, "Main Activity >f workerFindNews ------------END")
+    }
+
+    private fun workerFindNews1() {
+        Log.d(TAG, "Main Activity >f workerFindNews ======START")
+        //запускаем worker >
+        var arrayStringLinkSQL = emptyArray<String>()
+
+        vm.newsItemArray.value?.forEach {
+            Log.d(TAG, "Main Activity >f workerFindNews > it: $it")
+            arrayStringLinkSQL += it.link
+        }
+
+        /*val constraintsZapas = Constraints.Builder()
+            .setRequiresCharging(true) //критерий: зарядное устройство должно быть подключено
+            .setRequiresBatteryNotLow(true) //уровень батареи не ниже критического
+            .setRequiredNetworkType(NetworkType.UNMETERED) //наличие интернета //только WiFi
+            .setRequiresDeviceIdle(true) //девайс не используется какое-то время и ушел “в спячку”
+            .setRequiresStorageNotLow(true) //на девайсе должно быть свободное место
+            .build()*/
+
+        //Критерии
+        val constraints = Constraints.Builder()
+            .setRequiresBatteryNotLow(true) //уровень батареи не ниже критического
+            .setRequiredNetworkType(NetworkType.CONNECTED) //наличие интернета - только WiFi
+            .build()
+        Log.d(TAG, "Main Activity >f workerFindNews > constraints")
+
+
+        writeToFile(vm.testSiteString.value.toString(), "testSite.txt", this)
+
+        //подготавливаем старые данные из БД (link)
+        val dataForWorker = Data.Builder()
+            .putStringArray(WorkerFindNews.WORKER_PUT_LINK_SQL, arrayStringLinkSQL)
+            .putBoolean(WorkerFindNews.WORKER_PUT_STATUS_UPDATE, vm.statusUpdateWorker)
+            .build()
+
+        //.putString(WorkerFindNews.TEST_WORKER_PUT_SITE, vm.testSiteString.value.toString()) //слишком много весит (>10240 bytes)
+        Log.d(TAG, "Main Activity >f workerFindNews > dataForWorker")
+
+        /*val myWorkRequestOne = OneTimeWorkRequest.Builder(WorkerFindNews::class.java)
+            .setConstraints(constraints)
+            .build()*/
+
+        //Сборка Задачи
+        val  myWorkRequest = OneTimeWorkRequestBuilder<WorkerFindNews>()
+            .addTag(WorkerFindNews.WORKER_TAG_PARSER)
+            .setConstraints(constraints)
+            .setInputData(dataForWorker)
+            .build()
+        Log.d(TAG, "Main Activity >f workerFindNews > myWorkRequest")
+
+        //val  myWorkRequest = OneTimeWorkRequestBuilder<WorkerFindNews>().build()
+        //val  myWorkRequest = PeriodicWorkRequestBuilder<WorkerFindNews>(30, TimeUnit.MINUTES, 25, TimeUnit.MINUTES).build()
+
+        //val myWorkRequest = OneTimeWorkRequest.Builder(WorkerFindNews::class.java).build()
+
+        //Запускаем новую Задачу
+        WorkManager.getInstance(this)
+            .enqueueUniqueWork(WorkerFindNews.WORKER_UNIQUE_NAME_PARSER, ExistingWorkPolicy.REPLACE, myWorkRequest) //для единоразового запуска
+        //WorkManager.getInstance(this).enqueue(myWorkRequest) //почему-то запускается несколько раз
+        //запускаем worker ^
+        Log.d(TAG, "Main Activity >f workerFindNews ------------END")
+    }
+
+    private fun writeJSON() {
+        //записывем данные в JSON
+        Log.d(TAG, "Main Activity >f writeJSON ======START")
+        var stringItem = "name%20:witcher%20:Moscow%20:Columbia%20:Washington%20:Bali%20:Kin"
+        var searchItemList = emptyArray<SearchItemWorker>()//mutableListOf<SearchItemWorker>() //готовим список searchItem
+        var searchItemListTest = emptyArray<SearchItem>()
+        val dataList = ArrayList<SearchItem>()
+        val dataListWorker = ArrayList<SearchItemWorker>()
+        val arrayItem = stringItem.split("%20:").toTypedArray() //разбиваем цельную строку на массив будущих элементов searchItem
+        arrayItem.forEach {
+            //каждый элемент массива записываем в список как объекты SearchItem
+            val searchItem = SearchItem(it)
+            val searchItemWorker = SearchItemWorker(searchItem, 0)
+            searchItemList += searchItemWorker
+            searchItemListTest += SearchItem(it)
+            dataList.add(searchItem)
+            dataListWorker.add(searchItemWorker)
+        }
+
+
+        Log.d(TAG, "Main Activity >f writeJSON > searchItemList: $searchItemList")
+        Log.d(TAG, "Main Activity >f writeJSON > searchItemListTest: $searchItemListTest")
+        Log.d(TAG, "Main Activity >f writeJSON > dataList: $dataList")
+        Log.d(TAG, "Main Activity >f writeJSON > dataList: $dataListWorker")
+
+        //сериализация
+        val gson = Gson()
+        val json = gson.toJson(dataList)
+        val json1 = gson.toJson(searchItemList)//gson.getAdapter(SearchItemArrayList::class.java)//gson.toJson(dataList)
+        val json2 = gson.toJson(dataListWorker)
+        val json3 = gson.toJson(searchItemListTest)
+
+        val newsItemArrayList = SearchItemArrayList(dataListWorker)
+        val json4 = gson.toJson(newsItemArrayList)
+        //val newsItemArrayList = NewsItemArrayList(vm.newsItemArray.value)
+        Log.d(TAG, "Main Activity >f writeJSON > json: $json")
+        Log.d(TAG, "Main Activity >f writeJSON > json1: $json1")
+        Log.d(TAG, "Main Activity >f writeJSON > json2: $json2")
+        Log.d(TAG, "Main Activity >f writeJSON > json3: $json3")
+        Log.d(TAG, "Main Activity >f writeJSON > json4: $json4")
+        Log.d(TAG, "Main Activity >f writeJSON > -------------------")
+
+        //десериализация
+        try {
+            Log.d(TAG, "Main Activity >f writeJSON > try-------")
+            val users = Gson().fromJson(json4, SearchItemArrayList::class.java)
+            //Log.d(TAG, "Main Activity >f workerJSON > users: $users")
+            //Log.d(TAG, "Main Activity >f workerJSON > list: ${users.list}")
+            users.list.forEach {
+                val dateParse = it.searchItem
+                Log.d(TAG, "Main Activity >f workerJSON > it: ${dateParse.search}")
+            }
+
+
+
+            val homeDateList: List<SearchItem> = gson.fromJson(json, Array<SearchItem>::class.java).toList()
+            val homeDateList1: List<SearchItemWorker> = gson.fromJson(json1, Array<SearchItemWorker>::class.java).toList()
+            val homeDateList2: List<SearchItemWorker> = gson.fromJson(json2, Array<SearchItemWorker>::class.java).toList()
+            val homeDateList3: List<SearchItemWorker> = gson.fromJson(json3, Array<SearchItemWorker>::class.java).toList()
+            Log.d(TAG, "Main Activity >f workerJSON > it: $homeDateList")
+            Log.d(TAG, "Main Activity >f workerJSON > it: $homeDateList1")
+            Log.d(TAG, "Main Activity >f workerJSON > it: $homeDateList2")
+            Log.d(TAG, "Main Activity >f workerJSON > it: $homeDateList3")
+            //val users = Gson().fromJson(json, SearchItemArrayList::class.java)
+            //Log.d(TAG, "Main Activity >f workerJSON > users: $users")
+            //Log.d(TAG, "Main Activity >f workerJSON > list: ${users.list}")
+            homeDateList.forEach {
+                val dateParse = it.search
+                Log.d(TAG, "Main Activity >f workerJSON > it: $dateParse")
+            }
+        }catch (e: JSONException) {
+            Log.e(TAG, "ERROR: Main Activity >f workerJSON > JSONException: $e")
+        }
+
+        //Записываем текст в файл
+        //writeToFile(json, FILE_SEARCH_ITEM, this)
+    }
+
+    private fun readJSON() {
+        //Читаем данные из JSON
+        //Читаем файл
+        val searchItemListJSON = readFromFile(FILE_SEARCH_ITEM, this)
+
+        //десериализация
+        try {
+            val users = Gson().fromJson(searchItemListJSON, SearchItemArrayList::class.java)
+
+            //Log.d(TAG, "Main Activity >f workerJSON > users: $users")
+            //Log.d(TAG, "Main Activity >f workerJSON > list: ${users.list}")
+            users.list.forEach {
+                val dateParse = it.searchItem.search
+                Log.d(TAG, "Main Activity >f readJSON > it: $dateParse")
+            }
+
+        }catch (e: JSONException) {
+            Log.e(TAG, "ERROR: Main Activity >f readJSON > JSONException: $e")
+        }
+        return
+    }
+
+    private fun testWorkerJSON() {
+        //сериализация
+        val newsItemArrayList = vm.newsItemArray.value?.let { NewsItemArrayList(it) }
+        //val newsItemArrayList = NewsItemArrayList(vm.newsItemArray.value)
+        val gson = Gson()
+        val json = gson.toJson(newsItemArrayList)
+
+        Log.d(TAG, "Main Activity >f workerJSON > newsItemArrayList: $newsItemArrayList")
+
+        Log.d(TAG, "Main Activity >f workerJSON > json: $json")
+        Log.d(TAG, "Main Activity >f workerJSON > -------------------")
+
+        //десериализация
+        try {
+            val users = Gson().fromJson(json, NewsItemArrayList::class.java)
+            //Log.d(TAG, "Main Activity >f workerJSON > users: $users")
+            //Log.d(TAG, "Main Activity >f workerJSON > list: ${users.list}")
+            users.list.forEach {
+                val dateParse = LocalDate.parse(it.date, ISO_OFFSET_DATE_TIME)
+                Log.d(TAG, "Main Activity >f workerJSON > it: ${dateParse.month}")
+            }
+        }catch (e: JSONException) {
+            Log.e(TAG, "ERROR: Main Activity >f workerJSON > JSONException: $e")
+        }
+    }
+
+    private fun workerJSON() {
+        //сериализация
+        val newsItemArrayList = vm.newsItemArray.value?.let { NewsItemArrayList(it) }
+        val gson = Gson()
+        //val testNewsItemList = vm.newsItemArray.value
+        val json = gson.toJson(newsItemArrayList)
+
+        Log.d(TAG, "Main Activity >f workerJSON > newsItemArrayList: $newsItemArrayList")
+
+        Log.d(TAG, "Main Activity >f workerJSON > json: $json")
+        Log.d(TAG, "Main Activity >f workerJSON > -------------------")
+
+
+        //var newsItemList: ArrayList<NewsItem> = ArrayList()
+
+        //десериализация
+        try {
+            //val obj = JSONObject(json)
+            //Log.d(TAG, "Main Activity >f workerJSON > obj: $obj")
+            //val userArray = obj.getJSONArray("list")
+
+            val users = Gson().fromJson(json, NewsItemArrayList::class.java)
+            //Log.d(TAG, "Main Activity >f workerJSON > users: $users")
+            //Log.d(TAG, "Main Activity >f workerJSON > list: ${users.list}")
+            users.list.forEach {
+                val dateParse = LocalDate.parse(it.date, ISO_OFFSET_DATE_TIME)
+                Log.d(TAG, "Main Activity >f workerJSON > it: ${dateParse.month}")
+            }
+
+           /* Log.d(TAG, "Main Activity >f workerJSON > userArray: $userArray")
+            for (i in 0 until userArray.length()) {
+                val user = userArray.getJSONObject(i)
+                Log.d(TAG, "Main Activity >f workerJSON > user: user ------------")
+                val date = user.getString("date")
+                val dateParse = LocalDate.parse(date, ISO_OFFSET_DATE_TIME)
+
+                val title = user.getString("title")
+                val content = user.getString("content")
+                Log.d(TAG, "Main Activity >f workerJSON > date: $date, timeParse: ${dateParse.month}}") //ISO_OFFSET_DATE_TIME
+                Log.d(TAG, "Main Activity >f workerJSON > content: $content")
+                Log.d(TAG, "Main Activity >f workerJSON > title: $title")
+            }*/
+
+        }catch (e: JSONException) {
+            Log.e(TAG, "ERROR: Main Activity >f workerJSON > JSONException: $e")
+        }
+
+        //десериализация
+        //val newsItemFromJSON = gson.fromJson<ArrayList<NewsItem>>(json, ArrayList<NewsItem>())
+        //Log.d(TAG, "Main Activity >f workerJSON > newsItemFromJSON: $newsItemFromJSON")
+    }
+
+    private fun writeToFile(data: String, nameFile: String,  context: Context) {
+        //Записываем текст в файл
+        try {
+            val outputStreamWriter = OutputStreamWriter(context.openFileOutput(nameFile, MODE_PRIVATE))
+            outputStreamWriter.write(data)
+            outputStreamWriter.close()
+        } catch (e: IOException) {
+            Log.e(TAG, "ERROR: Main Activity >f writeToFile > File write failed: $e")
+            Log.d(TAG, "ERROR: Main Activity >f writeToFile > File write failed: $e")
+        }
+    }
+
+    private fun readFromFile(nameFile: String, context: Context): String {
+        //Читаем текст из файла
+        var ret = ""
+        try {
+            val inputStream: InputStream? = context.openFileInput(nameFile)
+            if (inputStream != null) {
+                val inputStreamReader = InputStreamReader(inputStream)
+                val bufferedReader = BufferedReader(inputStreamReader)
+                var receiveString: String? = ""
+                val stringBuilder = StringBuilder()
+                while (bufferedReader.readLine().also { receiveString = it } != null) {
+                    stringBuilder.append("\n").append(receiveString)
+                }
+                inputStream.close()
+                ret = stringBuilder.toString()
+            }
+        } catch (e: FileNotFoundException) {
+            Log.e(TAG, "ERROR: Main Activity >f readFromFile > File not found: $e")
+            Log.d(TAG, "ERROR: Main Activity >f readFromFile > File not found: $e")
+        } catch (e: IOException) {
+            Log.e(TAG, "ERROR: Main Activity >f readFromFile > Can not read file: $e")
+            Log.d(TAG, "ERROR: Main Activity >f readFromFile > Can not read file: $e")
+        }
+        return ret
+    }
+
+    //Recycler View >
+    private fun uploadRcViewListSearchItem(savedSearches: String){
+        //добавляем новое значение SearchItem
+        val sharedPrefsRcView = getSharedPreferences("init", Context.MODE_PRIVATE)
+        val stringItem = sharedPrefsRcView.getString(SEARCH_ITEM, "") //читаем сохраненную ранее строку с searchItem
+        Log.d("TAG1", "Main Activity >f uploadRcViewListSearchItem > stringItem: $stringItem")
+        val stringItemUpdate = "$stringItem%20:$savedSearches" //добавляем новое значение
+        Log.d("TAG1", "Main Activity >f uploadRcViewListSearchItem > stringItem_Update: $stringItemUpdate")
+        sharedPrefsRcView.edit().putString(SEARCH_ITEM, stringItemUpdate).apply() //обновляем сохраненную ранее строку searchItem с новым значением
+
+
+        //обновляем vm чтобы подхватила RcView
+        val searchItemList = mutableListOf<SearchItem>() //готовим список searchItem
+        val arrayItem = stringItemUpdate.split("%20:").toTypedArray() //разбиваем цельную строку на массив будущих элементов searchItem
+        arrayItem.forEach {
+            //каждый элемент массива записываем в список как объекты SearchItem
+            val searchItem = SearchItem(it)
+            searchItemList.add(searchItem)
+        }
+        vm.searchItemList.value = searchItemList
+    }
+
+    private fun readRcViewListSearchItem(){
+        //читаем сохраненный список SearchItem
+        val sharedPrefsRcView = getSharedPreferences("init", Context.MODE_PRIVATE)
+
+        var stringItem = sharedPrefsRcView.getString(SEARCH_ITEM, "") //читаем сохраненную ранее строку с searchItem
+        //Log.d("TAG1", "Main Activity >f readRcViewListSearchItem > stringItem: $stringItem")
+        stringItem = "name%20:witcher%20:Moscow%20:Columbia%20:Washington%20:Bali%20:Kin" //delete
+        //Log.d("TAG1", "Main Activity >f readRcViewListSearchItem > stringItem: $stringItem")
+
+        val searchItemList = mutableListOf<SearchItem>() //готовим список searchItem
+        val arrayItem = stringItem.split("%20:").toTypedArray() //разбиваем цельную строку на массив будущих элементов searchItem
+        arrayItem.forEach {
+            //каждый элемент массива записываем в список как объекты SearchItem
+            val searchItem = SearchItem(it)
+            searchItemList.add(searchItem)
+        }
+        vm.searchItemList.value = searchItemList
+        //Log.d("TAG1", "Main Activity >f readRcViewListSearchItem > searchItemList: ${vm.searchItemList.value}")
+    }
+
+    private fun startRecyclerViewActMain(view: View){
+        Log.d("TAG1", "Main Activity >f startRecyclerViewActMain ======START")
+        readRcViewListSearchItem()
+        //Подключаем RecyclerView и отображаем данные из SQLite
+        binding.apply {
+            //fragTest2RecyclerView.setHasFixedSize(true) //для оптимизации?
+            //actMainRecyclerViewSavedSearches.layoutManager = LinearLayoutManager(view.context) //проверить
+            actMainRecyclerViewSavedSearches.layoutManager = GridLayoutManager(view.context, 3) //проверить
+            actMainRecyclerViewSavedSearches.adapter = searchItemAdapter
+        }
+    }
+
+    override fun clickOnSearchItem(searchItem: SearchItem) {
+        //при клике на элемент recycler view из БД загружаются все новости с этим именем
+    }
+
+    override fun selectSearchItem(searchItem: SearchItem) {
+        var a = vm.searchItemDeleteCount.value
+        if (a != null) {
+            a++
+        }
+        vm.searchItemDeleteCount.value = a
+        Log.d("TAG1", "Main Activity >f selectSearchItem >  Count: ${vm.searchItemDeleteCount.value}")
+    }
+
+    override fun unSelectSearchItem(searchItem: SearchItem) {
+        var a = vm.searchItemDeleteCount.value
+        if (a != null) {
+            a--
+        }
+        vm.searchItemDeleteCount.value = a
+        Log.d("TAG1", "Main Activity >f unSelectSearchItem >  Count: ${vm.searchItemDeleteCount.value}")
+    }
+    //Recycler View ^
 
     // //Функции далее - работа с Базой Данных
     private fun viewModelToSQLite(){
@@ -382,7 +915,7 @@ class MainActivity : AppCompatActivity() {
         //Log.d("TAG1", "Activity >f loadSQLiteToViewModel > testCount1: $testCount1 ======START")
         vm.newsItemArray.value = mainDbManager.readDbData()
         //Log.d("TAG1", "Activity >f loadSQLiteToViewModel > vm.newsItemArray: ${vm.newsItemArray.value}")
-        //Log.d("TAG1", "Activity >f loadSQLiteToViewModel > ------------END")
+        //Log.d("TAG1", "Activity >f loadSQLiteToViewModel ------------END")
     }
 
     private fun updateElementOfSQLite(){
@@ -500,7 +1033,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun getSavedTheme() = sharedPrefs.getInt(KEY_THEME, THEME_UNDEFINED)
     // //Функции Выше ^ - тема (светлая и темная). Чужой код
-
 }
 
 //loadFragment(R.id.frameLayoutMainFragment, WebsiteFragment.newInstance())

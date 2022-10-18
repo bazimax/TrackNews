@@ -18,12 +18,11 @@ import com.example.tracknews.databinding.RecyclerViewNewsItemBinding
 import com.example.tracknews.databinding.RecyclerViewNewsItemV2Binding
 import java.security.AccessController.getContext
 
-class NewsItemAdapter(val listener: Listener): RecyclerView.Adapter<NewsItemAdapter.NewsItemHolder>() {
+class NewsItemAdapter(private val listener: Listener): RecyclerView.Adapter<NewsItemAdapter.NewsItemHolder>() {
 
     private val newsItemList = ArrayList<NewsItem>()
 
     class NewsItemHolder(item: View): RecyclerView.ViewHolder(item) {
-        //private lateinit var vm: ViewModel
 
         val binding = RecyclerViewNewsItemBinding.bind(item) //использует cardView
         //val binding = RecyclerViewNewsItemV2Binding.bind(item) //использует linearLayout
@@ -34,22 +33,12 @@ class NewsItemAdapter(val listener: Listener): RecyclerView.Adapter<NewsItemAdap
             newsItemTextViewContent.text = newsItem.content
             newsItemTextViewLink.text = newsItem.link
 
-            /*itemView.setOnClickListener {
-                Log.d("TAG1", "click observe ${newsItem.title}")
-                Log.d("TAG1", "click observe $adapterPosition")
-                listener.onClick(newsItem)
-            }*/
-
-
-
             if (newsItem.statusSaved == "true") {
-                //newsItemButtonExpand.visibility = View.VISIBLE
                 newsItemButtonSave.visibility = View.VISIBLE
                 newsItemButtonUnSave.visibility = View.GONE
                 //newsItemButtonSave.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star_select, 0, 0, 0)
             }
             else {
-                //newsItemButtonExpand.visibility = View.INVISIBLE
                 newsItemButtonSave.visibility = View.GONE
                 newsItemButtonUnSave.visibility = View.VISIBLE
                 //newsItemButtonSave.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star_unselect, 0, 0, 0)

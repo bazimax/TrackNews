@@ -74,6 +74,12 @@
         <item name="android:textColor">@color/baseColorTextContent</item>
     </style>
 
+    <style name="Theme.BackgroundSearchButton" parent="Theme.TrackNews">
+        <!--Для кнопок в searchItem-->
+        <!--<item name="android:textColor">@color/baseColorPrimary</item>-->
+        <item name="colorPrimary">?attr/colorAccent</item>
+    </style>
+
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/background_splash</item>
         <item name="android:statusBarColor" tools:targetApi="l">@color/baseWhite</item>

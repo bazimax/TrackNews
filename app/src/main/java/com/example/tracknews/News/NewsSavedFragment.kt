@@ -47,8 +47,8 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val v1 = binding.fragNewsSavedRecyclerView
-        startRecyclerView(v1)
+        val rcView = binding.fragNewsSavedRecyclerView
+        startRecyclerView(rcView)
 
         Log.d("TAG1", "NewsSavedFragment > test: ${vm.testParserSitesString.value}")
         vm.testParserSitesString.observe(activity as LifecycleOwner) {
