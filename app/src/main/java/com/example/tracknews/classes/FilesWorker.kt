@@ -89,7 +89,7 @@ class FilesWorker (context: Context) {
         Log.d(MainActivity.TAG, "Main Activity >f writeJSON > json4: $json4")*/
 
 
-        //Log.d(TAG, "FilesWorker >f readJSONSearchItemArrayList ======START")
+        Log.d(TAG_DEBUG, "FilesWorker >f readJSONSearchItemArrayList ======START")
         //Читаем файл JSON
         val searchItemListJSON = readFromFile(nameFile, context)
         //Log.d(TAG, "FilesWorker >f readJSONSearchItemArrayList > searchItemListJSON: $searchItemListJSON")
@@ -108,7 +108,7 @@ class FilesWorker (context: Context) {
         }catch (e: JSONException) {
             Log.e(TAG, "ERROR: FilesWorker >f readJSONSearchItemArrayList > JSONException: $e")
         }
-        //Log.d(TAG, "FilesWorker >f readJSONSearchItemArrayList ------------END")
+        Log.d(TAG_DEBUG, "FilesWorker >f readJSONSearchItemArrayList ------------END")
         return data
     }
 

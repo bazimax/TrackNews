@@ -135,7 +135,7 @@ class MainDbManager(context: Context) {
 
         //val iName = cursor?.getColumnIndex(MainDbNameObject.COLUMN_NAME_SEARCH)
         //Log.d("TAG1", "MainDbManager >f findItemInDb > iName: $iName")
-        val cursor = db?.query(tableName, columns, selection, selectionArgs, null, null, null)
+        val cursor = db?.query(tableName, null, selection, selectionArgs, null, null, null)
         //Log.d("TAG1", "MainDbManager >f findItemInDb > cursor: $cursor")
         //Log.d("TAG1", "MainDbManager >f findItemInDb > cursor2: $cursor2")
         while (cursor?.moveToNext()!!){
@@ -143,14 +143,14 @@ class MainDbManager(context: Context) {
             //Log.d("TAG1", "readDbData > Start while")
             val search = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_SEARCH)).toString()
             //Log.d("TAG1", "MainDbManager >f findItemInDb > val 1: $search")
-            val img = ""//cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_IMG)).toString()
-            val date = ""//cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_DATE)).toString()
-            val title = ""//cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_TITLE)).toString()
-            val content = ""//cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_CONTENT)).toString()
+            val img = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_IMG)).toString()
+            val date = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_DATE)).toString()
+            val title = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_TITLE)).toString()
+            val content = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_CONTENT)).toString()
             val link = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_LINK)).toString()
             //Log.d("TAG1", "MainDbManager >f findItemInDb > link: $link")
 
-            val statusSaved = ""//cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_STATUS_SAVED)).toString()
+            val statusSaved = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_STATUS_SAVED)).toString()
 
             //val id = cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_STATUS_SAVED).toString()
             val id: Int = cursor.position //записываем id

@@ -18,7 +18,7 @@
             android:layout_width="60dp"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="@string/newsItemDate" />
+            android:text="@string/newsItemTime" />
 
         <TextView
             android:id="@+id/newsItemTextViewImg"

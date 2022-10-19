@@ -257,7 +257,7 @@ class ParserSites {
 
             val statusSaved = false.toString()
             val id = 0
-            val search = "123"
+            val search = "witcher"
 
 
             val newsItem = NewsItem(id, search ,img, date, title, content, link, statusSaved)

@@ -22,22 +22,31 @@ class SearchItemAdapter(private val listener: Listener): RecyclerView.Adapter<Se
 
             searchItemButton.text = searchItem.search
             searchItemButtonSelect.text = searchItem.search
+            searchItemCount.text = searchItem.counterNewNews.toString()
 
-            searchItemButtonSelect.visibility = 4
-            searchItemButton.visibility = 0
+            searchItemButtonSelect.visibility = 4 //??
+            searchItemButton.visibility = 0 //??
+
+            //Если счетчик новых новостей больше 0, то мы его показываем
+            if(searchItem.counterNewNews > 0) {
+                searchItemCount.visibility = VISIBLE
+            }
+            else searchItemCount.visibility = INVISIBLE
 
             Log.d("TAG1", "SearchItemAdapter >f bind > searchItem: $searchItem")
             Log.d("TAG1", "SearchItemAdapter >f bind > searchItemButtonSelect: ${searchItemButtonSelect.visibility}")
             Log.d("TAG1", "SearchItemAdapter >f bind > searchItemButton: ${searchItemButton.visibility}")
 
             searchItemButton.setOnClickListener {
-                //сохраняем новость в закладки
+                //При нажатии на "сохраненный поиск" в rcView открываются все новости относящиеся к нему
+                //Delete -> Сохраняем новость в закладки
                 //Log.d("TAG1", "click observe ${newsItem.link}")
                 //Log.d("TAG1", "click observe $adapterPosition")
                 listener.clickOnSearchItem(searchItem)
             }
 
             searchItemButton.setOnLongClickListener {
+                //Выделяем "сохраненный поиск", чтобы в будущем удалить
                 searchItemButtonSelect.visibility = VISIBLE
                 searchItemButton.visibility = INVISIBLE
                 listener.selectSearchItem(searchItem)
@@ -45,6 +54,7 @@ class SearchItemAdapter(private val listener: Listener): RecyclerView.Adapter<Se
             }
 
             searchItemButtonSelect.setOnClickListener {
+                //Снимаем выделение с "сохраненного поиска"
                 searchItemButtonSelect.visibility = INVISIBLE
                 searchItemButton.visibility = VISIBLE
                 listener.unSelectSearchItem(searchItem)

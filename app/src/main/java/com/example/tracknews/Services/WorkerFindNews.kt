@@ -36,19 +36,19 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
         const val TAG_DEBUG = Constants.TAG_DEBUG
 
         //Worker
-        const val WORKER_TAG_PARSER = "parser"
-        const val WORKER_UNIQUE_NAME_PARSER = "uniqueParser"
+        const val WORKER_TAG_PARSER = Constants.WORKER_TAG_PARSER//"parser"
+        const val WORKER_UNIQUE_NAME_PARSER = Constants.WORKER_UNIQUE_NAME_PARSER//"uniqueParser"
         const val WORKER_PUT_ID = "id"
         const val WORKER_PUT_IMG = "img"
         const val WORKER_PUT_DATE = "date"
         const val WORKER_PUT_TITLE = "title"
         const val WORKER_PUT_CONTENT = "content"
         const val WORKER_PUT_LINK = "link"
-        const val WORKER_PUT_LINK_SQL = "linkSQL"
+        //const val WORKER_PUT_LINK_SQL = "linkSQL"
         const val WORKER_PUT_STATUS_SAVED = "statusSaved"
 
         const val TEST_WORKER_PUT_COUNTER = "counter"
-        const val WORKER_PUT_STATUS_UPDATE = "statusUpdate"
+        const val WORKER_PUT_STATUS_UPDATE = Constants.WORKER_PUT_STATUS_UPDATE//"statusUpdate"
     }
 
     //private val sharedPrefs = context.getSharedPreferences("init", Context.MODE_PRIVATE) //getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE)
@@ -66,7 +66,7 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
 
     @NonNull
     override fun doWork(): Result {
-        Log.d(TAG, "WorkerFindNews >f doWork ======START")
+        Log.d(TAG_DEBUG, "WorkerFindNews >f doWork ======START")
 
         val outputData : Data
         //testCounter++
@@ -115,7 +115,8 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
                                 itResultParse.link,
                                 itResultParse.statusSaved)
                             //увеличиваем счетчик новых новостей
-                            itSearchItemArrayList.counterNewNews++
+                            itSearchItemArrayList.searchItem.counterNewNews++
+                            //itSearchItemArrayList.counterNewNews2++
                             //меняем статус "есть ли новые новости" на "да"
                             statusUpdateWorker = true
                         }
@@ -139,14 +140,15 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
             Log.e(TAG, "WorkerFindNews >f doWork > catch > FAILURE: $ex")
             return Result.retry()//Result.failure(); //или Result.retry()
         }
-        //Log.d(TAG, "WorkerFindNews >f doWork ------------END")
+        Log.d(TAG_DEBUG, "WorkerFindNews >f doWork ------------END")
         return Result.success(outputData)
     }
 
     private fun readDb(): ArrayList<NewsItem>{
-        Log.d(TAG, "WorkerFindNews >f dbWork ======START")
+        Log.d(TAG_DEBUG, "WorkerFindNews >f dbWork ======START")
         //открываем Базу Данных (БД) SQLite
         mainDbManager.openDb()
+
 
         //читаем БД
         val newsItemList = mainDbManager.readDbData()
@@ -354,6 +356,7 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
 
     private fun notification(){
         //Уведомления
+        val mess = ctx.resources.getString(com.example.tracknews.R.string.loadWebsiteFail)//resources.getString(com.example.tracknews.R.string.loadWebsiteFail)
         //Log.d(TAG, "WorkerFindNews >f notification ======START")
         //Log.d(TAG, "WorkerFindNews >f notification > IF > Счетчик: $testCounter")
         //Если есть новые новости - создаём уведомление

@@ -6,8 +6,28 @@
     <string name="search">Search</string>
     <string name="defaultTextView">///</string>
 
+    <!--time/date-->
+    <string name="timeToday">Today</string>
+    <string name="timeYesterday">Yesterday</string>
+    <string-array name="timeMonth">
+        <item >January</item>
+        <item >February</item>
+        <item >March</item>
+        <item >April</item>
+        <item >May</item>
+        <item >June</item>
+        <item >July</item>
+        <item >August</item>
+        <item >September</item>
+        <item >October</item>
+        <item >November</item>
+        <item >December</item>
+    </string-array>
+
     <!--cardView-->
-    <string name="newsItemDate">00:00 00.00</string>
+    <string name="newsItemTime">00:00</string>
+    <string name="newsItemDayMonth">Jan 1</string>
+    <string name="newsItemYear">2012</string>
     <string name="newsItemTitle">Title</string>
     <string name="newsItemContent">Content</string>
     <string name="newsItemLink">link</string>

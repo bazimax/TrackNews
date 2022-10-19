@@ -5,8 +5,28 @@
     <string name="search">Поиск</string>
     <string name="defaultTextView">///</string>
 
+    <!--time/date-->
+    <string name="timeToday">Сегодня</string>
+    <string name="timeYesterday">Вчера</string>
+    <string-array name="timeMonth">
+        <item >Январь</item>
+        <item >Февраль</item>
+        <item >Март</item>
+        <item >Апрель</item>
+        <item >Май</item>
+        <item >Июнь</item>
+        <item >Июль</item>
+        <item >Август</item>
+        <item >Сентябрь</item>
+        <item >Октябрь</item>
+        <item >Ноябрь</item>
+        <item >Декабрь</item>
+    </string-array>
+
     <!--cardView-->
-    <string name="newsItemDate">00:00 вчера</string>
+    <string name="newsItemTime">00:00</string>
+    <string name="newsItemDayMonth">1 Янв</string>
+    <string name="newsItemYear">2012</string>
     <string name="newsItemTitle">Заголовок</string>
     <string name="newsItemContent">Текст</string>
     <string name="newsItemLink">ссылка</string>

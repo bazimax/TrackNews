@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.tracknews.MainActivity
 import com.example.tracknews.ViewModel
 import com.example.tracknews.WebsiteFragment
 import com.example.tracknews.classes.NewsItem
@@ -79,6 +80,7 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
         //отслеживаем изменения в данных для RecyclerView (SQLite > ViewModel)
         vm.newsItemArray.value?.let { newsItemAdapter.addAllNews(it) }
         vm.newsItemArray.observe(activity as LifecycleOwner) {
+            Log.d(MainActivity.TAG, "NewsSavedFragment >f newsItemArray.OBSERVE > vm.newsItemArray.value: ${vm.newsItemArray.value}")
             vm.newsItemArray.value?.let { it1 -> newsItemAdapter.addAllNews(it1) }
         }
     }

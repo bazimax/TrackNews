@@ -17,12 +17,12 @@ open class ViewModel : ViewModel() {
     /*init {
         Log.d("TAG1", "ViewModel created")
     }*/
-    //данные по новостям
+    //Список новостей (NewsItem)
     val newsItemArray: MutableLiveData<ArrayList<NewsItem>> by lazy {
         MutableLiveData<ArrayList<NewsItem>>()
     }
 
-    //список сохраненных поисков для чтения
+    //список "сохраненных поисков" (SearchItem) для постоянного отслеживания (подписка на определенные новости)
     val searchItemList: MutableLiveData<List<SearchItem>> by lazy {
         MutableLiveData<List<SearchItem>>()
     }
@@ -56,7 +56,7 @@ open class ViewModel : ViewModel() {
         MutableLiveData<String>()
     }
 
-    //поворот экрана
+    //Отслеживаем поворот экрана
     val statusLandscape: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
@@ -93,8 +93,10 @@ open class ViewModel : ViewModel() {
     }
 
 
+
+    var activeSearchItem = MutableLiveData("") //активный "поисковой запрос"(или сохраненный поиск) для которого выводятся все найденные новости. Если запрос пустой - значит еще нет "поисковых запросов"
     var searchItemDeleteCount = MutableLiveData<Int>() //счетчик элементов searchItem на удаление (если счетчик = 0, то кнопки для удаления скрываются)
-    var tempWebsiteLink = MutableLiveData<String>()
+    var tempWebsiteLink = MutableLiveData<String>() //ссылка на новость
     var newsItemDeleted = MutableLiveData<String>()
     //var newsItemWorkId = MutableLiveData<Int>()
     //var newsItemWork = MutableLiveData<String>()

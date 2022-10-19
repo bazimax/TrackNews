@@ -17,22 +17,31 @@ import com.example.tracknews.ViewModel
 import com.example.tracknews.databinding.RecyclerViewNewsItemBinding
 import com.example.tracknews.databinding.RecyclerViewNewsItemV2Binding
 import java.security.AccessController.getContext
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 class NewsItemAdapter(private val listener: Listener): RecyclerView.Adapter<NewsItemAdapter.NewsItemHolder>() {
-
     private val newsItemList = ArrayList<NewsItem>()
 
     class NewsItemHolder(item: View): RecyclerView.ViewHolder(item) {
+        private val dateFun = DateFunctions()
+        private val ctx = item.context
 
         val binding = RecyclerViewNewsItemBinding.bind(item) //использует cardView
         //val binding = RecyclerViewNewsItemV2Binding.bind(item) //использует linearLayout
         fun bind(newsItem: NewsItem, listener: Listener) = with (binding){
-            newsItemTextViewDate.text = newsItem.date
+            val time = dateFun.parseNewsItemDate(newsItem.date, ctx)
+
+            newsItemTextViewTime.text = time[0]
+            newsItemTextViewDayMonth.text = time[1]
+            newsItemTextViewYear.text = time[2]
             //newsItemTextViewImg.text = newsItem.img
             newsItemTextViewTitle.text = newsItem.title
             newsItemTextViewContent.text = newsItem.content
             newsItemTextViewLink.text = newsItem.link
 
+            //Если новость сохранена ранее отмечаем соответсвтующей кнопкой. Если нет то по умолчанию
             if (newsItem.statusSaved == "true") {
                 newsItemButtonSave.visibility = View.VISIBLE
                 newsItemButtonUnSave.visibility = View.GONE
@@ -45,20 +54,20 @@ class NewsItemAdapter(private val listener: Listener): RecyclerView.Adapter<News
             }
 
             newsItemButtonSave.setOnClickListener {
-                //сохраняем новость в закладки
+                //Сохраняем новость в закладки
                 //Log.d("TAG1", "click observe ${newsItem.link}")
                 //Log.d("TAG1", "click observe $adapterPosition")
                 listener.changeStatusSaved(newsItem)
             }
             newsItemButtonUnSave.setOnClickListener {
-                //убираем новость из закладок
+                //Убираем новость из закладок
                 //Log.d("TAG1", "click observe ${newsItem.link}")
                 //Log.d("TAG1", "click observe $adapterPosition")
                 listener.changeStatusSaved(newsItem)
             }
 
             newsItemCardView.setOnClickListener {
-                //открываем новость в браузере
+                //Открываем новость в браузере
                 //vm = ViewModelProvider(this).get(ViewModel)
                 //Log.d("TAG1", "click observe ${newsItem.link}")
                 //Log.d("TAG1", "click observe $adapterPosition")
@@ -67,14 +76,15 @@ class NewsItemAdapter(private val listener: Listener): RecyclerView.Adapter<News
             }
 
             newsItemTextViewContent.setOnClickListener {
+                //При нажатии на "content" (частичный текст) -> показывается "весь текст" и наоборот
                 //listener.changeStatusSaved(newsItem)
                 if (newsItemTextViewContent.lineCount > 1 && newsItemTextViewContent.maxLines == 2) {
                     newsItemTextViewContent.layoutParams.height = -1
                     newsItemTextViewContent.maxLines = 999
-                    Log.d("TAG1", "NewsItemAdapter >f bind > Content > IF > height: ${newsItemTextViewContent.height}")
-                    Log.d("TAG1", "NewsItemAdapter >f bind > Content > IF > lineCount: ${newsItemTextViewContent.lineCount}")
-                    Log.d("TAG1", "NewsItemAdapter >f bind > Content > IF > maxLines: ${newsItemTextViewContent.maxLines}")
-                    Log.d("TAG1", "NewsItemAdapter >f bind > Content > IF > lineHeight: ${newsItemTextViewContent.lineHeight}")
+                    //Log.d("TAG1", "NewsItemAdapter >f bind > Content > IF > height: ${newsItemTextViewContent.height}")
+                    //Log.d("TAG1", "NewsItemAdapter >f bind > Content > IF > lineCount: ${newsItemTextViewContent.lineCount}")
+                    //Log.d("TAG1", "NewsItemAdapter >f bind > Content > IF > maxLines: ${newsItemTextViewContent.maxLines}")
+                    //Log.d("TAG1", "NewsItemAdapter >f bind > Content > IF > lineHeight: ${newsItemTextViewContent.lineHeight}")
                     //newsItemButtonExpand.visibility = View.VISIBLE
                 }
                 else if (newsItemTextViewContent.lineCount == 1) {
@@ -83,10 +93,10 @@ class NewsItemAdapter(private val listener: Listener): RecyclerView.Adapter<News
                 else {
                     newsItemTextViewContent.layoutParams.height = 88
                     newsItemTextViewContent.maxLines = 2
-                    Log.d("TAG1", "NewsItemAdapter >f bind > Content > ELSE > height: ${newsItemTextViewContent.height}")
-                    Log.d("TAG1", "NewsItemAdapter >f bind > Content > ELSE > lineCount: ${newsItemTextViewContent.lineCount}")
-                    Log.d("TAG1", "NewsItemAdapter >f bind > Content > ELSE > maxLines: ${newsItemTextViewContent.maxLines}")
-                    Log.d("TAG1", "NewsItemAdapter >f bind > Content > ELSE > lineHeight: ${newsItemTextViewContent.lineHeight}")
+                    //Log.d("TAG1", "NewsItemAdapter >f bind > Content > ELSE > height: ${newsItemTextViewContent.height}")
+                    //Log.d("TAG1", "NewsItemAdapter >f bind > Content > ELSE > lineCount: ${newsItemTextViewContent.lineCount}")
+                    //Log.d("TAG1", "NewsItemAdapter >f bind > Content > ELSE > maxLines: ${newsItemTextViewContent.maxLines}")
+                    //Log.d("TAG1", "NewsItemAdapter >f bind > Content > ELSE > lineHeight: ${newsItemTextViewContent.lineHeight}")
                     //newsItemButtonExpand.visibility = View.INVISIBLE
                 }
 
@@ -99,7 +109,7 @@ class NewsItemAdapter(private val listener: Listener): RecyclerView.Adapter<News
 
             }
             //Thread.sleep(2000L)
-            Log.d("TAG1", "NewsItemAdapter >f bind > MaxLines: ${newsItemTextViewContent.lineCount}")
+            //Log.d("TAG1", "NewsItemAdapter >f bind > MaxLines: ${newsItemTextViewContent.lineCount}")
         }
 
         /*//без with (binding)

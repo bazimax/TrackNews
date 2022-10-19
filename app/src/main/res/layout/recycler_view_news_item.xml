@@ -26,14 +26,45 @@
             android:orientation="horizontal"
             android:theme="@style/Theme.BackgroundNewsItemText">
 
-            <TextView
-                android:id="@+id/newsItemTextViewDate"
-                style="@style/Theme.BackgroundNewsItemDate"
+            <LinearLayout
                 android:layout_width="48dp"
-                android:layout_height="96dp"
+                android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="@string/newsItemDate"
-                android:textColor="@color/baseNewsItemButton" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/newsItemTextViewTime"
+                    style="@style/Theme.BackgroundNewsItemDate"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/newsItemTime"
+                    android:textColor="@color/baseNewsItemButton" />
+
+                <TextView
+                    android:id="@+id/newsItemTextViewDayMonth"
+                    style="@style/Theme.BackgroundNewsItemDate"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/newsItemDayMonth"
+                    android:textColor="@color/baseNewsItemButton" />
+
+                <TextView
+                    android:id="@+id/newsItemTextViewYear"
+                    style="@style/Theme.BackgroundNewsItemDate"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/newsItemYear"
+                    android:textColor="@color/baseNewsItemButton" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/newsItemTextViewImg"
