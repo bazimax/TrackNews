@@ -11,7 +11,7 @@ import java.io.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class FilesWorker (context: Context) {
+class FilesWorker () {
     //КОНСТАНТЫ
     companion object {
         //log
@@ -19,7 +19,7 @@ class FilesWorker (context: Context) {
         const val TAG_DEBUG = Constants.TAG_DEBUG
     }
 
-    private val ctx = context
+    //private val ctx = context
     //private val sharedPrefs: SharedPreferences? = ctx.getSharedPreferences("init", Context.MODE_PRIVATE) //getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE)
 
     fun writeToFile(data: String, nameFile: String,  context: Context) {
@@ -121,6 +121,35 @@ class FilesWorker (context: Context) {
         //записываем строку в SharedPreferences
         sharedPrefs.edit().putString(nameSharedPreferences, data).apply()
     }*/
+
+    //первый запуск приложения
+    fun firstLaunch(context: Context) {
+        //читаем статус из файла
+        val statusFirstLaunch = readFromFile(Constants.FILE_FIRST_LAUNCH, context)
+
+        //если это первый запуск, то меняем true на false и записываем в SharedPreferences
+        if (statusFirstLaunch == "true") {
+            //записываем в файл - единственный раз (до переустановки приложения)
+            writeToFile("false", Constants.FILE_FIRST_LAUNCH, context)
+            //записываем в SharedPreferences
+            val sharedPrefs = context.getSharedPreferences("init", Context.MODE_PRIVATE)
+            sharedPrefs.edit().putString(Constants.SHARED_FIRST_LAUNCH, "false").apply()
+        }
+    }
+
+    //проверка первый ли это запуск приложения
+    fun checkStatusFirstLaunch(context: Context) {
+        //записываем строку в SharedPreferences
+        val sharedPrefs = context.getSharedPreferences("init", Context.MODE_PRIVATE)
+        val statusFirstLaunch = sharedPrefs.getString(Constants.SHARED_FIRST_LAUNCH, "")
+
+        if (statusFirstLaunch == "") {
+            writeToFile("false", Constants.FILE_FIRST_LAUNCH, context)
+        }
+
+        val att = sharedPrefs.getBoolean("testSite", true)
+        sharedPrefs.edit().putBoolean(Constants.SHARED_FIRST_LAUNCH, false).apply()
+    }
 
     //что за Any?
     /*fun readJSONAny(nameFile: String, classJava: Class<*>?, context: Context):Any {

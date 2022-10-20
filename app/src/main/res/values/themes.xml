@@ -75,9 +75,14 @@
     </style>
 
     <style name="Theme.BackgroundSearchButton" parent="Theme.TrackNews">
-        <!--Для кнопок в searchItem-->
+        <!--Для кнопок в searchItem Select-->
         <!--<item name="android:textColor">@color/baseColorPrimary</item>-->
         <item name="colorPrimary">?attr/colorAccent</item>
+    </style>
+
+    <style name="Theme.BackgroundSearchButtonActive" parent="Theme.TrackNews">
+        <!--Для кнопок в searchItem Active-->
+        <item name="colorPrimary">@color/baseColorPrimaryVariant2</item>
     </style>
 
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">

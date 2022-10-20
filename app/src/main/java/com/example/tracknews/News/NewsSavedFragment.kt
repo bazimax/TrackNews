@@ -28,8 +28,6 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
     lateinit var binding: FragmentNewsSavedBinding
     private val vm: ViewModel by activityViewModels()
     private val newsItemAdapter = NewsItemAdapter(this)
-    //private var parserSites = ParserSites()
-
     var okHttpClient: OkHttpClient = OkHttpClient()
 
     override fun onCreateView(
@@ -80,7 +78,7 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
         //отслеживаем изменения в данных для RecyclerView (SQLite > ViewModel)
         vm.newsItemArray.value?.let { newsItemAdapter.addAllNews(it) }
         vm.newsItemArray.observe(activity as LifecycleOwner) {
-            Log.d(MainActivity.TAG, "NewsSavedFragment >f newsItemArray.OBSERVE > vm.newsItemArray.value: ${vm.newsItemArray.value}")
+            Log.d(MainActivity.TAG, "NewsSavedFragment >f newsItemArray.OBSERVE > value: ${vm.newsItemArray.value}")
             vm.newsItemArray.value?.let { it1 -> newsItemAdapter.addAllNews(it1) }
         }
     }

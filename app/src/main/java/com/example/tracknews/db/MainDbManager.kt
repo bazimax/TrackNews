@@ -9,7 +9,6 @@ import com.example.tracknews.classes.NewsItem
 
 class MainDbManager(context: Context) {
 
-
     private val mainDbHelper = MainDbHelper(context) //может открывать БД и ид
     private var db : SQLiteDatabase? = null //через mainDbHelper работает с БД
 
@@ -114,29 +113,15 @@ class MainDbManager(context: Context) {
     fun findItemInDb(columnSearch: String, search: String): ArrayList<NewsItem>{
         //Ищем совпадения в БД
         //Log.d("TAG1", "MainDbManager >f findItemInDb ======START")
-        val dataList = ArrayList<NewsItem>()
 
         val tableName = MainDbNameObject.TABLE_NAME
-        val columns = arrayOf(MainDbNameObject.COLUMN_NAME_SEARCH, MainDbNameObject.COLUMN_NAME_LINK)
+        //val columns = arrayOf(MainDbNameObject.COLUMN_NAME_SEARCH, MainDbNameObject.COLUMN_NAME_LINK)
         val selection =  "$columnSearch LIKE '%' || ? || '%'"
-        val selectionArgs = arrayOf("$search")//arrayOf("9422089")
+        val selectionArgs = arrayOf(search)//arrayOf("9422089")
 
-        /*//тоже работает
-        val selectQuery5 = "SELECT * FROM $tableName WHERE $column LIKE '%' || :string || '%'"
-        val selectQuery1 = "SELECT  * FROM $tableName WHERE $column LIKE ?" //"SELECT  * FROM $tableName WHERE $column = ?"
-        val cursor4 = db?.rawQuery(selectQuery1, selectionArgs)
-        val cursor5 = db?.rawQuery(selectQuery5, selectionArgs)
-        //id
-        val cursor3 = db?.query(tableName,null,"_ID<=?", arrayOf("3"),null,null,null)
-        val cursor1 = db?.query(tableName,null,"link LIKE 'pi%'", null,null,null,null)
-
-        val selectQuery6 = "SELECT * FROM $tableName WHERE $column LIKE '%' || ? || '%'"
-        val cursor6 = db?.rawQuery(selectQuery6, selectionArgs)*/
-
-        //val iName = cursor?.getColumnIndex(MainDbNameObject.COLUMN_NAME_SEARCH)
-        //Log.d("TAG1", "MainDbManager >f findItemInDb > iName: $iName")
+        val dataList = ArrayList<NewsItem>()
         val cursor = db?.query(tableName, null, selection, selectionArgs, null, null, null)
-        //Log.d("TAG1", "MainDbManager >f findItemInDb > cursor: $cursor")
+        //Log.d("TAG1", "MainDbManager >f findItemInDb > cursor: ${cursor?.position}")
         //Log.d("TAG1", "MainDbManager >f findItemInDb > cursor2: $cursor2")
         while (cursor?.moveToNext()!!){
 
@@ -162,6 +147,7 @@ class MainDbManager(context: Context) {
             //Log.d("TAG1", "MainDbManager >f findItemInDb > while ------------END")
         }
         cursor.close()
+        //Log.d("TAG1", "MainDbManager >f findItemInDb > dataList: ${dataList.toString()}")
         //Log.d("TAG1", "MainDbManager >f findItemInDb ------------END")
         return dataList
     }
@@ -197,3 +183,15 @@ class MainDbManager(context: Context) {
         db?.delete(MainDbNameObject.TABLE_NAME,"search=?", arrayOf(search))
     }
 }
+
+/*//тоже работает
+        val selectQuery5 = "SELECT * FROM $tableName WHERE $column LIKE '%' || :string || '%'"
+        val selectQuery1 = "SELECT  * FROM $tableName WHERE $column LIKE ?" //"SELECT  * FROM $tableName WHERE $column = ?"
+        val cursor4 = db?.rawQuery(selectQuery1, selectionArgs)
+        val cursor5 = db?.rawQuery(selectQuery5, selectionArgs)
+        //id
+        val cursor3 = db?.query(tableName,null,"_ID<=?", arrayOf("3"),null,null,null)
+        val cursor1 = db?.query(tableName,null,"link LIKE 'pi%'", null,null,null,null)
+
+        val selectQuery6 = "SELECT * FROM $tableName WHERE $column LIKE '%' || ? || '%'"
+        val cursor6 = db?.rawQuery(selectQuery6, selectionArgs)*/

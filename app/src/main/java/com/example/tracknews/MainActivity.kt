@@ -68,13 +68,14 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
 
     //важные переменные
     private lateinit var binding: ActivityMainBinding
+
     //var testCount1 = 0
     private val vm: ViewModel by viewModels()
-    private val searchItemAdapter = SearchItemAdapter(this) //Список сохраненных поисков
+    private val searchItemAdapter = SearchItemAdapter(this) //список сохраненных поисков
     private val mainDbManager = MainDbManager(this) //База Данных (БД)
     private var parserSites = ParserSites() //парсинг
     private val sharedPrefs by lazy {getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)}
-    private val filesWorker = FilesWorker(this) //работа с файлами (чтение и запись)
+    private val filesWorker = FilesWorker() //работа с файлами (чтение и запись)
 
 
     //второстепенные переменные
@@ -116,13 +117,11 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         mainDbManager.openDb() //создаем/открываем Базу Данных (БД) SQLite
         //Log.d("TAG1", "Activity >f viewModelToSQLite")
         //viewModelToSQLite() // подключаем observe
-        val vmFunctions = ViewModelFunctions(vm)
-        vmFunctions.viewModelToSQLite(mainDbManager, this) // подключаем observe
-        //Log.d("TAG1", "Activity >f loadSQLiteToViewModel")
-        //loadSQLiteToViewModel() // загружаем БД во viewModel
-        vm.activeSearchItem.value?.let {vmFunctions.loadSQLiteToViewModelActive(mainDbManager, it)}
-        //updateElementOfSQLite() // отслеживаем и удаляем элементы БД
-        vmFunctions.updateElementOfSQLite(mainDbManager, this, this)
+
+        //??
+        //val vmFunctions = ViewModelFunctions(vm) //подключаем основную логику
+        observeVM() //observeVM(vmFunctions) // подключаем observe
+
 
         val buttonSearch = binding.fabButtonSearch
         val buttonSave = binding.buttonSave
@@ -179,7 +178,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
 
         }
 
-        //Раскрываем меню поиска
+        //раскрываем меню поиска
         buttonSearch.setOnClickListener {
             //delete >
             vm.newsItemTempYa.value = null
@@ -189,6 +188,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             //..val newsItem = parserSites.parse("witcher")
             //Delete >>
             val newsItem = parserSites.testParse("witcher", vm.testSiteString.value.toString())
+
             vm.testSiteString.value = newsItem.statusEthernet
             //Delete^^
             vm.newsItemTempYa.value = newsItem.list
@@ -226,22 +226,30 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
                 //полученные данные отправляем в ViewModel
                 vm.newsItemTempYa.value = newsItem
             }*/
+            val search = binding.editTextSearch.text.toString()
+            //??
+            ViewModelFunctions(vm).searchNews(search, this)
+            //vmFunctions.searchNews(search, this)
 
-            if (binding.editTextSearch.text.toString() != "") {
-                vm.newsItemTempYa.value = null
+            /*//?? Test
+            if (search != "") {
                 //проверка интернета
                 //val testRequest: Request = Request.Builder().url("https://www.ya.ru/").build()
                 //запускаем парсинг новостных сайтов/сайта
-                val newsItem = parserSites.parse(binding.editTextSearch.text.toString())
-                //полученные данные отправляем в ViewModel
-                vm.newsItemTempYa.value = newsItem.list
+                val resultParse = parserSites.parse(binding.editTextSearch.text.toString())
+
                 //если парсинг не удался
-                if (newsItem.statusEthernet == false.toString()) {
+                if (resultParse.statusEthernet == false.toString()) {
                     val messageLoadWebsite = resources.getString(com.example.tracknews.R.string.loadWebsiteFail)
                     Toast.makeText(this, messageLoadWebsite, Toast.LENGTH_SHORT).show()
                 }
-
-            }
+                else {
+                    vm.newsItemTempYa.value = null
+                    //??
+                    //полученные данные отправляем в ViewModel
+                    vm.newsItemTempYa.value = resultParse.list
+                }
+            }*/
 
             /*//animation
             animationView.lateHide(cardView, 1)
@@ -258,7 +266,10 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
 
             WorkerFindNewsFun().timeDiff()
             //Worker - работа в фоне и отправка уведомлений
-            workerFindNews()
+            //??
+            WorkerFindNewsFun().workerFindNewsFirst(this)
+            //workerFindNews()
+
         }
         binding.actMainDrLayoutButton2.setOnClickListener {
             Log.d(TAG, "Main Activity > button 2 > -------------------")
@@ -317,7 +328,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         binding.actMainDrLayoutButton4.setOnClickListener {
             //записываем данные
             Log.d(TAG, "Main Activity >f writeJSON ======START")
-            var stringItem = "name%20:witcher%20:Moscow%20:Columbia%20:Washington%20:Bali%20:Kin"
+            val stringItem = "name%20:witcher%20:Moscow%20:Columbia%20:Washington%20:Bali%20:Kin"
             val dataListWorker = ArrayList<SearchItemWorker>()
             val arrayItem = stringItem.split("%20:").toTypedArray() //разбиваем цельную строку на массив будущих элементов searchItem
             arrayItem.forEach {
@@ -343,6 +354,10 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             //writeJSON()
         }
         binding.actMainDrLayoutButton5.setOnClickListener {
+            val testSiteString = filesWorker.readFromFile("testSite.txt", this)
+            Log.d(WorkerFindNews.TAG, "WorkerFindNews >f doWork > try > testSiteString: $testSiteString")
+            Log.d(WorkerFindNews.TAG, "WorkerFindNews >f doWork > try > testSiteString: ${vm.testSiteString.value.toString()}")
+
             //читаем данные из JSON
             /*val data = filesWorker.readJSONSearchItemArrayList(FILE_SEARCH_ITEM, this)
 
@@ -364,7 +379,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             //Log.d("TAG1", "end mDrawer Button ==============")
         }
 
-        //раскрываем сохранненые результаты поисков
+        //раскрываем список "сохранненых поисков (подписок)"
         btnSavedSearches.setOnClickListener {
             frameLayoutSavedSearches.layoutParams = frameLayoutSavedSearches.layoutParams
             //binding.frameLayoutSavedSearches.layoutParams = binding.frameLayoutSavedSearches.layoutParams
@@ -412,9 +427,9 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
 
     private var backPressed: Long = 0
     override fun onBackPressed() {
-        //Кнопка назад
+        //кнопка назад
         if (supportFragmentManager.backStackEntryCount == 0) {
-            //Повтороный запрос на выход из приложения.
+            //повтороный запрос на выход из приложения.
             val messageExitApp = resources.getString(R.string.exitApp)
 
             if (backPressed + 2000 > System.currentTimeMillis()) super.onBackPressed() else Toast.makeText(
@@ -426,14 +441,15 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         else super.onBackPressed()
     }
 
+    //стартовые функции
     private fun init() {
+        //первый запуск - изменение статуса
 
 
         val rcView = binding.actMainRecyclerViewSavedSearches
         startRecyclerViewActMain(rcView)
 
-        observeVM()
-
+        //Delete??
         //сохранение сайта (backUp)
         val sharedPrefsInit = getSharedPreferences("init", Context.MODE_PRIVATE)
         //Log.d("TAG1", "Main Activity > Init > site: ${vm.testSiteString.value.toString()}")
@@ -452,21 +468,17 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
     }
 
     //отслеживание изменений в ViewModel
+    //private fun observeVM(vmFunctions: ViewModelFunctions){
     private fun observeVM(){
-        //val vmFunctions = ViewModelFunctions(vm)
-        //vmFunctions.observeVM(mainDbManager, this)
-        //обновление отображаемых новостей для конкретного "поискового запроса"
-        /*vm.activeSearchItem.observe(this) {
-            //Ищем все новости по данному запросу напрямую в БД и обновляем выводимый список новостей
-            vm.newsItemArray.value = vm.activeSearchItem.value?.let { it1 ->
-                mainDbManager.findItemInDb(MainDbNameObject.COLUMN_NAME_LINK, it1)
-            }
-        }*/
+        //??
+        ViewModelFunctions(vm).observeVM(mainDbManager, this, this) //основная логика приложения завязанная на ViewModel
+        //vmFunctions.observeVM(mainDbManager, this, this) //основная логика приложения завязанная на ViewModel
 
-
+        //View логика MainActivity завязанная на ViewModel
         //searchItemList для RcView
         vm.searchItemList.value?.let { searchItemAdapter.addAllSearch(it) }
         vm.searchItemList.observe(this) {
+            Log.d(TAG, "MainActivity >f searchItemList.OBSERVE ${vm.searchItemList.value}")
             vm.searchItemList.value?.let { it1 -> searchItemAdapter.addAllSearch(it1) }
             searchItemAdapter.notifyDataSetChanged()
         }
@@ -480,7 +492,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         }
     }
 
-    //Загружаем фрагмент
+    //загружаем фрагмент
     private fun loadFragment(idFrameLayoutFragment: Int, fragment: Fragment){
         supportFragmentManager
             .beginTransaction()
@@ -490,9 +502,9 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
 
     //Worker - работа в фоне и отправка уведомлений
     private fun workerFindNews() {
-        Log.d(TAG_DEBUG, "Main Activity >f workerFindNews ======START")
+        Log.d(TAG_DEBUG, "MainActivity >f workerFindNews ======START")
 
-        //Критерии
+        //критерии
         val constraints = Constraints.Builder()
             .setRequiresBatteryNotLow(true) //уровень батареи не ниже критического
             .setRequiredNetworkType(NetworkType.CONNECTED) //наличие интернета - только WiFi
@@ -511,7 +523,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
 
 
 
-        //Сборка Задачи
+        //сборка Задачи
         val  myWorkRequest = OneTimeWorkRequestBuilder<WorkerFindNews>()
             .addTag(WorkerFindNews.WORKER_TAG_PARSER)
             .setInitialDelay(timeDiff)
@@ -520,7 +532,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             .build()
         //Log.d(TAG, "Main Activity >f workerFindNews > myWorkRequest")
 
-        //Запускаем новую Задачу
+        //запускаем новую Задачу
         WorkManager.getInstance(this)
             .enqueueUniqueWork(WorkerFindNews.WORKER_UNIQUE_NAME_PARSER, ExistingWorkPolicy.REPLACE, myWorkRequest) //для единоразового запуска
         //WorkManager.getInstance(this).enqueue(myWorkRequest) //почему-то запускается несколько раз
@@ -546,7 +558,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             .setRequiresStorageNotLow(true) //на девайсе должно быть свободное место
             .build()*/
 
-        //Критерии
+        //критерии
         val constraints = Constraints.Builder()
             .setRequiresBatteryNotLow(true) //уровень батареи не ниже критического
             .setRequiredNetworkType(NetworkType.CONNECTED) //наличие интернета - только WiFi
@@ -568,7 +580,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             .setConstraints(constraints)
             .build()*/
 
-        //Сборка Задачи
+        //сборка Задачи
         val  myWorkRequest = OneTimeWorkRequestBuilder<WorkerFindNews>()
             .addTag(WorkerFindNews.WORKER_TAG_PARSER)
             .setConstraints(constraints)
@@ -581,7 +593,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
 
         //val myWorkRequest = OneTimeWorkRequest.Builder(WorkerFindNews::class.java).build()
 
-        //Запускаем новую Задачу
+        //запускаем новую Задачу
         WorkManager.getInstance(this)
             .enqueueUniqueWork(WorkerFindNews.WORKER_UNIQUE_NAME_PARSER, ExistingWorkPolicy.REPLACE, myWorkRequest) //для единоразового запуска
         //WorkManager.getInstance(this).enqueue(myWorkRequest) //почему-то запускается несколько раз
@@ -663,7 +675,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             Log.e(TAG, "ERROR: Main Activity >f workerJSON > JSONException: $e")
         }
 
-        //Записываем текст в файл
+        //записываем текст в файл
         //writeToFile(json, FILE_SEARCH_ITEM, this)
     }
     //Delete
@@ -849,8 +861,9 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
 
     private fun startRecyclerViewActMain(view: View){
         Log.d(TAG_DEBUG, "Main Activity >f startRecyclerViewActMain ======START")
+        ViewModelFunctions(vm).readSearchItemListToRcView(this)
         readRcViewListSearchItem()
-        //Подключаем RecyclerView и отображаем данные из SQLite
+        //подключаем RecyclerView и отображаем данные из SQLite
         binding.apply {
             //fragTest2RecyclerView.setHasFixedSize(true) //для оптимизации?
             //actMainRecyclerViewSavedSearches.layoutManager = LinearLayoutManager(view.context) //проверить
@@ -860,7 +873,24 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
     }
 
     override fun clickOnSearchItem(searchItem: SearchItem) {
-        //при клике на элемент searchItem в recycler view -> из БД загружаются все новости с этим именем
+        //Log.d(TAG, "MainActivity >f clickOnSearchItem > searchItem.search: ${searchItem.search}")
+        //при клике на элемент searchItem в recycler view -> он становится активным -> из БД загружаются все новости с этим именем
+
+        //выделяем элемент, меняя его состояние (active)
+        vm.searchItemList.value?.forEach {
+            it.active = false
+            if (it.search == searchItem.search) {
+                it.active = true
+            }
+            //Log.d(TAG, "MainActivity >f clickOnSearchItem > it Active: ${it.search}")
+            //Log.d(TAG, "MainActivity >f clickOnSearchItem > it: ${it.active}")
+        }
+        //обновляем searchItemList, чтобы LiveData подхватила изменения
+        vm.searchItemList.value = vm.searchItemList.value
+        //searchItem.active = true
+        //Log.d(TAG, "MainActivity >f clickOnSearchItem > searchItemList.size: ${vm.searchItemList.value}")
+
+        //Log.d(TAG, "MainActivity >f clickOnSearchItem > searchItemList.size: ${vm.searchItemList.value?.size}")
         vm.activeSearchItem.value = searchItem.search
     }
 
@@ -883,7 +913,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
     }
     //Recycler View ^
 
-    // //Функции далее - работа с Базой Данных
+    // //функции далее - работа с Базой Данных
     private fun viewModelToSQLite(){
         //следим за изменениями в DataModel(ViewModel) и передаем их в SQLite
         Log.d(TAG_DEBUG, "Activity >f viewModelToSQLite >  ======START")
@@ -932,18 +962,6 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         val dataList = mainDbManager.readDbData() //создаем лист данных для тестового отображения
     }*/
 
-    class SuperName(viewModel: ViewModel, dbManager: MainDbManager) {
-        private val vm = viewModel
-        private val mainDbManager = dbManager
-        private fun loadSQLiteToViewModel(){
-            //читаем Базу Данных
-            Log.d(TAG_DEBUG, "Activity >f loadSQLiteToViewModel ======START")
-            vm.newsItemArray.value = mainDbManager.readDbData()
-            //Log.d("TAG1", "Activity >f loadSQLiteToViewModel > vm.newsItemArray: ${vm.newsItemArray.value}")
-            Log.d(TAG_DEBUG, "Activity >f loadSQLiteToViewModel ------------END")
-        }
-    }
-
     private fun loadSQLiteToViewModel(){
         //читаем Базу Данных
         Log.d(TAG_DEBUG, "Activity >f loadSQLiteToViewModel ======START")
@@ -981,7 +999,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             loadSQLiteToViewModelActive()
         }
     }
-    // //Функции выше ^ - работа с Базой Данных
+    // //функции выше ^ -> работа с Базой Данных
 
     private fun cardViewVisibility(cardView: View, view: View) {
         //vm.statusSearchMutable.value = false.toString()
@@ -1027,7 +1045,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
     }
 
 
-    // //Функции далее - тема (светлая и темная). Чужой код
+    // //функции далее -> тема (светлая и темная). Чужой код
     private fun initThemeListener(){
         Log.d(TAG_DEBUG, "MainActivity >f initThemeListener ======START")
         binding.themeGroup.setOnCheckedChangeListener { _, checkedId ->
@@ -1080,7 +1098,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
     private fun saveTheme(theme: Int) = sharedPrefs.edit().putInt(KEY_THEME, theme).apply()
 
     private fun getSavedTheme() = sharedPrefs.getInt(KEY_THEME, THEME_UNDEFINED)
-    // //Функции Выше ^ - тема (светлая и темная). Чужой код
+    // //функции Выше ^ -> тема (светлая и темная). Чужой код
 }
 
 //loadFragment(R.id.frameLayoutMainFragment, WebsiteFragment.newInstance())

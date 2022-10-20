@@ -59,7 +59,7 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
 
     private val parserSites = ParserSites() //парсинг
     private val ctx = context
-    private val filesWorker = FilesWorker(ctx) //работа с файлами (чтение и запись)
+    private val filesWorker = FilesWorker() //работа с файлами (чтение и запись)
     //private val testSiteString = readFromFile(ctx) //delete
     //private var arrayStringLinkSQL = inputData.getStringArray(WORKER_PUT_LINK_SQL) //ссылки из БД с которыми будет сравнивать
     private var statusUpdateWorker = inputData.getBoolean(WORKER_PUT_STATUS_UPDATE, false) //есть ли новые новости-NewsItem (по умолчанию нет)
@@ -78,6 +78,9 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
             //открываем Базу Данных (БД) SQLite
             mainDbManager.openDb()
 
+            //проверка интернета
+            var statusInternet = true
+
             searchItemArrayList.list.forEach { itSearchItemArrayList ->
                 //для каждого "сохраненного поиска" ищем новые новости
                 val search = itSearchItemArrayList.searchItem.search
@@ -86,6 +89,7 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
                 //Delete >
                 //запускаем парсинг
                 val testSiteString = filesWorker.readFromFile("testSite.txt", ctx)
+                Log.d(TAG, "WorkerFindNews >f doWork > try > testSiteString: $testSiteString")
                 //val resultParse = testSiteString?.let { parserSites.testParse("witcher", it) } ?: parserSites.testParse("witcher", "") //запасной вариант
                 val resultParse = parserSites.testParse(search, testSiteString)
                 //Delete ^
@@ -93,7 +97,7 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
                 //запускаем парсинг новостных сайтов/сайта
                 //val resultParse = parserSites.parse(search)
                 //Если инета нет
-                //if (resultParse.statusEthernet == false.toString()) {}
+                //if (resultParse.statusEthernet == false.toString()) statusInternet = false
 
                 //если есть новости (любые) (если новостей нет, то ничего не делаем)
                 if (resultParse.list.size != 0) {
@@ -103,7 +107,7 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
                         val findNewsItem = mainDbManager.findItemInDb(MainDbNameObject.COLUMN_NAME_LINK, itResultParse.link)
                         //Log.d(TAG, "WorkerFindNews >f doWork > try > findNewsItem.size: ${findNewsItem.size}")
 
-                        //если совпадений со старыми новостями нет -> новость уникальная (если новость не уникальная, то ничего не делаем)
+                        //если совпадений со старыми новостями нет -> новость уникальная ->записываем её в бд  (если новость не уникальная, то ничего не делаем)
                         if (findNewsItem.size == 0) {
                             //записываем новость в бд
                             mainDbManager.insertToDb(
@@ -122,14 +126,29 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
                         }
                     }
                 }
+                //Считаем общее количество новостей
+                itSearchItemArrayList.searchItem.counterAllNews = mainDbManager.findItemInDb(MainDbNameObject.COLUMN_NAME_SEARCH, search).size
                 //после парсинга одного "сохраненного поиска" немного ждем
-                TimeUnit.MINUTES.sleep(5)
-                //TimeUnit.SECONDS.sleep(1)
+                TimeUnit.SECONDS.sleep(1) //delete
+                //TimeUnit.MINUTES.sleep(5)
+            }
+
+            //Записываем обновленный список "сохраненных поисков" (счетчики) обратно в JSON
+            filesWorker.writeJSON(searchItemArrayList, MainActivity.FILE_SEARCH_ITEM, ctx)
+
+            //определяем время запуска
+            var timeDiff = WorkerFindNewsFun().timeDiff() //timeDiff()
+            timeDiff = Duration.ofSeconds(5) //Delete
+
+            if (!statusInternet) {
+                Log.d(TAG, "WorkerFindNews >f doWork > statusInternet - FALSE")
+                timeDiff = Duration.ofSeconds(5) //Delete
+                //timeDiff = Duration.ofMinutes(30)
             }
 
             //формируем данные и новую задачу
             //outputData = newWorker(resultParse)
-            outputData = newWorker1()
+            outputData = newWorker(timeDiff)
 
             //отправлем уведомление если надо
             notification()
@@ -172,7 +191,7 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
         mainDbManager.closeDb() //закрываем БД (доступ к БД?)
     }
 
-    private fun newWorker1(): Data {
+    private fun newWorker(timeDiff: Duration): Data {
         //подготовка к новой итерации Задачи
 
         //подготавливаем полученные и старые данные для вывода из Задачи и передачи в следуюущее Задачу
@@ -188,9 +207,6 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
             .build()
         //Log.d(TAG, "WorkerFindNews >f newWorker > constraints")
 
-        //определяем время запуска
-        val timeDiff = WorkerFindNewsFun().timeDiff() //timeDiff()
-
         //Сборка Задачи и запуск в определенное время +- (главное не час-пик, для снижения нагрузки на сервер)
         val  myWorkRequest = OneTimeWorkRequestBuilder<WorkerFindNews>()
             .setConstraints(constraints)
@@ -202,7 +218,7 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
         //Delete >
         val  myWorkRequestMinute = OneTimeWorkRequestBuilder<WorkerFindNews>() //test
             .setConstraints(constraints)
-            .setInitialDelay(10, TimeUnit.SECONDS)
+            .setInitialDelay(5, TimeUnit.SECONDS)
             .addTag(WORKER_TAG_PARSER)
             .setInputData(outputData)
             .build()
@@ -383,8 +399,15 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
 }
 
 class WorkerFindNewsFun(){
+    //КОНСТАНТЫ
+    companion object {
+        //log
+        const val TAG = Constants.TAG
+        const val TAG_DEBUG = Constants.TAG_DEBUG
+    }
+
+    //определяем время запуска
     fun timeDiff(): Duration{
-        //определяем время запуска
         //Log.d(WorkerFindNews.TAG, "WorkerFindNewsFun >f timeDiff ======START")
 
         val timeNow = LocalTime.now()
@@ -395,22 +418,59 @@ class WorkerFindNewsFun(){
 
         val timeDiff: Duration//Duration.ofHours(24).minus(Duration.between(timeNow, timeNight))
 
-        Log.d(WorkerFindNews.TAG, "WorkerFindNewsFun >f timeDiff > timeNow: $timeNow")
+        Log.d(TAG, "WorkerFindNewsFun >f timeDiff > timeNow: $timeNow")
 
         if(timeNow in timeNight..timeNoon){
             timeDiff = Duration.between(timeNow, timeNoon)
-            Log.d(WorkerFindNews.TAG, "WorkerFindNewsFun >f timeDiff > Вечер-Ночь > timeDuration: $timeDiff")
+            Log.d(TAG, "WorkerFindNewsFun >f timeDiff > Вечер-Ночь > timeDuration: $timeDiff")
         }
         else if(timeNow >= timeNoon) {
             timeDiff = Duration.ofHours(24).plus(Duration.between(timeNow, timeNight)) //
-            Log.d(WorkerFindNews.TAG, "WorkerFindNewsFun >f timeDiff > Утро > timeDuration: $timeDiff")
+            Log.d(TAG, "WorkerFindNewsFun >f timeDiff > Утро > timeDuration: $timeDiff")
         }
         else {
             timeDiff = Duration.between(timeNow, timeNight)
-            Log.d(WorkerFindNews.TAG, "WorkerFindNewsFun >f timeDiff > Ночь > timeDuration: $timeDiff")
+            Log.d(TAG, "WorkerFindNewsFun >f timeDiff > Ночь > timeDuration: $timeDiff")
         }
         //Log.d(WorkerFindNews.TAG, "WorkerFindNewsFun >f timeDiff ------------END")
         return timeDiff
+    }
+
+    //первый запуск worker из Main Activity
+    fun workerFindNewsFirst(context: Context) {
+        Log.d(TAG_DEBUG, "WorkerFindNewsFun >f workerFindNewsFirst ======START")
+
+        //Критерии
+        val constraints = Constraints.Builder()
+            .setRequiresBatteryNotLow(true) //уровень батареи не ниже критического
+            .setRequiredNetworkType(NetworkType.CONNECTED) //наличие интернета - только WiFi
+            .build()
+        //Log.d(TAG, "Main Activity >f workerFindNews > constraints")
+
+        //подготавливаем данные
+        val dataForWorker = Data.Builder()
+            .putBoolean(WorkerFindNews.WORKER_PUT_STATUS_UPDATE, false) //статус - есть ли новые новости - новых нет
+            .build()
+
+        //определяем время запуска
+        val timeDiff =  WorkerFindNewsFun().timeDiff()
+
+
+
+        //Сборка Задачи
+        val  myWorkRequest = OneTimeWorkRequestBuilder<WorkerFindNews>()
+            .addTag(WorkerFindNews.WORKER_TAG_PARSER)
+            .setInitialDelay(timeDiff)
+            .setConstraints(constraints)
+            .setInputData(dataForWorker)
+            .build()
+        //Log.d(TAG, "Main Activity >f workerFindNews > myWorkRequest")
+
+        //Запускаем новую Задачу
+        WorkManager.getInstance(context)
+            .enqueueUniqueWork(WorkerFindNews.WORKER_UNIQUE_NAME_PARSER, ExistingWorkPolicy.REPLACE, myWorkRequest) //для единоразового запуска
+        //WorkManager.getInstance(this).enqueue(myWorkRequest) //почему-то запускается несколько раз
+        Log.d(TAG_DEBUG, "WorkerFindNewsFun >f workerFindNewsFirst ------------END")
     }
 }
 

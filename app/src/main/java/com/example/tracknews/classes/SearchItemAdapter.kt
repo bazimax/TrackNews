@@ -21,27 +21,44 @@ class SearchItemAdapter(private val listener: Listener): RecyclerView.Adapter<Se
         fun bind(searchItem: SearchItem, listener: Listener) = with (binding){
 
             searchItemButton.text = searchItem.search
+            searchItemButtonActive.text = searchItem.search
             searchItemButtonSelect.text = searchItem.search
             searchItemCount.text = searchItem.counterNewNews.toString()
 
+            //Если есть хотя бы одна новость для данного "сохраненного поиска", то показываем количество всех его новостей
+            if (searchItem.counterAllNews > 0) {
+                searchItemButton.text = searchItem.search + searchItem.counterAllNews
+                searchItemButtonActive.text = searchItem.search + searchItem.counterAllNews
+                searchItemButtonSelect.text = searchItem.search + searchItem.counterAllNews
+            }
+
             searchItemButtonSelect.visibility = 4 //??
+            searchItemButtonActive.visibility = 4 //??
             searchItemButton.visibility = 0 //??
 
+            //Если это активный "сохраненный поиск", то выделяем его
+            if (searchItem.active) {
+                searchItemButtonActive.visibility = 0
+                searchItemButton.visibility = 4
+            }
+
+            //Log.d("TAG1", "bind ${searchItem.active}")
             //Если счетчик новых новостей больше 0, то мы его показываем
             if(searchItem.counterNewNews > 0) {
                 searchItemCount.visibility = VISIBLE
             }
             else searchItemCount.visibility = INVISIBLE
 
-            Log.d("TAG1", "SearchItemAdapter >f bind > searchItem: $searchItem")
-            Log.d("TAG1", "SearchItemAdapter >f bind > searchItemButtonSelect: ${searchItemButtonSelect.visibility}")
-            Log.d("TAG1", "SearchItemAdapter >f bind > searchItemButton: ${searchItemButton.visibility}")
+            //Log.d("TAG1", "SearchItemAdapter >f bind > searchItem: $searchItem")
+            //Log.d("TAG1", "SearchItemAdapter >f bind > searchItemButtonSelect: ${searchItemButtonSelect.visibility}")
+            //Log.d("TAG1", "SearchItemAdapter >f bind > searchItemButton: ${searchItemButton.visibility}")
 
             searchItemButton.setOnClickListener {
                 //При нажатии на "сохраненный поиск" в rcView открываются все новости относящиеся к нему
                 //Delete -> Сохраняем новость в закладки
                 //Log.d("TAG1", "click observe ${newsItem.link}")
                 //Log.d("TAG1", "click observe $adapterPosition")
+                Log.d("TAG1", "click observe ${searchItem.search}")
                 listener.clickOnSearchItem(searchItem)
             }
 

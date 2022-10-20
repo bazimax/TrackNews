@@ -20,9 +20,11 @@ object Constants {
 
     //SharedPreferences
     const val SEARCH_ITEM = "search"
+    const val SHARED_FIRST_LAUNCH = "firstLaunch"
 
     //Имена файлов
     const val FILE_SEARCH_ITEM = "searchItems.json"
+    const val FILE_FIRST_LAUNCH = "firstLaunch.txt"
 
     //Worker
     const val WORKER_TAG_PARSER = "parser"
