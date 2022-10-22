@@ -25,13 +25,13 @@ class NewsItemAdapter(private val listener: Listener): RecyclerView.Adapter<News
     private val newsItemList = ArrayList<NewsItem>()
 
     class NewsItemHolder(item: View): RecyclerView.ViewHolder(item) {
-        private val dateFun = DateFunctions()
+        //private val dateFun = DateFunctions()
         private val ctx = item.context
 
         val binding = RecyclerViewNewsItemBinding.bind(item) //использует cardView
         //val binding = RecyclerViewNewsItemV2Binding.bind(item) //использует linearLayout
         fun bind(newsItem: NewsItem, listener: Listener) = with (binding){
-            val time = dateFun.parseNewsItemDate(newsItem.date, ctx)
+            val time = DateFunctions().parseNewsItemDate(newsItem.date, ctx)
 
             newsItemTextViewTime.text = time[0]
             newsItemTextViewDayMonth.text = time[1]

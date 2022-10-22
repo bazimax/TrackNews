@@ -1,32 +1,26 @@
-package com.example.tracknews.Services
+package com.example.tracknews.services
 
 //import android.support.annotation.NonNull
 //import androidx.work.WorkRequest
 //import androidx.work.Worker
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import androidx.work.*
 import com.example.tracknews.MainActivity
 import com.example.tracknews.classes.Constants
 import com.example.tracknews.classes.FilesWorker
 import com.example.tracknews.classes.NewsItem
-import com.example.tracknews.classes.SearchItem
 import com.example.tracknews.db.MainDbManager
 import com.example.tracknews.db.MainDbNameObject
 import com.example.tracknews.parseSite.ParserSites
-import java.io.*
-import java.security.AccessController.getContext
 import java.time.Duration
 import java.time.LocalTime
 import java.util.concurrent.TimeUnit
 
-
+//запуск worker(задачи) на поиск новостей
 class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(context, params) {
 
     //КОНСТАНТЫ
@@ -138,12 +132,12 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
 
             //определяем время запуска
             var timeDiff = WorkerFindNewsFun().timeDiff() //timeDiff()
-            timeDiff = Duration.ofSeconds(5) //Delete
+            //timeDiff = Duration.ofSeconds(5) //Delete
 
             if (!statusInternet) {
                 Log.d(TAG, "WorkerFindNews >f doWork > statusInternet - FALSE")
-                timeDiff = Duration.ofSeconds(5) //Delete
-                //timeDiff = Duration.ofMinutes(30)
+                //timeDiff = Duration.ofSeconds(5) //Delete
+                timeDiff = Duration.ofMinutes(30)
             }
 
             //формируем данные и новую задачу
@@ -163,7 +157,7 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
         return Result.success(outputData)
     }
 
-    private fun readDb(): ArrayList<NewsItem>{
+    /*private fun readDb(): ArrayList<NewsItem>{
         Log.d(TAG_DEBUG, "WorkerFindNews >f dbWork ======START")
         //открываем Базу Данных (БД) SQLite
         mainDbManager.openDb()
@@ -174,9 +168,9 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
 
         Log.d(TAG, "WorkerFindNews >f dbWork ------------END")
         return newsItemList
-    }
+    }*/
 
-    private fun writeToDb(newsItemList: ArrayList<NewsItem>){
+    /*private fun writeToDb(newsItemList: ArrayList<NewsItem>){
         //Записываем в БД
         newsItemList.forEach {
             val search = it.search
@@ -189,7 +183,7 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
             mainDbManager.insertToDb(search ,img, date, title, content, link, statusSaved)
         }
         mainDbManager.closeDb() //закрываем БД (доступ к БД?)
-    }
+    }*/
 
     private fun newWorker(timeDiff: Duration): Data {
         //подготовка к новой итерации Задачи
@@ -343,7 +337,7 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
         return outputData
     }*/
 
-    fun timeDiff(): Duration{
+    /*fun timeDiff(): Duration{
         //определяем время запуска
         val timeNow = LocalTime.now()
         val rndMinute = (10..59).random() // generated random from 10 to 59 included
@@ -368,11 +362,11 @@ class WorkerFindNews(context: Context, params: WorkerParameters) : Worker(contex
             Log.d(TAG, "WorkerFindNews >f doWork > Ночь > timeDuration: $timeDiff")
         }
         return timeDiff
-    }
+    }*/
 
     private fun notification(){
         //Уведомления
-        val mess = ctx.resources.getString(com.example.tracknews.R.string.loadWebsiteFail)//resources.getString(com.example.tracknews.R.string.loadWebsiteFail)
+        //val mess = ctx.resources.getString(com.example.tracknews.R.string.loadWebsiteFail)//resources.getString(com.example.tracknews.R.string.loadWebsiteFail)
         //Log.d(TAG, "WorkerFindNews >f notification ======START")
         //Log.d(TAG, "WorkerFindNews >f notification > IF > Счетчик: $testCounter")
         //Если есть новые новости - создаём уведомление
@@ -436,9 +430,14 @@ class WorkerFindNewsFun(){
         return timeDiff
     }
 
-    //первый запуск worker из Main Activity
+    //запуск первого worker, которая уже сама сделает новые повторяющиеся задачи
+    //при каждом заходе в приложение и любом запуске поиска -> запускать заново
     fun workerFindNewsFirst(context: Context) {
         Log.d(TAG_DEBUG, "WorkerFindNewsFun >f workerFindNewsFirst ======START")
+
+        //очищаем предыдущие задачи
+        WorkManager.getInstance(context).cancelAllWorkByTag(WorkerFindNews.WORKER_TAG_PARSER)
+        WorkManager.getInstance(context).cancelUniqueWork(WorkerFindNews.WORKER_UNIQUE_NAME_PARSER)
 
         //Критерии
         val constraints = Constraints.Builder()
@@ -454,8 +453,6 @@ class WorkerFindNewsFun(){
 
         //определяем время запуска
         val timeDiff =  WorkerFindNewsFun().timeDiff()
-
-
 
         //Сборка Задачи
         val  myWorkRequest = OneTimeWorkRequestBuilder<WorkerFindNews>()

@@ -8,7 +8,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.MotionEventCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tracknews.MainActivity
 import com.example.tracknews.ViewModel
 import com.example.tracknews.WebsiteFragment
+import com.example.tracknews.classes.FragmentFunction
 import com.example.tracknews.classes.NewsItem
 import com.example.tracknews.classes.NewsItemAdapter
 import com.example.tracknews.databinding.FragmentNewsSavedBinding
@@ -33,7 +33,7 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View { /*View?*/
+    ): View {
         binding = FragmentNewsSavedBinding.inflate(inflater)
         return binding.root
     }
@@ -53,17 +53,6 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
         vm.testParserSitesString.observe(activity as LifecycleOwner) {
             binding.testFragNewsSavedTextView.text = vm.testParserSitesString.value
         }
-
-        //binding.fragNewsSavedRecyclerView.setOnTouchListener { _, event -> onTouch(event)}
-
-        /*binding.testFragNewsSavedGO.setOnClickListener {
-            //Log.d("TAG1", "Click - Button")
-            vm.newsItemTempYa.value = null
-            vm.newsItemTempYa.value = parserSites.parse(binding.testFragNewsSavedEditText.text.toString())
-            //Log.d("TAG1", "vm.newsItemTempYa: ${binding.testFragNewsSavedEditText.text}")
-            //Log.d("TAG1", "vm.newsItemTempYa: ${vm.newsItemTempYa.value}")
-            //Log.d("TAG1", "End button click -----")
-        }*/
     }
 
     companion object {
@@ -76,10 +65,10 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
         //запуск фрагмента
 
         //отслеживаем изменения в данных для RecyclerView (SQLite > ViewModel)
-        vm.newsItemArray.value?.let { newsItemAdapter.addAllNews(it) }
-        vm.newsItemArray.observe(activity as LifecycleOwner) {
-            Log.d(MainActivity.TAG, "NewsSavedFragment >f newsItemArray.OBSERVE > value: ${vm.newsItemArray.value}")
-            vm.newsItemArray.value?.let { it1 -> newsItemAdapter.addAllNews(it1) }
+        vm.newsItemArraySaved.value?.let { newsItemAdapter.addAllNews(it) }
+        vm.newsItemArraySaved.observe(activity as LifecycleOwner) {
+            //Log.d(MainActivity.TAG, "NewsSavedFragment >f newsItemArraySaved.OBSERVE > value: ${vm.newsItemArraySaved.value}")
+            vm.newsItemArraySaved.value?.let { it1 -> newsItemAdapter.addAllNews(it1) }
         }
     }
 
@@ -131,58 +120,26 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
         return false //если поставить true, то скролл перестает работать
     }
 
-    /*private fun onTouchZapas(event: MotionEvent): Boolean {
-        var x = event.x//event.getX()
-        var y = event.y//event.getY()
-
-        var sDown = ""
-        var sMove = ""
-        var sUp = ""
-
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                sDown = "Down: $x,$y"
-                sMove = ""
-                sUp = ""
-                if (vm.statusSearchMutable.value == true.toString()) {
-                    vm.statusSearchMutable.value = false.toString()
-                }
-            }
-            MotionEvent.ACTION_MOVE -> {
-                if (vm.statusSearchMutable.value == true.toString()) {
-                    vm.statusSearchMutable.value = false.toString()
-                }
-                //sMove = "Move: $x,$y";
-            }
-            MotionEvent.ACTION_UP -> {}
-            MotionEvent.ACTION_CANCEL -> {
-                sMove = "";
-                sUp = "Up: $x,$y";
-            }
-        }
-        //binding.testFragNewsSavedTextView.text = sDown + "\n" + sMove + "\n" + sUp
-        return true
-    }*/
-
     override fun runWebsite(newsItem: NewsItem) {
         //При клике на элемент > загрузка интеренет страницы
         //vm.tempWebsiteLink.value = newsItem.link
         //loadProgressBar(newsItem.link) //прогрессбар
-        loadWebsite(newsItem.link) //загрузка интеренет страницы
+        //loadWebsite(newsItem.link) //загрузка интеренет страницы
+        Log.d("TAG1", "NewsSavedFragment >f loadWebsite")
+        FragmentFunction(vm).loadWebsite(newsItem.link, activity as MainActivity)
         //Toast.makeText(view?.context, "test \n ${newsItem.title}", Toast.LENGTH_SHORT).show()
     }
 
     override fun changeStatusSaved(newsItem: NewsItem) {
         //сохраняем новость (отмечаем звездочкой)
-        // //пока тестово удаляем
-        // //пока тестово меняем ссылку(link)
+        vm.newsItemUpdateItem.value = newsItem
+
 
         /*vm.newsItemWorkId.value = newsItem.id
         vm.newsItemWork.value = newsItem.statusSaved*/
         //Log.d("TAG1", "fragNewsSaved >f loadWebsite > updateItem: ${vm.newsItemUpdateItem.value}")
         //var a = NewsItem()
         //a.id = newsItem.id
-        vm.newsItemUpdateItem.value = newsItem
 
 
         //vm.newsItemUpdateItem.value?.id = newsItem.id
@@ -209,7 +166,7 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
 
     private fun loadWebsite(url: String) {
         vm.tempWebsiteLink.value = url
-        vm.url2 = url
+        //vm.url2 = url
         //Log.d("TAG1", "fragNewsSaved >f loadWebsite > url: $url")
         //Log.d("TAG1", "fragNewsSaved >f loadWebsite > vm.tempUrl: ${vm.tempWebsiteLink.value}")
 
@@ -264,3 +221,36 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
     }
 
 }
+
+/*private fun onTouchZapas(event: MotionEvent): Boolean {
+        var x = event.x//event.getX()
+        var y = event.y//event.getY()
+
+        var sDown = ""
+        var sMove = ""
+        var sUp = ""
+
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                sDown = "Down: $x,$y"
+                sMove = ""
+                sUp = ""
+                if (vm.statusSearchMutable.value == true.toString()) {
+                    vm.statusSearchMutable.value = false.toString()
+                }
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (vm.statusSearchMutable.value == true.toString()) {
+                    vm.statusSearchMutable.value = false.toString()
+                }
+                //sMove = "Move: $x,$y";
+            }
+            MotionEvent.ACTION_UP -> {}
+            MotionEvent.ACTION_CANCEL -> {
+                sMove = "";
+                sUp = "Up: $x,$y";
+            }
+        }
+        //binding.testFragNewsSavedTextView.text = sDown + "\n" + sMove + "\n" + sUp
+        return true
+    }*/

@@ -33,7 +33,7 @@
                     android:layout_width="44dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/button_transparent"
-                    android:text="back"
+                    android:text="@string/uiMenu"
                     app:icon="@drawable/ic_hamburger"
                     app:iconGravity="top"
                     app:iconTint="@color/baseColorOnPrimary" />
@@ -42,24 +42,37 @@
                 <TextView
                     android:id="@+id/textViewProjectName"
                     style="@style/Theme.BackgroundPrimary"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:layout_weight="1"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
-                    android:text="TrackNews"
+                    android:paddingStart="10dp"
+                    android:text="@string/app_name"
                     android:textColor="@color/baseColorOnPrimary"
-                    android:textSize="18sp" /> <!--android:textColor:="?android:textColorSecondary"-->
+                    android:textSize="18sp"
+                    tools:ignore="RtlSymmetry" /> <!--android:textColor:="?android:textColorSecondary"-->
+
+                <TextView
+                    android:id="@+id/textViewSavedSearchActive"
+                    style="@style/Theme.BackgroundPrimary"
+                    android:layout_width="120dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical|end"
+                    android:paddingEnd="8dp"
+                    android:text="@string/defaultTextView"
+                    android:textColor="@color/baseColorOnPrimary"
+                    android:textSize="16sp"
+                    tools:ignore="RtlSymmetry" />
 
                 <Button
                     android:id="@+id/buttonSavedSearches"
                     android:layout_width="44dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/button_transparent"
-                    android:text="saved searches"
+                    android:text="@string/uiSavedSearches"
                     app:icon="@drawable/ic_arrow_bottom"
                     app:iconGravity="top"
                     app:iconTint="@color/baseColorOnPrimary" />
@@ -81,7 +94,7 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/actMainRecyclerViewSavedSearches"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="0dp"
                         android:layout_gravity="center"
                         android:layout_margin="4dp"
                         android:layout_weight="1">
@@ -89,7 +102,7 @@
                     </androidx.recyclerview.widget.RecyclerView>
 
                     <Button
-                        android:id="@+id/razdelitel"
+                        android:id="@+id/separator"
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
                         android:layout_marginLeft="16dp"
@@ -109,10 +122,11 @@
                         android:layout_marginRight="8dp"
                         android:layout_marginBottom="16dp"
                         android:orientation="horizontal"
-                        android:visibility="gone">
+                        android:visibility="gone"
+                        tools:visibility="visible">
 
                         <Button
-                            android:id="@+id/newsItemButtonUnSave2"
+                            android:id="@+id/searchItemButtonDelete"
                             android:layout_width="wrap_content"
                             android:layout_height="32dp"
                             android:layout_marginRight="8dp"
@@ -124,7 +138,7 @@
                             android:theme="@style/Theme.BackgroundSearchButton" />
 
                         <Button
-                            android:id="@+id/newsItemButtonUnSave"
+                            android:id="@+id/searchItemButtonCancel"
                             android:layout_width="wrap_content"
                             android:layout_height="32dp"
                             android:layout_marginBottom="2dp"
@@ -135,7 +149,7 @@
                     </LinearLayout>
 
                     <Button
-                        android:id="@+id/razdelitel2"
+                        android:id="@+id/separator2"
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
                         android:layout_marginLeft="16dp"
@@ -177,22 +191,6 @@
                     tools:visibility="visible" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/testFabButtonSearch2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginBottom="150dp"
-                    android:clickable="true"
-                    android:contentDescription="@string/news_all"
-                    android:elevation="8dp"
-                    android:stateListAnimator="@null"
-                    android:theme="@style/Theme.BackgroundSecondary"
-                    android:translationZ="10dp"
-                    android:visibility="gone"
-                    app:srcCompat="?android:attr/actionModeWebSearchDrawable" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/fabButtonGO"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -206,23 +204,6 @@
                     android:translationZ="8dp"
                     android:visibility="invisible"
                     app:srcCompat="@drawable/ic_arrow_forward" />
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/testCardView"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_gravity="bottom|end"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginBottom="100dp"
-                    android:animateLayoutChanges="true"
-                    android:background="@drawable/round_button"
-                    android:clipToOutline="true"
-                    android:elevation="2dp"
-                    android:stateListAnimator="@null"
-                    android:translationZ="2dp"
-                    android:visibility="gone"
-                    app:cardCornerRadius="28dp" />
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardView"
@@ -295,24 +276,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:orientation="vertical">
-
-
-        <!--<EditText
-            android:id="@+id/actMainDrLayoutEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="text test"
-            android:inputType="textPersonName"
-            android:textColor="#FAF5F5"
-            android:textColorHint="#76A3E8" />-->
-
-        <!--<TextView
-            android:id="@+id/actMainDrLayoutText"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:text="XXXX"
-            android:textColor="#FFFDFD" />-->
 
         <Button
             android:id="@+id/actMainDrLayoutButtonSettings"

@@ -102,16 +102,15 @@ class MainDbManager(context: Context) {
         Log.d("TAG1", "MainDbManager >f clearAllDataInDb - OK")
     }
 
+    //удаляем элемент/строку из БД
     fun deleteDbElement(whereClause: String, whereArgs: String){
-        //удаляем элемент/строку из Базы Данных
-
         //Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $link")
         val a = db?.delete(MainDbNameObject.TABLE_NAME, "$whereClause = ?", arrayOf(whereArgs))
         //Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $a")
     }
 
+    //Ищем совпадения в БД
     fun findItemInDb(columnSearch: String, search: String): ArrayList<NewsItem>{
-        //Ищем совпадения в БД
         //Log.d("TAG1", "MainDbManager >f findItemInDb ======START")
 
         val tableName = MainDbNameObject.TABLE_NAME
@@ -152,9 +151,8 @@ class MainDbManager(context: Context) {
         return dataList
     }
 
+    //обновляем элемент/строку из Базы Данных (статус сохранения новости)
     fun updateDbElementStatusSaved(statusSaved: String, id: Int){
-        //обновляем элемент/строку из Базы Данных (статус сохранения новости)
-
         //Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $link")
         val values = ContentValues().apply {
             //put(MainDbNameObject.COLUMN_NAME_LINK, "-1")
@@ -179,6 +177,7 @@ class MainDbManager(context: Context) {
         //db?.delete(MainDbNameObject.TABLE_NAME,"name=?", arrayOf(link))
     }
 
+    //удаляем элемент/строку из БД по столбцу "search"
     fun deleteDbElement(search: String){
         db?.delete(MainDbNameObject.TABLE_NAME,"search=?", arrayOf(search))
     }

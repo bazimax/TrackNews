@@ -30,7 +30,7 @@ class WebsiteFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentWebsiteBinding.inflate(inflater)
         return binding.root
@@ -80,7 +80,7 @@ class WebsiteFragment : Fragment() {
         val request: Request = Request.Builder().url(url).build()
 
         okHttpClient.newCall(request).enqueue(object: Callback {
-            override fun onFailure(call: Call?, e: IOException?) {
+            override fun onFailure(call: Call, e: IOException) {
                 //vm.messageLoadWebsite.value = messageLoadWebsite
                 binding.fragWebsiteProgressBar.visibility = View.GONE
                 binding.fragWebsiteTextView.text = messageLoadWebsite
@@ -89,7 +89,7 @@ class WebsiteFragment : Fragment() {
                 //vm.messageFact.value = "Fail"
             }
 
-            override fun onResponse(call: Call?, response: Response?) {
+            override fun onResponse(call: Call, response: Response) {
                 runOnUiThread {
                     binding.fragWebsiteProgressBar.visibility = View.GONE
                     binding.fragWebsiteWebView.loadUrl(url)

@@ -1,7 +1,13 @@
 <resources>
     <string name="app_name">TrackNews</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--UI-->
+    <string name="uiMenu">Menu</string>
+    <string name="uiAppName">App name</string>
+    <string name="uiSavedSearchActive">Saved Search Active</string>
+    <string name="uiSavedSearches">Saved searches</string>
+
+
 
     <string name="search">Search</string>
     <string name="defaultTextView">///</string>
@@ -34,13 +40,14 @@
 
     <!--tabLayout-->
     <string name="news_today">Today</string>
-    <string name="news_week">Week</string>
+    <string name="news_week">Month</string>
     <string name="news_all">All</string>
     <string name="news_saved">Saved</string>
 
     <!--searchItem-->
     <string name="searchItemDelete">Delete all selected Item</string>
     <string name="searchItemCancel">Cancel</string>
+    <string name="searchItemSave">This search has been saved</string>
 
     <!--theme-->
     <string name="theme_title">Themes:</string>
@@ -50,8 +57,8 @@
     <string name="battery_saver_theme">Battery saver theme</string>
 
     <!--load Website\ProgressBar-->
-    <string name="loadWebsiteFail">Website is not response. Please check wi-fi</string>
+    <string name="loadWebsiteFail">Website is not response. Check internet connection</string>
 
     <!--Exit App-->
-    <string name="exitApp">Press once again to exit!</string>
+    <string name="exitApp">Once again to exit!</string>
 </resources>

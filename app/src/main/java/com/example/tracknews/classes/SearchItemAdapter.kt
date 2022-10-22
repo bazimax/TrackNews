@@ -9,6 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tracknews.R
 import com.example.tracknews.databinding.RecyclerViewSearchItemBinding
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.fragment.app.activityViewModels
+import com.example.tracknews.ViewModel
 
 
 class SearchItemAdapter(private val listener: Listener): RecyclerView.Adapter<SearchItemAdapter.SearchItemHolder>() {
@@ -18,14 +21,15 @@ class SearchItemAdapter(private val listener: Listener): RecyclerView.Adapter<Se
     class SearchItemHolder(item: View): RecyclerView.ViewHolder(item) {
 
         val binding = RecyclerViewSearchItemBinding.bind(item)
-        fun bind(searchItem: SearchItem, listener: Listener) = with (binding){
 
+        fun bind(searchItem: SearchItem, listener: Listener) = with (binding){
             searchItemButton.text = searchItem.search
             searchItemButtonActive.text = searchItem.search
             searchItemButtonSelect.text = searchItem.search
             searchItemCount.text = searchItem.counterNewNews.toString()
 
             //Если есть хотя бы одна новость для данного "сохраненного поиска", то показываем количество всех его новостей
+            //??
             if (searchItem.counterAllNews > 0) {
                 searchItemButton.text = searchItem.search + searchItem.counterAllNews
                 searchItemButtonActive.text = searchItem.search + searchItem.counterAllNews
@@ -53,27 +57,51 @@ class SearchItemAdapter(private val listener: Listener): RecyclerView.Adapter<Se
             //Log.d("TAG1", "SearchItemAdapter >f bind > searchItemButtonSelect: ${searchItemButtonSelect.visibility}")
             //Log.d("TAG1", "SearchItemAdapter >f bind > searchItemButton: ${searchItemButton.visibility}")
 
+            //При нажатии на "сохраненный поиск" в rcView открываются все новости относящиеся к нему
             searchItemButton.setOnClickListener {
-                //При нажатии на "сохраненный поиск" в rcView открываются все новости относящиеся к нему
-                //Delete -> Сохраняем новость в закладки
                 //Log.d("TAG1", "click observe ${newsItem.link}")
                 //Log.d("TAG1", "click observe $adapterPosition")
                 Log.d("TAG1", "click observe ${searchItem.search}")
                 listener.clickOnSearchItem(searchItem)
+                /*if (counter == 0) {
+
+                }
+                else {
+                    counter++
+                    Log.d("TAG1", "click observe $counter")
+                    searchItemButtonSelect.visibility = VISIBLE
+                    searchItemButton.visibility = INVISIBLE
+                    listener.selectSearchItem(searchItem)
+                }*/
             }
 
+            //Выделяем активный "сохраненный поиск", чтобы в будущем удалить
+            searchItemButtonActive.setOnLongClickListener {
+                searchItemButtonSelect.visibility = VISIBLE
+                searchItemButtonActive.visibility = INVISIBLE
+                listener.selectSearchItem(searchItem)
+                true
+            }
+
+            //Выделяем "сохраненный поиск", чтобы в будущем удалить
             searchItemButton.setOnLongClickListener {
-                //Выделяем "сохраненный поиск", чтобы в будущем удалить
                 searchItemButtonSelect.visibility = VISIBLE
                 searchItemButton.visibility = INVISIBLE
                 listener.selectSearchItem(searchItem)
                 true
             }
 
+            //Снимаем выделение с "сохраненного поиска"
             searchItemButtonSelect.setOnClickListener {
-                //Снимаем выделение с "сохраненного поиска"
-                searchItemButtonSelect.visibility = INVISIBLE
-                searchItemButton.visibility = VISIBLE
+                //если снимаем выделение с активного "сохраненного поиска" то показываем выделенной кнопкой. Иначе обычной
+                if (searchItem.active) {
+                    searchItemButtonSelect.visibility = INVISIBLE
+                    searchItemButtonActive.visibility = VISIBLE
+                }
+                else {
+                    searchItemButtonSelect.visibility = INVISIBLE
+                    searchItemButton.visibility = VISIBLE
+                }
                 listener.unSelectSearchItem(searchItem)
             }
         }

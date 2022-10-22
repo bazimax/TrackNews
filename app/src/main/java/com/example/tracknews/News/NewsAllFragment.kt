@@ -2,35 +2,21 @@ package com.example.tracknews.News
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.tracknews.MainActivity
 import com.example.tracknews.ViewModel
 import com.example.tracknews.WebsiteFragment
 import com.example.tracknews.classes.NewsItem
 import com.example.tracknews.classes.NewsItemAdapter
 import com.example.tracknews.databinding.FragmentNewsAllBinding
-import com.example.tracknews.parseSite.ParserSites
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import okhttp3.*
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
-import java.nio.charset.StandardCharsets
-import javax.net.ssl.HttpsURLConnection
 
 class NewsAllFragment : Fragment(), NewsItemAdapter.Listener {
 
@@ -73,10 +59,10 @@ class NewsAllFragment : Fragment(), NewsItemAdapter.Listener {
         //запуск фрагмента
 
         //отслеживаем изменения в данных для RecyclerView (SQLite > ViewModel)
-        vm.newsItemArray.value?.let { newsItemAdapter.addAllNews(it) }
-        vm.newsItemArray.observe(activity as LifecycleOwner) {
-            Log.d(MainActivity.TAG, "NewsAllFragment >f newsItemArray.OBSERVE > value: ${vm.newsItemArray.value}")
-            vm.newsItemArray.value?.let { it1 -> newsItemAdapter.addAllNews(it1) }
+        vm.newsItemArrayAll.value?.let { newsItemAdapter.addAllNews(it) }
+        vm.newsItemArrayAll.observe(activity as LifecycleOwner) {
+            //Log.d(MainActivity.TAG, "NewsAllFragment >f newsItemArray.OBSERVE > value: ${vm.newsItemArray.value}")
+            vm.newsItemArrayAll.value?.let { it1 -> newsItemAdapter.addAllNews(it1) }
         }
     }
 
@@ -129,7 +115,7 @@ class NewsAllFragment : Fragment(), NewsItemAdapter.Listener {
 
     private fun loadWebsite(url: String) {
         vm.tempWebsiteLink.value = url
-        vm.url2 = url
+        //vm.url2 = url
         //Log.d("TAG1", "fragNewsSaved >f loadWebsite > url: $url")
         //Log.d("TAG1", "fragNewsSaved >f loadWebsite > vm.tempUrl: ${vm.tempWebsiteLink.value}")
 

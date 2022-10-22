@@ -22,8 +22,8 @@ class FilesWorker () {
     //private val ctx = context
     //private val sharedPrefs: SharedPreferences? = ctx.getSharedPreferences("init", Context.MODE_PRIVATE) //getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE)
 
-    fun writeToFile(data: String, nameFile: String,  context: Context) {
-        //Записываем данные(data) в файл
+    //Записываем данные(data) в файл
+    fun writeToFile(data: String, nameFile: String, context: Context) {
         //Log.d(TAG, "FilesWorker >f writeToFile ======START")
         try {
             val outputStreamWriter = OutputStreamWriter(context.openFileOutput(nameFile, AppCompatActivity.MODE_PRIVATE))
@@ -36,8 +36,8 @@ class FilesWorker () {
         //Log.d(TAG, "FilesWorker >f writeToFile ------------END")
     }
 
+    //Читаем данные(data) из файла
     fun readFromFile(nameFile: String, context: Context): String {
-        //Читаем данные(data) из файла
         //Log.d(TAG, "FilesWorker >f readFromFile ======START")
         var data = ""
         try {
@@ -64,23 +64,23 @@ class FilesWorker () {
         return data
     }
 
+    //записывем данные в JSON
     fun writeJSON(data: Any, nameFile: String, context: Context) {
-        //записывем данные в JSON
         //Log.d(TAG, "FilesWorker >f writeJSON ======START")
 
         //сериализация
         val gson = Gson()
         val json = gson.toJson(data)
-        Log.d(TAG, "FilesWorker >f writeJSON > json: $json")
-        Log.d(TAG, "FilesWorker >f writeJSON > -------------------")
+        //Log.d(TAG, "FilesWorker >f writeJSON > json: $json")
+        //Log.d(TAG, "FilesWorker >f writeJSON > -------------------")
 
         //Записываем текст в файл
         writeToFile(json, nameFile, context)
         //Log.d(TAG, "FilesWorker >f writeJSON ------------END")
     }
 
+    //читаем JSON - SearchItemArrayList
     fun readJSONSearchItemArrayList(nameFile: String, context: Context):  SearchItemArrayList {
-        //читаем JSON - SearchItemArrayList
         /*val data1 = ArrayList<SearchItemWorker>()
         //сериализация
         val gson = Gson()
@@ -92,6 +92,7 @@ class FilesWorker () {
         Log.d(TAG_DEBUG, "FilesWorker >f readJSONSearchItemArrayList ======START")
         //Читаем файл JSON
         val searchItemListJSON = readFromFile(nameFile, context)
+        //Log.d(TAG, "FilesWorker >f readJSONSearchItemArrayList > searchItemListJSON: $searchItemListJSON")
         //Log.d(TAG, "FilesWorker >f readJSONSearchItemArrayList > searchItemListJSON: $searchItemListJSON")
 
         //десериализация
@@ -122,36 +123,25 @@ class FilesWorker () {
         sharedPrefs.edit().putString(nameSharedPreferences, data).apply()
     }*/
 
-    //первый запуск приложения
-    fun firstLaunch(context: Context) {
-        //читаем статус из файла
-        val statusFirstLaunch = readFromFile(Constants.FILE_FIRST_LAUNCH, context)
-
-        //если это первый запуск, то меняем true на false и записываем в SharedPreferences
-        if (statusFirstLaunch == "true") {
-            //записываем в файл - единственный раз (до переустановки приложения)
-            writeToFile("false", Constants.FILE_FIRST_LAUNCH, context)
-            //записываем в SharedPreferences
-            val sharedPrefs = context.getSharedPreferences("init", Context.MODE_PRIVATE)
-            sharedPrefs.edit().putString(Constants.SHARED_FIRST_LAUNCH, "false").apply()
-        }
-    }
-
     //проверка первый ли это запуск приложения
-    fun checkStatusFirstLaunch(context: Context) {
+    fun checkStatusFirstLaunch(context: Context): Boolean {
         //записываем строку в SharedPreferences
         val sharedPrefs = context.getSharedPreferences("init", Context.MODE_PRIVATE)
-        val statusFirstLaunch = sharedPrefs.getString(Constants.SHARED_FIRST_LAUNCH, "")
+        val statusFirstLaunch = sharedPrefs.getBoolean(Constants.SHARED_FIRST_LAUNCH, true)
 
-        if (statusFirstLaunch == "") {
-            writeToFile("false", Constants.FILE_FIRST_LAUNCH, context)
+        //если это первый запуск, то меняем true на false и записываем в SharedPreferences
+        val statusOutput: Boolean = if (statusFirstLaunch) {
+            //первый запуск приложения
+            Log.d(TAG, "FilesWorker >f checkStatusFirstLaunch > IF > firstLaunch")
+            sharedPrefs.edit().putBoolean(Constants.SHARED_FIRST_LAUNCH, false).apply()
+            false
+        } else {
+            true
         }
-
-        val att = sharedPrefs.getBoolean("testSite", true)
-        sharedPrefs.edit().putBoolean(Constants.SHARED_FIRST_LAUNCH, false).apply()
+        return statusOutput
     }
 
-    //что за Any?
+    //?? что за Any?
     /*fun readJSONAny(nameFile: String, classJava: Class<*>?, context: Context):Any {
         //читаем любой JSON
         Log.d(TAG, "FilesWorker >f readJSONAny ======START")
@@ -180,3 +170,24 @@ class FilesWorker () {
     Log.d(TAG, "WorkerFindNews >f doWork > try > stringItem: $stringItem")*/
 
 }
+
+/*
+fun firstFirst(context: Context){
+        writeToFile("false", Constants.FILE_FIRST_LAUNCH, context)
+    }
+//первый запуск приложения
+fun firstLaunch(context: Context) {
+    //читаем статус из файла
+    val statusFirstLaunch = readFromFile(Constants.FILE_FIRST_LAUNCH, context)
+
+    //Проверка на краш SharedPreferences
+    if (statusFirstLaunch == "true") {
+        //все норм
+    }else //какой-то баг
+
+    //записываем в файл - единственный раз (до переустановки приложения)
+        writeToFile("false", Constants.FILE_FIRST_LAUNCH, context)
+    //записываем в SharedPreferences
+    val sharedPrefs = context.getSharedPreferences("init", Context.MODE_PRIVATE)
+    sharedPrefs.edit().putString(Constants.SHARED_FIRST_LAUNCH, "false").apply()
+}*/

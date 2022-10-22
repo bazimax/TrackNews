@@ -18,7 +18,16 @@ open class ViewModel : ViewModel() {
         Log.d("TAG1", "ViewModel created")
     }*/
     //Список новостей (NewsItem)
-    val newsItemArray: MutableLiveData<ArrayList<NewsItem>> by lazy {
+    val newsItemArrayAll: MutableLiveData<ArrayList<NewsItem>> by lazy { //Список новостей (NewsItem) - "всех"
+        MutableLiveData<ArrayList<NewsItem>>()
+    }
+    val newsItemArrayDay: MutableLiveData<ArrayList<NewsItem>> by lazy { //Список новостей (NewsItem) - "за сегодня"
+        MutableLiveData<ArrayList<NewsItem>>()
+    }
+    val newsItemArrayMonth: MutableLiveData<ArrayList<NewsItem>> by lazy { //Список новостей (NewsItem) - "за месяц"
+        MutableLiveData<ArrayList<NewsItem>>()
+    }
+    val newsItemArraySaved: MutableLiveData<ArrayList<NewsItem>> by lazy { //Список новостей (NewsItem) - "сохраненные"
         MutableLiveData<ArrayList<NewsItem>>()
     }
 
@@ -27,7 +36,7 @@ open class ViewModel : ViewModel() {
         MutableLiveData<List<SearchItem>>()
     }
 
-    //список сохраненных поисков для записи
+    /*//список сохраненных поисков для записи
     val searchItemArrayTemp: MutableLiveData<Array<String>> by lazy {
         MutableLiveData<Array<String>>()
     }
@@ -35,9 +44,17 @@ open class ViewModel : ViewModel() {
     //временные данные из яндекса?
     val newsItemTempYa: MutableLiveData<ArrayList<NewsItem>> by lazy {
         MutableLiveData<ArrayList<NewsItem>>()
+    }*/
+    //временные данные после парсинга для записи в БД
+    val newsItemTempArrayInBd: MutableLiveData<ArrayList<NewsItem>> by lazy {
+        MutableLiveData<ArrayList<NewsItem>>()
+    }
+    //временные данные после парсинга
+    val newsItemTempArray: MutableLiveData<ArrayList<NewsItem>> by lazy {
+        MutableLiveData<ArrayList<NewsItem>>()
     }
 
-    //временные данные?
+    /*//временные данные?
     val newsItemTemp: MutableLiveData<NewsItem> by lazy {
         MutableLiveData<NewsItem>()
     }
@@ -54,7 +71,7 @@ open class ViewModel : ViewModel() {
 
     val testViewToSQLite: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
-    }
+    }*/
 
     //Отслеживаем поворот экрана
     val statusLandscape: MutableLiveData<String> by lazy {
@@ -77,7 +94,7 @@ open class ViewModel : ViewModel() {
     var url2 = "https://yandex.ru/"
     var nState = 0
     var counterB: Int = 0
-    var sizeFAButton: Int = -99
+    var sizeFAButton: Int = -99 //размер кнопки, как точка отсчета для подгонки интерфейса
     var statusChannelNotification = false
     var statusSavedSearchesView: Boolean = false //статус кнопки сохранённых поисков (показывает скрыт ли список "сохранённых поисков")
     var statusUpdateWorker: Boolean = false //есть ли обновления для SQLite от Worker
@@ -91,13 +108,15 @@ open class ViewModel : ViewModel() {
     val statusSearchMutable: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
+    //список searchItem на удаление
+    val searchItemDeleteArrayList = MutableLiveData<ArrayList<String>>()
 
 
 
-    var activeSearchItem = MutableLiveData("") //активный "поисковой запрос"(или сохраненный поиск) для которого выводятся все найденные новости. Если запрос пустой - значит еще нет "поисковых запросов"
+    var searchItemActive = MutableLiveData("") //активный "поисковой запрос"(или сохраненный поиск) для которого выводятся все найденные новости. Если запрос пустой - значит еще нет "поисковых запросов"
     var searchItemDeleteCount = MutableLiveData<Int>() //счетчик элементов searchItem на удаление (если счетчик = 0, то кнопки для удаления скрываются)
     var tempWebsiteLink = MutableLiveData<String>() //ссылка на новость
-    var newsItemDeleted = MutableLiveData<String>()
+    //var newsItemDeleted = MutableLiveData<String>()
     //var newsItemWorkId = MutableLiveData<Int>()
     //var newsItemWork = MutableLiveData<String>()
     var newsItemDeleted2 = MutableLiveData("Moroz")
@@ -109,9 +128,10 @@ open class ViewModel : ViewModel() {
     init {
         //запускать init в activity или fragment не надо?
 
+        searchItemDeleteArrayList.value = ArrayList() //пустой список searchItem на удаление
         searchItemDeleteCount.value = 0
         tempWebsiteLink.value = "-1"
-        newsItemDeleted.value = "false"
+        //newsItemDeleted.value = "false"
         newsItemUpdateItem.value?.id = 0
         testSiteString.value = ""
         //newsItemWork.value = "false"

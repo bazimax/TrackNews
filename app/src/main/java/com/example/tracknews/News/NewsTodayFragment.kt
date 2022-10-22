@@ -1,91 +1,50 @@
 package com.example.tracknews.News
 
-import android.content.Intent
-import android.net.Uri
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tracknews.ViewModel
 import com.example.tracknews.MainActivity
-import com.example.tracknews.R
 import com.example.tracknews.WebsiteFragment
-import com.example.tracknews.databinding.ActivityMainBinding
+import com.example.tracknews.classes.NewsItem
+import com.example.tracknews.classes.NewsItemAdapter
 import com.example.tracknews.databinding.FragmentNewsTodayBinding
-import com.example.tracknews.databinding.FragmentWebsiteBinding
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import okhttp3.*
 import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
-import javax.net.ssl.HttpsURLConnection
 
-class NewsTodayFragment : Fragment() {
+class NewsTodayFragment : Fragment(), NewsItemAdapter.Listener {
 
     private lateinit var binding: FragmentNewsTodayBinding
-    private lateinit var bindingMainActivity: MainActivity
-    private lateinit var bindingActivity: ActivityMainBinding
-    lateinit var bindingWebsite: WebsiteFragment
-    lateinit var bindingWeb: FragmentWebsiteBinding
     private val vm: ViewModel by activityViewModels()
-
-    private val siteURL = "https://yandex.ru/"
-
-    private val URL = "https://yandex.ru/"
+    private val newsItemAdapter = NewsItemAdapter(this)
     var okHttpClient: OkHttpClient = OkHttpClient()
-    var request: Disposable? = null //для контроля утечки памяти, не добавлено
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    ): View {
         binding = FragmentNewsTodayBinding.inflate(inflater)
         return binding.root
-        //return inflater.inflate(R.layout.fragment_news_today, container, false)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        init()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        vm.messageLoadWebsite.observe(activity as LifecycleOwner) {
-            binding.factTv.text = it
-        }
-
-        binding.nextBtn.setOnClickListener {
-
-            loadRandomFact() //прогрессбар
-            loadWebsite() //загрузка интеренет страницы
-
-            /*//тест соединения
-            o.subscribe({
-                dataModel.messageFact.value = if (it == "check_OK") "Ok" else "Failed"
-            },{
-                dataModel.messageFact.value = "Failed"
-            })*/
-
-            /*//тест соединения2 ???
-            request = o.subscribe({
-                dataModel.messageFact.value = if (it == "check_OK") "Ok" else "Failed"
-            },{
-                dataModel.messageFact.value = "Failed"
-            })*/
-
-
-            //Log.d("TAG1", "Test 111")
-            //dataModel.messageFact.value = "1234"
-            //dataModel.url2 = "0001"
-
-            /*Log.d("TAG1", "1 = ${dataModel.messageFact}")
-            Log.d("TAG1", "2 = ${dataModel.url2}")
-            Log.d("TAG1", "3 = ${dataModel.url.value}")
-            Log.d("TAG1", "4 = ${dataModel.statusLandscape.value}")*/
-        }
+        val rcView = binding.fragNewsSavedRecyclerView
+        startRecyclerView(rcView)
     }
 
     companion object {
@@ -93,66 +52,87 @@ class NewsTodayFragment : Fragment() {
         fun newInstance() = NewsTodayFragment()
     }
 
-    private fun loadWebsiteV0() {
-        //загрузка интернет страницы
-        //1й вариант - открытие в новой страничке
-        val i = Intent(Intent.ACTION_VIEW)
-        i.data = Uri.parse(siteURL)
-        startActivity(i)
+    private fun init(){
+        //запуск фрагмента
+
+        //отслеживаем изменения в данных для RecyclerView (SQLite > ViewModel)
+        vm.newsItemArrayDay.value?.let { newsItemAdapter.addAllNews(it) }
+        vm.newsItemArrayDay.observe(activity as LifecycleOwner) {
+            //Log.d(MainActivity.TAG, "NewsTodayFragment >f newsItemArrayDay.OBSERVE > value: ${vm.newsItemArrayDay.value}")
+            vm.newsItemArrayDay.value?.let { it1 -> newsItemAdapter.addAllNews(it1) }
+        }
     }
 
-    private fun loadWebsite() {
+    @SuppressLint("ClickableViewAccessibility") //для setOnTouchListener
+    private fun startRecyclerView(view: View){
+        //Подключаем RecyclerView и отображаем данные из SQLite
+        binding.apply {
+            //fragTest2RecyclerView.setHasFixedSize(true) //для оптимизации?
+            fragNewsSavedRecyclerView.layoutManager = LinearLayoutManager(view.context) //проверить
+            fragNewsSavedRecyclerView.adapter = newsItemAdapter
+        }
+
+        //Отслеживаем движение по экрану, чтобы скрывать форму поиска
+        view.setOnTouchListener { _, event -> onTouch(event)}
+    }
+
+    //Отслеживаем движение по экрану, чтобы скрывать поиск
+    private fun onTouch(event: MotionEvent): Boolean {
+
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {}
+            MotionEvent.ACTION_MOVE -> {
+                if (vm.statusSearchMutable.value == true.toString()) {
+                    vm.statusSearchMutable.value = false.toString()
+                }
+            }
+            MotionEvent.ACTION_UP -> {}
+            MotionEvent.ACTION_CANCEL -> {}
+        }
+        return false //если поставить true, то скролл перестает работать
+    }
+
+    override fun runWebsite(newsItem: NewsItem) {
+        //При клике на элемент > загрузка интеренет страницы
+        //vm.tempWebsiteLink.value = newsItem.link
+        //loadProgressBar(newsItem.link) //прогрессбар
+        loadWebsite(newsItem.link) //загрузка интеренет страницы
+        //Toast.makeText(view?.context, "test \n ${newsItem.title}", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun changeStatusSaved(newsItem: NewsItem) {
+        //сохраняем новость (отмечаем звездочкой)
+        vm.newsItemUpdateItem.value = newsItem
+    }
+    override fun expandContent(newsItem: NewsItem) {
+        //показываем полный текст
+        //"в работе"
+        //Toast.makeText(view?.context, newsItem.content, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun loadWebsite(url: String) {
+        vm.tempWebsiteLink.value = url
+        //vm.url2 = url
+        //Log.d("TAG1", "fragNewsSaved >f loadWebsite > url: $url")
+        //Log.d("TAG1", "fragNewsSaved >f loadWebsite > vm.tempUrl: ${vm.tempWebsiteLink.value}")
+
         if (vm.statusLandscape.value == "true") {
             //загрузка интернет страницы
             //2й вариант - замена одного фрагмента на другой - WebSiteFragment
             activity!!.supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.frameLayoutMainFragment, WebsiteFragment.newInstance())
+                .replace(com.example.tracknews.R.id.frameLayoutSuperMain, WebsiteFragment.newInstance())
                 .addToBackStack("main")
                 .commit()
-
-            /*// разное, можно удалить
-            Fragment newFragment = new ExampleFragment(); //в java
-            val newFragment: Fragment = WebsiteFragment() //в kotlin
-
-            //
-            FragmentTransaction transaction = getFragmentManager().beginTransaction(); //в java
-            val transaction: FragmentTransaction = parentFragmentManager.beginTransaction() //в kotlin
-
-            transaction.replace(R.id.frameLayoutMainFragment, newFragment)
-            transaction.addToBackStack(null)
-            transaction.commit();*/
-
-            //val testActivity = activity!!.findViewById<View>(R.id.frameLayoutMainFragment)
         }
         else {
             //bindingWeb.fragWebsiteWebView.loadUrl("https://www.google.ru/")
             activity!!.supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.frameLayoutMainFragmentLand, WebsiteFragment.newInstance())
-                .addToBackStack("main")
+                .replace(com.example.tracknews.R.id.frameLayoutMainFragmentLand, WebsiteFragment.newInstance())
                 .commit()
         }
     }
-
-
-    val o = io.reactivex.Observable.create<String>{
-        //net
-        //проверка соединения
-
-        val url = siteURL //ссылка
-        val urlConnection = URL(url).openConnection() as HttpsURLConnection
-        try {
-            urlConnection.connect()
-            if(urlConnection.responseCode == HttpURLConnection.HTTP_OK)
-                it.onNext("check_OK") //передаём it в o.subscribe
-            else
-                it.onNext("check_Failed") //передаём it в o.subscribe
-        }finally {
-            urlConnection.disconnect()
-        }
-
-    }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 
     fun Fragment?.runOnUiThread(action: () -> Unit) {
         //прогрессбар
@@ -161,27 +141,24 @@ class NewsTodayFragment : Fragment() {
         activity?.runOnUiThread(action)
     }
 
-    private fun loadRandomFact() {
+    private fun loadProgressBar(url: String) {
         //прогрессбар, продолжение
+        val mess = resources.getString(com.example.tracknews.R.string.loadWebsiteFail)
+
         runOnUiThread {
-            binding.progressBar.visibility = View.VISIBLE
+            binding.fragNewsSavedProgressBar.visibility = View.VISIBLE
         }
 
-        val request: Request = Request.Builder().url(URL).build()
+        val request: Request = Request.Builder().url(url).build()
         okHttpClient.newCall(request).enqueue(object: Callback {
             override fun onFailure(call: Call?, e: IOException?) {
-                //dataModel.messageFact.value = "Fail"
+                vm.messageLoadWebsite.value = mess
+                //vm.messageFact.value = "Fail"
             }
 
             override fun onResponse(call: Call?, response: Response?) {
-                val json = response?.body()?.string()
-                //val txt = (JSONObject(json).getJSONObject("value").get("joke")).toString()
-
-                //binding.factTv.text = Html.fromHtml(txt)
-                //binding.factTv.text = "123"
-                //dataModel.messageLoadWebsite.value = "123"
                 runOnUiThread {
-                    binding.progressBar.visibility = View.GONE
+                    binding.fragNewsSavedProgressBar.visibility = View.GONE
                     //dataModel.messageFact.value = Html.fromHtml(txt).toString()
                     vm.messageLoadWebsite.value = "Good"
                 }

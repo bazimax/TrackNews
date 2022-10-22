@@ -1,24 +1,29 @@
 package com.example.tracknews
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.activityViewModels
 import com.example.tracknews.News.*
 import com.example.tracknews.databinding.FragmentNewsBinding
 import com.google.android.material.tabs.TabLayoutMediator
 
 class NewsFragment : Fragment() {
+    private val fragList2: List<Fragment> = listOf(
+        NewsTodayFragment.newInstance(),
+        NewsWeekFragment.newInstance(),
+        NewsAllFragment.newInstance(),
+        NewsSavedFragment.newInstance()
+    )
+
     private val fragList = listOf(
         NewsTodayFragment.newInstance(),
         NewsWeekFragment.newInstance(),
         NewsAllFragment.newInstance(),
         NewsSavedFragment.newInstance()
     )
+
     /*private var fragListTitles = listOf(
         //getString(R.string.news_today),
         *//*getString(R.string.news_today),
@@ -56,7 +61,7 @@ class NewsFragment : Fragment() {
             getString(R.string.news_saved)
         )
 
-        val adapter = ViewPager2Adapter(this, fragList)
+        val adapter = ViewPager2Adapter(this, fragList2)
         binding.fragNewsViewPager2.adapter = adapter
         TabLayoutMediator(binding.fragNewsTab, binding.fragNewsViewPager2) {
             tab, pos -> tab.text = fragListTitles[pos]

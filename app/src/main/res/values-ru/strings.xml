@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">TrackNews</string>
-    <string name="hello_blank_fragment">Hellot</string>
+
+    <!--UI-->
+    <string name="uiMenu">Меню</string>
+    <string name="uiAppName">Название приложения</string>
+    <string name="uiSavedSearchActive">Активный сохраненный поиск</string>
+    <string name="uiSavedSearches">Сохраненные поиски или подписки</string>
 
     <string name="search">Поиск</string>
     <string name="defaultTextView">///</string>
@@ -33,13 +38,14 @@
 
     <!--tabLayout-->
     <string name="news_today">Сегодня</string>
-    <string name="news_week">За неделю</string>
+    <string name="news_week">За месяц</string>
     <string name="news_all">Все</string>
     <string name="news_saved">Важное</string>
 
     <!--searchItem-->
     <string name="searchItemDelete">Удалить выбранные элементы</string>
     <string name="searchItemCancel">Отмена</string>
+    <string name="searchItemSave">Данный поисковой запрос сохранен</string>
 
     <!--theme-->
     <string name="theme_title">Темы:</string>
