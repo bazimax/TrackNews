@@ -115,7 +115,8 @@ open class ViewModel : ViewModel() {
 
     var searchItemActive = MutableLiveData("") //активный "поисковой запрос"(или сохраненный поиск) для которого выводятся все найденные новости. Если запрос пустой - значит еще нет "поисковых запросов"
     var searchItemDeleteCount = MutableLiveData<Int>() //счетчик элементов searchItem на удаление (если счетчик = 0, то кнопки для удаления скрываются)
-    var tempWebsiteLink = MutableLiveData<String>() //ссылка на новость
+    //var tempWebsiteLink = MutableLiveData<String>() //ссылка на новость (при нажатии на элемент новости)
+    var tempNewsItemOpenWebsite = MutableLiveData<NewsItem>() //временный элемент новости
     //var newsItemDeleted = MutableLiveData<String>()
     //var newsItemWorkId = MutableLiveData<Int>()
     //var newsItemWork = MutableLiveData<String>()
@@ -130,7 +131,7 @@ open class ViewModel : ViewModel() {
 
         searchItemDeleteArrayList.value = ArrayList() //пустой список searchItem на удаление
         searchItemDeleteCount.value = 0
-        tempWebsiteLink.value = "-1"
+        //tempWebsiteLink.value = "-1"
         //newsItemDeleted.value = "false"
         newsItemUpdateItem.value?.id = 0
         testSiteString.value = ""

@@ -47,7 +47,7 @@
 
         <Button
             android:id="@+id/searchItemButtonSelect"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="32dp"
             android:layout_marginBottom="2dp"
             android:background="@drawable/round_button"

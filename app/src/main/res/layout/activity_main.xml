@@ -233,6 +233,17 @@
                         android:theme="@style/Theme.BackgroundSecondary"
                         android:translationZ="4dp"
                         app:icon="@drawable/ic_bookmark_border" /> <!--android:background="@drawable/round_button"-->
+                    <Button
+                        android:id="@+id/buttonSaved"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/round_button"
+                        android:elevation="4dp"
+                        android:stateListAnimator="@null"
+                        android:theme="@style/Theme.BackgroundSecondary"
+                        android:translationZ="4dp"
+                        android:visibility="invisible"
+                        app:icon="@drawable/ic_bookmark" />
 
                     <EditText
                         android:id="@+id/editTextSearch"
@@ -278,34 +289,29 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/actMainDrLayoutButtonSettings"
+            android:id="@+id/testButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Button 1" />
+            android:text="Button 1"
+            android:visibility="visible" />
 
         <Button
-            android:id="@+id/actMainDrLayoutButton2"
+            android:id="@+id/testButton2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Button 2" />
+            android:text="Button 2"
+            android:visibility="visible" />
 
-        <Button
-            android:id="@+id/actMainDrLayoutButton3"
+        <TextView
+            android:id="@+id/textViewTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Button 3" />
-
-        <Button
-            android:id="@+id/actMainDrLayoutButton4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button 4" />
-
-        <Button
-            android:id="@+id/actMainDrLayoutButton5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button 5" />
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/theme_title"
+            android:textSize="16sp" />
 
         <RadioGroup
             android:id="@+id/themeGroup"
@@ -313,36 +319,36 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             app:layout_constraintTop_toBottomOf="@id/title">
 
             <RadioButton
                 android:id="@+id/themeDark"
 
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:text="@string/light_theme" /><!--style="@style/SecondaryText"-->
 
             <RadioButton
                 android:id="@+id/themeLight"
 
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:text="@string/dark_theme" /> <!--style="@style/SecondaryText"-->
 
             <RadioButton
                 android:id="@+id/themeBattery"
 
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:text="@string/battery_saver_theme" /><!--style="@style/SecondaryText"-->
 
             <RadioButton
                 android:id="@+id/themeSystem"
 
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:text="@string/system_theme" /><!--style="@style/SecondaryText"-->
 
         </RadioGroup>

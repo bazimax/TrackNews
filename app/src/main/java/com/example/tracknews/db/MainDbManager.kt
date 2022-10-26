@@ -8,21 +8,32 @@ import com.example.tracknews.classes.Constants
 import com.example.tracknews.classes.NewsItem
 
 class MainDbManager(context: Context) {
+    private val logNameClass = "MainDbManager" //для логов
+
+    //КОНСТАНТЫ
+    companion object {
+        //log
+        const val TAG = Constants.TAG //разное
+        const val TAG_DEBUG = Constants.TAG_DEBUG //запуск функция, активити и тд
+        const val TAG_DATA = Constants.TAG_DATA //переменные и данные
+        const val TAG_DATA_BIG = Constants.TAG_DATA_BIG//объемные данные
+        const val TAG_DATA_IF = Constants.TAG_DATA_IF //переменные и данные в циклах
+    }
 
     private val mainDbHelper = MainDbHelper(context) //может открывать БД и ид
     private var db : SQLiteDatabase? = null //через mainDbHelper работает с БД
 
+    //открываем-запускаем Базу Данных
     fun openDb(){
-        //открываем-запускаем Базу Данных
-        //Log.d("TAG1", "MainDbManager >f openDb ======START")
+        Log.d(TAG_DEBUG, "$logNameClass >f openDb === START")
         db = mainDbHelper.writableDatabase
-        //Log.d("TAG1", "MainDbManager >f openDb - OK")
+        Log.d(TAG_DEBUG, "$logNameClass >f openDb ----- END > OK")
     }
 
+    //добавляем данные в Базу Данных
     fun insertToDb(search: String, img: String, date: String, title: String, content: String, link: String, statusSaved: String) {
-        //добавляем данные в Базу Данных
-        //Log.d("TAG1", "MainDbManager >f insertToDB ======START")
-        //Log.d("TAG1", "insertToDB > SQL title...: $title, $content, $link")
+        Log.d(TAG_DEBUG, "$logNameClass >f insertToDB === START")
+        Log.d(TAG_DATA, "$logNameClass > insertToDB > SQL title...: $title, $content, $link")
         val values = ContentValues().apply {
             put(MainDbNameObject.COLUMN_NAME_SEARCH, search)
             put(MainDbNameObject.COLUMN_NAME_IMG, img)
@@ -35,7 +46,7 @@ class MainDbManager(context: Context) {
         //Log.d("TAG1", "SQL values: $values")
         db?.insert(MainDbNameObject.TABLE_NAME, null, values)
         //Log.d("TAG1", "SQL db: $db, ${db.toString()}")
-        //Log.d("TAG1", "MainDbManager >f insertToDB - OK")
+        Log.d(TAG_DEBUG, "$logNameClass >f insertToDB ----- END")
     }
 
     fun testReadDbData() : ArrayList<String>{
@@ -52,9 +63,9 @@ class MainDbManager(context: Context) {
         return dataList
     }
 
+    //чтение Базы Данных
     fun readDbData() : ArrayList<NewsItem>{
-        //чтение Базы Данных
-        Log.d("TAG1", "MainDbManager >f readDbData ======START")
+        Log.d(TAG_DEBUG, "$logNameClass >f readDbData === START")
         val dataList = ArrayList<NewsItem>()
         val cursor = db?.query(MainDbNameObject.TABLE_NAME, null, null, null, null, null, null)
         //Log.d("TAG1", "readDbData > SQL cursor: $cursor")
@@ -87,31 +98,34 @@ class MainDbManager(context: Context) {
         }
 
         cursor.close()
-        Log.d("TAG1", "MainDbManager >f readDbData - OK")
+        Log.d(TAG_DEBUG, "$logNameClass >f readDbData ----- END")
         return dataList
     }
 
+    //закрытие Базы Данных
     fun closeDb(){
-        //закрытие Базы Данных
         mainDbHelper.close()
+        Log.d(TAG_DEBUG, "$logNameClass >f openDb === START / END")
     }
 
+    //очистка всей Базы Данных
     fun clearAllDataInDb(){
-        //очистка всей Базы Данных
         db?.delete(MainDbNameObject.TABLE_NAME, null, null)
-        Log.d("TAG1", "MainDbManager >f clearAllDataInDb - OK")
+        Log.d(TAG_DEBUG, "$logNameClass >f clearAllDataInDb === START / END")
     }
 
     //удаляем элемент/строку из БД
     fun deleteDbElement(whereClause: String, whereArgs: String){
-        //Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $link")
-        val a = db?.delete(MainDbNameObject.TABLE_NAME, "$whereClause = ?", arrayOf(whereArgs))
-        //Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $a")
+        Log.d(TAG_DEBUG, "$logNameClass >f deleteDbElement === START")
+        val deleteDbElement = db?.delete(MainDbNameObject.TABLE_NAME, "$whereClause = ?", arrayOf(whereArgs))
+        Log.d(TAG_DATA, "$logNameClass >f deleteDbElement > deleteDbElement: $deleteDbElement")
+        Log.d(TAG_DEBUG, "$logNameClass >f deleteDbElement ----- END")
     }
 
-    //Ищем совпадения в БД
+    //ищем совпадения в БД
     fun findItemInDb(columnSearch: String, search: String): ArrayList<NewsItem>{
-        //Log.d("TAG1", "MainDbManager >f findItemInDb ======START")
+        Log.d(TAG_DEBUG, "$logNameClass >f findItemInDb === START")
+        Log.d(TAG_DEBUG, "$logNameClass >f findItemInDb // ищем совпадения в БД")
 
         val tableName = MainDbNameObject.TABLE_NAME
         //val columns = arrayOf(MainDbNameObject.COLUMN_NAME_SEARCH, MainDbNameObject.COLUMN_NAME_LINK)
@@ -137,7 +151,7 @@ class MainDbManager(context: Context) {
             val statusSaved = cursor.getString(cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_STATUS_SAVED)).toString()
 
             //val id = cursor.getColumnIndex(MainDbNameObject.COLUMN_NAME_STATUS_SAVED).toString()
-            val id: Int = cursor.position //записываем id
+            val id: Int = cursor.position //записываем id //??!! неверный id
             //Log.d("TAG1", "MainDbManager >f findItemInDb > id: $id")
             //Log.d("TAG1", "MainDbManager >f findItemInDb > INDEX > ${cursor.position}")
 
@@ -147,42 +161,48 @@ class MainDbManager(context: Context) {
         }
         cursor.close()
         //Log.d("TAG1", "MainDbManager >f findItemInDb > dataList: ${dataList.toString()}")
-        //Log.d("TAG1", "MainDbManager >f findItemInDb ------------END")
+        Log.d(TAG_DEBUG, "$logNameClass >f findItemInDb ----- END")
         return dataList
     }
 
     //обновляем элемент/строку из Базы Данных (статус сохранения новости)
-    fun updateDbElementStatusSaved(statusSaved: String, id: Int){
-        //Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $link")
+    fun updateDbElementStatusSaved(statusSaved: String, link: String){
+        Log.d(TAG_DEBUG, "$logNameClass >f updateDbElementStatusSaved === START")
         val values = ContentValues().apply {
             //put(MainDbNameObject.COLUMN_NAME_LINK, "-1")
             if (statusSaved == true.toString()) {
                 //put(MainDbNameObject.COLUMN_NAME_LINK, "${false}")
                 put(MainDbNameObject.COLUMN_NAME_STATUS_SAVED, "${false}")
-                Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > statusSaved True > False")
+                Log.d(TAG_DATA, "$logNameClass >f updateDbElementStatusSaved > statusSaved True > FALSE")
             }
             else {
                 //put(MainDbNameObject.COLUMN_NAME_LINK, "${true}")
                 put(MainDbNameObject.COLUMN_NAME_STATUS_SAVED, "${true}")
-                Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > statusSaved False > True")
+                Log.d(TAG_DATA, "$logNameClass >f updateDbElementStatusSaved > statusSaved False > TRUE")
             }
         }
 
-        val idCorrect = (id + 1).toString()
-        Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > values: $values")
-        Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > id: $id")
-        Log.d("TAG1", "MainDbManager >f updateDbElementStatusSaved > idCorrect: ${arrayOf(idCorrect)}")
-        db?.update(MainDbNameObject.TABLE_NAME, values, "_ID = ?", arrayOf(idCorrect))
-        //Log.d("TAG1", "MainDbManager >f deleteDbElement > link: $a")
+        //val idCorrect = (id + 1).toString()
+        Log.d(TAG_DATA, "$logNameClass >f updateDbElementStatusSaved > values: $values")
+        //Log.d(TAG_DATA, "$logNameClass >f updateDbElementStatusSaved > id: $id")
+        //Log.d(TAG_DATA, "$logNameClass >f updateDbElementStatusSaved > idCorrect: $idCorrect")
+        //db?.update(MainDbNameObject.TABLE_NAME, values, "_ID = ?", arrayOf(idCorrect))
+        db?.update(MainDbNameObject.TABLE_NAME, values, "${MainDbNameObject.COLUMN_NAME_LINK} = ?", arrayOf(link))
+
+        Log.d(TAG_DEBUG, "$logNameClass >f updateDbElementStatusSaved ----- END")
         //db?.delete(MainDbNameObject.TABLE_NAME,"name=?", arrayOf(link))
     }
 
     //удаляем элемент/строку из БД по столбцу "search"
     fun deleteDbElement(search: String){
         db?.delete(MainDbNameObject.TABLE_NAME,"search=?", arrayOf(search))
+        Log.d(TAG_DEBUG, "$logNameClass >f deleteDbElement === START / END")
+        Log.d(TAG_DATA, "$logNameClass >f deleteDbElement > search: $search")
     }
 }
 
+
+//BACKUP >
 /*//тоже работает
         val selectQuery5 = "SELECT * FROM $tableName WHERE $column LIKE '%' || :string || '%'"
         val selectQuery1 = "SELECT  * FROM $tableName WHERE $column LIKE ?" //"SELECT  * FROM $tableName WHERE $column = ?"

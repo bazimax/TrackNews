@@ -1,7 +1,9 @@
 package com.example.tracknews.parseSite
 
+import android.content.Context
 import android.util.Log
 import com.example.tracknews.classes.Constants
+import com.example.tracknews.classes.FilesWorker
 import com.example.tracknews.classes.NewsItem
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -13,38 +15,42 @@ import java.net.HttpURLConnection
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
-class ParserSites {
+class ParserSites() {
+    private val logNameClass = "ParserSites" //для логов
+
     //КОНСТАНТЫ
     companion object {
         //log
-        const val TAG = Constants.TAG
-        const val TAG_DEBUG = Constants.TAG_DEBUG
+        const val TAG = Constants.TAG //разное
+        const val TAG_DEBUG = Constants.TAG_DEBUG //запуск функция, активити и тд
+        const val TAG_DATA = Constants.TAG_DATA //переменные и данные
+        const val TAG_DATA_BIG = Constants.TAG_DATA_BIG//объемные данные
+        const val TAG_DATA_IF = Constants.TAG_DATA_IF //переменные и данные в циклах
     }
 
     private val newsItemList = ArrayList<NewsItem>()
     private var statusEthernet = ""
-
     data class ResultParse(val list: ArrayList<NewsItem>, val statusEthernet: String)
 
-    /*fun parse(search: String): ArrayList<NewsItem>{
-        val statusEthernet = parseYa(search)
-        //parseGoo(search)
-        return newsItemList
-    }*/
-    fun parse(search: String): ResultParse{
+    fun parse(search: String, context: Context): ResultParse{
+        Log.d(TAG_DEBUG, "$logNameClass >f parse === START")
+        //Log.d(TAG_DATA, "$logNameClass >f parse > search: $search")
         //parseYa(search)
         //parseGoo(search)
-        parseP(search)
+        parseP(search, context)
+        Log.d(TAG_DEBUG, "$logNameClass >f parse ----- END")
+        Log.d(TAG_DATA_BIG, "$logNameClass >f parse > statusEthernet: $statusEthernet\n- newsItemList: $newsItemList")
         return ResultParse(newsItemList, statusEthernet)
     }
-    fun testParse(search: String, site: String): ResultParse{
+    fun testParse(search: String, site: String, context: Context): ResultParse{
         //parseYa(search)
         //parseGoo(search)
-        //Log.d("TAG1", "ParserSites >f testParse > site: $site")
-        if (site == "") {
-            parseP(search)
+        testParseP(site)
+        //Log.d("TAG1", "$logNameClass >f testParse > site: $site")
+        /*if (site == "") {
+            parseP(search, context)
         }
-        else testParseP(site)
+        else testParseP(site)*/
         return ResultParse(newsItemList, statusEthernet)
     }
 
@@ -53,7 +59,9 @@ class ParserSites {
     }
 
     private fun initFromParseHTML(url: String): String {
-        //Log.d("TAG1", "Start - initFromParseHTML")
+        Log.d(TAG_DEBUG, "$logNameClass >f initFromParseHTML === START")
+        Log.d(TAG_DEBUG, "$logNameClass >f initFromParseHTML // открываем интернет страницу")
+        Log.d(TAG_DATA, "$logNameClass >f initFromParseHTML > url: $url")
         var siteTemp = ""
         //coroutines
         GlobalScope.launch { // запуск новой сопрограммы в фоне
@@ -68,11 +76,11 @@ class ParserSites {
                 if(urlConnection.responseCode == HttpURLConnection.HTTP_OK) {
                     //val isr = InputStreamReader(conn.getInputStream(), "windows-1251")
                     //val br = BufferedReader(isr)
-                    Log.d(TAG, "Connection - Good")
+                    Log.d(TAG, "$logNameClass >f initFromParseHTML > Connection - Good")
                     val br = BufferedReader(
                         InputStreamReader(
                             urlConnection.inputStream,
-                            "windows-1251"
+                            "windows-1251" //кодировка сайта
                             //StandardCharsets.UTF_8
                         )
                     )
@@ -82,7 +90,7 @@ class ParserSites {
                     }
                     br.close()
                 }
-                else Log.d(TAG, "Connection - Failed")
+                else Log.d(TAG, "$logNameClass >f initFromParseHTML > Connection - Failed")
             }catch (e: IOException) {
                 e.printStackTrace()
                 //Log.d("TAG1", "$e")
@@ -103,9 +111,9 @@ class ParserSites {
         //старая ссылка на яндекс-новости "https://newssearch.yandex.ru/news/search?text=$correctSearch&flat=1&sortby=date"
         //val url = "https://newssearch.yandex.ru/news/search?text=$correctSearch&flat=1&sortby=date"
         val url = "https://dzen.ru/news/search?issue_tld=ru&text=$correctSearch"
-        Log.d(TAG, "parseYa url: $url")
+        Log.d(TAG_DATA, "parseYa url: $url")
         val siteTemp = initFromParseHTML(url)
-        Log.d(TAG, "ParserSite >f parseYa > siteTemp: $siteTemp")
+        Log.d(TAG_DATA, "ParserSite >f parseYa > siteTemp: $siteTemp")
 
         statusEthernet = true.toString() //"good"
         if (siteTemp == "") {
@@ -120,8 +128,8 @@ class ParserSites {
         val item = doc.select("article") //начали парсить
         newsItemList.clear()
         //var testCount = 0
-        Log.d(TAG, ":::: item: ${doc.select("article").first()}")
-        Log.d(TAG, "item size: ${item.size}")
+        Log.d(TAG_DATA, ":::: item: ${doc.select("article").first()}")
+        Log.d(TAG_DATA, "item size: ${item.size}")
         item.forEach {
             //для каждого новостного элемента
             //Log.d("TAG1", "forEach val 1")
@@ -161,16 +169,28 @@ class ParserSites {
         //val urlEn = "https://news.google.com/search?q=$correctSearch&hl=en-US&gl=US&ceid=US%3Aen" //......
     }
 
-    private fun parseP(search: String):String {
+    private fun parseP(search: String, context: Context):String {
+        Log.d(TAG_DEBUG, "$logNameClass >f parseP === START")
+        Log.d(TAG_DATA, "$logNameClass >f parseP > search: $search")
         val correctSearch = search.replace(" ", "%20", true)
+        Log.d(TAG_DATA, "$logNameClass >f parseP > correctSearch: $correctSearch")
 
         //https://pikabu.ru/search?q=witcher&st=3&d=5347&D=5378
-        val url = "https://pikabu.ru/search?q=$correctSearch&st=3&d=5347&D=5378" //......
+        //val url = "https://pikabu.ru/search?q=$correctSearch&st=3&d=5347&D=5378" //...... по умолчанию
+        val url = "https://pikabu.ru/search?q=$correctSearch&r=4" //рейтинг от 100
+        //https://pikabu.ru/search?q=witcher&d=5347&D=5378 - по дате
+        //https://pikabu.ru/search?q=witcher&st=2&d=5347&D=5378 - по рейтингу
+        //https://pikabu.ru/search?q=witcher&st=3&d=5347&D=5378 - по релевантности
+        //https://pikabu.ru/search?q=%D0%B2%D0%B5%D0%B4%D1%8C%D0%BC%D0%B0%D0%BA&r=4
+        //https://pikabu.ru/search?q=witcher&r=4 - рейтинг от 100
 
 
         //Log.d("TAG1", "parseP url: $url")
         val siteTemp = initFromParseHTML(url)
-        //Log.d("TAG1", "ParserSite >f parseP > siteTemp: $siteTemp")
+
+        //записываем полученный сайт в файл (для тестов)
+        FilesWorker().writeToFile(siteTemp, Constants.FILE_TEST_LOAD_SITE, context)
+        Log.d(TAG_DATA, "$logNameClass >f parseP > siteTemp: $siteTemp")
 
         statusEthernet = true.toString() //"good"
         if (siteTemp == "") {
@@ -183,27 +203,28 @@ class ParserSites {
 
         //delete>
         //statusEthernet = doc.toString() //test
-        statusEthernet = siteTemp//doc.toString() //test
-        Log.d(TAG, "ParserSites >f parseP > statusEthernet: $statusEthernet")
+        //statusEthernet = siteTemp//doc.toString() //test
+        Log.d(TAG_DATA, "$logNameClass >f parseP > statusEthernet: $statusEthernet")
         //delete^
 
         //var testCount = 0
         //Log.d("TAG1", ":::: item 1: ${doc.select("story__main").first()}")
-        //Log.d("TAG1", ":::: item 2: ${item}")
-        Log.d(TAG, "ParserSites >f parseP > item size: ${item.size}")
+        Log.d(TAG_DATA_BIG, "$logNameClass >f parseP > item: ${item}")
+        Log.d(TAG_DATA, "$logNameClass >f parseP > item size: ${item.size}")
         item.forEach {
             /*Log.d("TAG1", "!! it0 size: ${it.select("div.story__content-inner").size}") //
             Log.d("TAG1", "!! it0-1 size: ${it.select("div.story-block_type_text").size}") //
             */
 
+
             //для каждого новостного элемента
-            //Log.d("TAG1", "forEach val 1")
+            val id = 0
             val img = ""//it.select("href").first().toString() ?: "Img Error"
             //Log.d("TAG1", "forEach val 2: $img")
             val date = it.select("time").attr("datetime") ?: "Date Error" //time (full)
             //Log.d("TAG1", "!! it1: ${it.select("time").text()}") //time text
             //Log.d("TAG1", "forEach val 3")
-            val title = it.select("header.story__header").text() ?: "Title Error" //title
+            val title = it.select("a.story__title-link").text() ?: "Title Error" //title
             //Log.d("TAG1", "forEach val 4")
             var content = ""
             if (it.select("div.story-block_type_text").size > 0) {
@@ -213,17 +234,29 @@ class ParserSites {
             val link = it.select("header.story__header").select("a").attr("href") ?: "Link Error" //link
 
             val statusSaved = false.toString()
-            val id = 0
 
             val newsItem = NewsItem(id, search ,img, date, title, content, link, statusSaved)
             //Log.d("TAG1", "forEach newsItem: $newsItem")
             //Log.d("TAG1", "forEach newsItemList: $newsItemList")
-            newsItemList.add(newsItem)
+
+            if (link != "") {
+                newsItemList.add(newsItem)
+
+                Log.d(TAG_DATA_IF, "$logNameClass >f testParseP > item.forEach:\n" +
+                        "- id: $id\n" +
+                        "- search: $search\n" +
+                        "- img: $img\n" +
+                        "- date: $date\n" +
+                        "- title: $title\n" +
+                        "- content: $content\n" +
+                        "- link: $link\n" +
+                        "- statusSaved: $statusSaved")
+            }
             //Log.d("TAG1", "forEach newsItemList: $newsItemList")
             //Log.d("TAG1", "forEach Count: $testCount")
             //testCount++
         }
-        Log.d(TAG, "==================================================================") //
+        Log.d(TAG, "$logNameClass >f parseP END ==================================================================")
         return statusEthernet
     }
 
@@ -232,23 +265,33 @@ class ParserSites {
     }
 
     private fun testParseP(site: String):String {
+        Log.d(TAG_DEBUG, "$logNameClass >f testParseP === START")
+        Log.d(TAG_DATA_BIG, "$logNameClass >f testParseP > site: $site")
         //чтобы при тестах лишний раз не парсить
         statusEthernet = true.toString() //"good"
         if (site == "") {
             statusEthernet = false.toString() //"bad"
         }
-        statusEthernet = site
+        //statusEthernet = site
+        Log.d(TAG_DATA, "$logNameClass >f testParseP > statusEthernet: $statusEthernet")
 
         val doc = Jsoup.parse(site)
+
         val item = doc.select("article") //начали парсить
         newsItemList.clear()
 
         //Log.d(TAG, "item size: ${item.size}")
+        Log.d(TAG_DATA_BIG, "$logNameClass >f testParseP > item: ${item}")
+        Log.d(TAG_DATA, "$logNameClass >f testParseP > item size: ${item.size}")
         item.forEach {
             //для каждого новостного элемента
             val img = ""//it.select("href").first().toString() ?: "Img Error"
             val date = it.select("time").attr("datetime") ?: "Date Error"
-            val title = it.select("header.story__header").text() ?: "Title Error"
+            val title = it.select("a.story__title-link").text() ?: "Title Error" //a.story__title-link //h2.story__title
+            Log.d(TAG_DATA_IF, "$logNameClass >f testParseP > item.forEach: title: ${it.select("a.story__title-link").text()}")
+            Log.d(TAG_DATA_IF, "$logNameClass >f testParseP > item.forEach: title: ${it.select("h2.story__title").text()}")
+            Log.d(TAG_DATA_IF, "$logNameClass >f testParseP > item.forEach: title: ${it.select("header.story__header").text()}")
+            //val title = it.select("header.story__header").text() ?: "Title Error" //старая версия
             var content = ""
             if (it.select("div.story-block_type_text").size > 0) {
                 content = it.select("div.story-block_type_text").text() ?: "Content Error"
@@ -257,15 +300,28 @@ class ParserSites {
 
             val statusSaved = false.toString()
             val id = 0
-            val search = "witcher"
+            val search = "мобилизация"
+
+
 
 
             val newsItem = NewsItem(id, search ,img, date, title, content, link, statusSaved)
 
-            newsItemList.add(newsItem)
+            if (link != "") {
+                newsItemList.add(newsItem)
 
+                Log.d(TAG_DATA_IF, "$logNameClass >f testParseP > item.forEach:\n" +
+                        "- id: $id\n" +
+                        "- search: $search\n" +
+                        "- img: $img\n" +
+                        "- date: $date\n" +
+                        "- title: $title\n" +
+                        "- content: $content\n" +
+                        "- link: $link\n" +
+                        "- statusSaved: $statusSaved")
+            }
         }
-        Log.d(TAG, "ParserSites >f testParseP ==================================================================") //
+        Log.d(TAG, "$logNameClass >f testParseP ==================================================================") //
         return statusEthernet
     }
 }

@@ -31,7 +31,7 @@
     <color name="darkColorPrimaryVariant">#3A1949</color>
     <color name="darkColorOnPrimary">@color/baseColorOnPrimary</color>
     <color name="darkColorText">#DED9E8</color>
-    <color name="darkColorBackground">#200C29</color>
+    <color name="darkColorBackground">#411851</color>
 
     <color name="darkColorTextAccent">@color/baseColorTextAccent</color>
     <color name="darkColorAccent">@color/baseColorAccent</color>
@@ -43,7 +43,7 @@
 
     <!--Текст в NewsItem-->
     <color name="darkColorPrimary2">#30133D</color>
-    <color name="darkColorNewsItemBackground">#15071B</color>
+    <color name="darkColorNewsItemBackground">#361345</color>
     <color name="darkColorTextDate">#50435C</color>
     <color name="darkColorTextTitle">#EAE2F8</color>
     <color name="darkColorTextContent">#867D98</color>

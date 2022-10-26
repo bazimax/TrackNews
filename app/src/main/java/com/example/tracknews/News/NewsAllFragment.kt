@@ -1,17 +1,18 @@
 package com.example.tracknews.News
 
-import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
-import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.tracknews.MainActivity
 import com.example.tracknews.ViewModel
-import com.example.tracknews.WebsiteFragment
+import com.example.tracknews.classes.Constants
+import com.example.tracknews.classes.FragmentFunction
 import com.example.tracknews.classes.NewsItem
 import com.example.tracknews.classes.NewsItemAdapter
 import com.example.tracknews.databinding.FragmentNewsAllBinding
@@ -19,6 +20,7 @@ import okhttp3.*
 import java.io.IOException
 
 class NewsAllFragment : Fragment(), NewsItemAdapter.Listener {
+    private val logNameClass = "NewsAllFragment"
 
     lateinit var binding: FragmentNewsAllBinding
     private val vm: ViewModel by activityViewModels()
@@ -42,12 +44,7 @@ class NewsAllFragment : Fragment(), NewsItemAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
 
         val rcView = binding.fragNewsSavedRecyclerView
-        startRecyclerView(rcView)
-
-        /*Log.d("TAG1", "NewsSavedFragment > test: ${vm.testParserSitesString.value}")
-        vm.testParserSitesString.observe(activity as LifecycleOwner) {
-            binding.testFragNewsSavedTextView.text = vm.testParserSitesString.value
-        }*/
+        FragmentFunction(vm).startRecyclerView(rcView, newsItemAdapter)
     }
 
     companion object {
@@ -66,75 +63,23 @@ class NewsAllFragment : Fragment(), NewsItemAdapter.Listener {
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility") //для setOnTouchListener
-    private fun startRecyclerView(view: View){
-        //Подключаем RecyclerView и отображаем данные из SQLite
-        binding.apply {
-            //fragTest2RecyclerView.setHasFixedSize(true) //для оптимизации?
-            fragNewsSavedRecyclerView.layoutManager = LinearLayoutManager(view.context) //проверить
-            fragNewsSavedRecyclerView.adapter = newsItemAdapter
-        }
 
-        //Отслеживаем движение по экрану, чтобы скрывать форму поиска
-        view.setOnTouchListener { _, event -> onTouch(event)}
-    }
-
-    //Отслеживаем движение по экрану, чтобы скрывать поиск
-    private fun onTouch(event: MotionEvent): Boolean {
-
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> {}
-            MotionEvent.ACTION_MOVE -> {
-                if (vm.statusSearchMutable.value == true.toString()) {
-                    vm.statusSearchMutable.value = false.toString()
-                }
-            }
-            MotionEvent.ACTION_UP -> {}
-            MotionEvent.ACTION_CANCEL -> {}
-        }
-        return false //если поставить true, то скролл перестает работать
-    }
-
+    //одинаково во всех 4х фрагментах (today, week, all, saved) >
+    //При клике на элемент > загрузка интеренет страницы
     override fun runWebsite(newsItem: NewsItem) {
-        //При клике на элемент > загрузка интеренет страницы
-        //vm.tempWebsiteLink.value = newsItem.link
+        Log.d(Constants.TAG_DEBUG, "$logNameClass >f runWebsite")
         //loadProgressBar(newsItem.link) //прогрессбар
-        loadWebsite(newsItem.link) //загрузка интеренет страницы
-        //Toast.makeText(view?.context, "test \n ${newsItem.title}", Toast.LENGTH_SHORT).show()
+        FragmentFunction(vm).loadWebsiteFragment(newsItem, activity as MainActivity) //загрузка интеренет страницы
     }
 
+    //сохраняем новость (отмечаем звездочкой)
     override fun changeStatusSaved(newsItem: NewsItem) {
-        //сохраняем новость (отмечаем звездочкой)
         vm.newsItemUpdateItem.value = newsItem
     }
+
+    //показываем полный текст NewsItem //??"в работе"
     override fun expandContent(newsItem: NewsItem) {
-        //показываем полный текст
-        //"в работе"
-        //Toast.makeText(view?.context, newsItem.content, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun loadWebsite(url: String) {
-        vm.tempWebsiteLink.value = url
-        //vm.url2 = url
-        //Log.d("TAG1", "fragNewsSaved >f loadWebsite > url: $url")
-        //Log.d("TAG1", "fragNewsSaved >f loadWebsite > vm.tempUrl: ${vm.tempWebsiteLink.value}")
-
-        if (vm.statusLandscape.value == "true") {
-            //загрузка интернет страницы
-            //2й вариант - замена одного фрагмента на другой - WebSiteFragment
-            activity!!.supportFragmentManager
-                .beginTransaction()
-                .replace(com.example.tracknews.R.id.frameLayoutSuperMain, WebsiteFragment.newInstance())
-                .addToBackStack("main")
-                .commit()
-        }
-        else {
-            //bindingWeb.fragWebsiteWebView.loadUrl("https://www.google.ru/")
-            activity!!.supportFragmentManager
-                .beginTransaction()
-                .replace(com.example.tracknews.R.id.frameLayoutMainFragmentLand, WebsiteFragment.newInstance())
-                .commit()
-        }
+        Toast.makeText(view?.context, newsItem.content, Toast.LENGTH_SHORT).show()
     }
 
     fun Fragment?.runOnUiThread(action: () -> Unit) {
@@ -168,4 +113,5 @@ class NewsAllFragment : Fragment(), NewsItemAdapter.Listener {
             }
         })
     }
+    //одинаково во всех 4х фрагментах (today, week, all, saved) ^
 }

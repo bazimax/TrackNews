@@ -6,6 +6,8 @@
     <string name="uiAppName">Название приложения</string>
     <string name="uiSavedSearchActive">Активный сохраненный поиск</string>
     <string name="uiSavedSearches">Сохраненные поиски или подписки</string>
+    <string name="uiSaveNews">Сохранить эту новость</string>
+    <string name="uiUnSaveNews">Удалить эту новость из сохраненных</string>
 
     <string name="search">Поиск</string>
     <string name="defaultTextView">///</string>
@@ -48,11 +50,11 @@
     <string name="searchItemSave">Данный поисковой запрос сохранен</string>
 
     <!--theme-->
-    <string name="theme_title">Темы:</string>
+    <string name="theme_title">Тема:</string>
     <string name="light_theme">Темная</string>
     <string name="dark_theme">Светлая</string>
     <string name="system_theme">Системная</string>
-    <string name="battery_saver_theme">Энергосберегающая</string>
+    <string name="battery_saver_theme">Экономная</string>
 
     <!--load Website\ProgressBar-->
     <string name="loadWebsiteFail">Сайт не отвечает. Проверьте интернет соединение.</string>

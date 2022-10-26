@@ -29,6 +29,7 @@
             <LinearLayout
                 android:layout_width="48dp"
                 android:layout_height="match_parent"
+                android:layout_marginStart="4dp"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -37,33 +38,33 @@
                     style="@style/Theme.BackgroundNewsItemDate"
                     android:layout_width="48dp"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
                     android:gravity="center"
                     android:maxLines="1"
                     android:text="@string/newsItemTime"
-                    android:textColor="@color/baseNewsItemButton" />
+                    android:textColor="@color/baseNewsItemButton"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/newsItemTextViewDayMonth"
                     style="@style/Theme.BackgroundNewsItemDate"
                     android:layout_width="48dp"
                     android:layout_height="wrap_content"
-                    android:textSize="11sp"
                     android:gravity="center"
                     android:maxLines="1"
                     android:text="@string/newsItemDayMonth"
-                    android:textColor="@color/baseNewsItemButton" />
+                    android:textColor="@color/baseNewsItemButton"
+                    android:textSize="11sp" />
 
                 <TextView
                     android:id="@+id/newsItemTextViewYear"
                     style="@style/Theme.BackgroundNewsItemDate"
                     android:layout_width="48dp"
                     android:layout_height="wrap_content"
-                    android:textSize="11sp"
                     android:gravity="center"
                     android:maxLines="1"
                     android:text="@string/newsItemYear"
-                    android:textColor="@color/baseNewsItemButton" />
+                    android:textColor="@color/baseNewsItemButton"
+                    android:textSize="11sp" />
             </LinearLayout>
 
             <TextView

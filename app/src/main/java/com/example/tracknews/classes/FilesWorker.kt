@@ -12,11 +12,16 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class FilesWorker () {
+    private val logNameClass = "FilesWorker" //для логов
+
     //КОНСТАНТЫ
     companion object {
         //log
-        const val TAG = Constants.TAG
-        const val TAG_DEBUG = Constants.TAG_DEBUG
+        const val TAG = Constants.TAG //разное
+        const val TAG_DEBUG = Constants.TAG_DEBUG //запуск функция, активити и тд
+        const val TAG_DATA = Constants.TAG_DATA //переменные и данные
+        const val TAG_DATA_BIG = Constants.TAG_DATA_BIG//объемные данные
+        const val TAG_DATA_IF = Constants.TAG_DATA_IF //переменные и данные в циклах
     }
 
     //private val ctx = context
@@ -24,21 +29,20 @@ class FilesWorker () {
 
     //Записываем данные(data) в файл
     fun writeToFile(data: String, nameFile: String, context: Context) {
-        //Log.d(TAG, "FilesWorker >f writeToFile ======START")
+        Log.d(TAG_DEBUG, "FilesWorker >f writeToFile === START")
         try {
             val outputStreamWriter = OutputStreamWriter(context.openFileOutput(nameFile, AppCompatActivity.MODE_PRIVATE))
             outputStreamWriter.write(data)
             outputStreamWriter.close()
         } catch (e: IOException) {
-            Log.e(TAG, "ERROR: FilesWorker >f writeToFile > File write failed: $e")
-            Log.d(TAG, "ERROR: FilesWorker >f writeToFile > File write failed: $e")
+            Log.e(TAG, "ERROR: $logNameClass >f writeToFile > File write failed: $e")
         }
-        //Log.d(TAG, "FilesWorker >f writeToFile ------------END")
+        Log.d(TAG_DEBUG, "$logNameClass >f writeToFile ----- END")
     }
 
     //Читаем данные(data) из файла
     fun readFromFile(nameFile: String, context: Context): String {
-        //Log.d(TAG, "FilesWorker >f readFromFile ======START")
+        Log.d(TAG_DEBUG, "$logNameClass >f readFromFile === START")
         var data = ""
         try {
             val inputStream: InputStream? = context.openFileInput(nameFile)
@@ -54,62 +58,53 @@ class FilesWorker () {
                 data = stringBuilder.toString()
             }
         } catch (e: FileNotFoundException) {
-            Log.e(TAG, "ERROR: FilesWorker >f readFromFile > File not found: $e")
-            Log.d(TAG, "ERROR: FilesWorker >f readFromFile > File not found: $e")
+            Log.e(TAG, "ERROR: $logNameClass >f readFromFile > File not found: $e")
         } catch (e: IOException) {
-            Log.e(TAG, "ERROR: FilesWorker >f readFromFile > Can not read file: $e")
-            Log.d(TAG, "ERROR: FilesWorker >f readFromFile > Can not read file: $e")
+            Log.e(TAG, "ERROR: $logNameClass >f readFromFile > Can not read file: $e")
         }
-        //Log.d(TAG, "FilesWorker >f readFromFile ------------END")
+        Log.d(TAG_DEBUG, "$logNameClass >f readFromFile ----- END")
+        Log.d(TAG_DATA_BIG, "$logNameClass >f readFromFile > data: $data")
         return data
     }
 
     //записывем данные в JSON
     fun writeJSON(data: Any, nameFile: String, context: Context) {
-        //Log.d(TAG, "FilesWorker >f writeJSON ======START")
+        Log.d(TAG_DEBUG, "$logNameClass >f writeJSON === START")
 
         //сериализация
         val gson = Gson()
         val json = gson.toJson(data)
-        //Log.d(TAG, "FilesWorker >f writeJSON > json: $json")
-        //Log.d(TAG, "FilesWorker >f writeJSON > -------------------")
+        //Log.d(TAG_DATA, "FilesWorker >f writeJSON > json: $json")
 
         //Записываем текст в файл
         writeToFile(json, nameFile, context)
-        //Log.d(TAG, "FilesWorker >f writeJSON ------------END")
+        Log.d(TAG_DEBUG, "$logNameClass >f writeJSON ------------END")
     }
 
     //читаем JSON - SearchItemArrayList
     fun readJSONSearchItemArrayList(nameFile: String, context: Context):  SearchItemArrayList {
-        /*val data1 = ArrayList<SearchItemWorker>()
-        //сериализация
-        val gson = Gson()
-        val newsItemArrayList = SearchItemArrayList(data1)
-        val json4 = gson.toJson(newsItemArrayList)
-        Log.d(MainActivity.TAG, "Main Activity >f writeJSON > json4: $json4")*/
-
-
-        Log.d(TAG_DEBUG, "FilesWorker >f readJSONSearchItemArrayList ======START")
-        //Читаем файл JSON
+        Log.d(TAG_DEBUG, "$logNameClass >f readJSONSearchItemArrayList === START")
+        Log.d(TAG_DEBUG, "$logNameClass >f readJSONSearchItemArrayList // читаем JSON")
+        //читаем файл JSON
         val searchItemListJSON = readFromFile(nameFile, context)
-        //Log.d(TAG, "FilesWorker >f readJSONSearchItemArrayList > searchItemListJSON: $searchItemListJSON")
-        //Log.d(TAG, "FilesWorker >f readJSONSearchItemArrayList > searchItemListJSON: $searchItemListJSON")
+
+        Log.d(TAG_DATA, "$logNameClass >f readJSONSearchItemArrayList > searchItemListJSON: $searchItemListJSON")
 
         //десериализация
         var data = SearchItemArrayList(ArrayList())
         try {
             data = Gson().fromJson(searchItemListJSON, SearchItemArrayList::class.java)
-            //Log.d(TAG, "FilesWorker >f readJSONSearchItemArrayList > data: $data")
+            //Log.d(TAG_DATA, "$logNameClass >f readJSONSearchItemArrayList > data: $data")
             /*data.list.forEach {
                 val dateParse = it.searchItem.search
                 val dateParse1 = it.searchItem
-                //Log.d(TAG, "FilesWorker >f readJSONSearchItemArrayList > it: ${dateParse1.search}")
+                //Log.d(TAG, "$logNameClass >f readJSONSearchItemArrayList > it: ${dateParse1.search}")
             }*/
 
         }catch (e: JSONException) {
-            Log.e(TAG, "ERROR: FilesWorker >f readJSONSearchItemArrayList > JSONException: $e")
+            Log.e(TAG, "ERROR: $logNameClass >f readJSONSearchItemArrayList > JSONException: $e")
         }
-        Log.d(TAG_DEBUG, "FilesWorker >f readJSONSearchItemArrayList ------------END")
+        Log.d(TAG_DEBUG, "$logNameClass >f readJSONSearchItemArrayList ----- END")
         return data
     }
 
@@ -132,13 +127,24 @@ class FilesWorker () {
         //если это первый запуск, то меняем true на false и записываем в SharedPreferences
         val statusOutput: Boolean = if (statusFirstLaunch) {
             //первый запуск приложения
-            Log.d(TAG, "FilesWorker >f checkStatusFirstLaunch > IF > firstLaunch")
+            Log.d(TAG, "$logNameClass >f checkStatusFirstLaunch > IF > firstLaunch")
             sharedPrefs.edit().putBoolean(Constants.SHARED_FIRST_LAUNCH, false).apply()
+            firstLaunch(context)
             false
         } else {
             true
         }
         return statusOutput
+    }
+
+    private fun firstLaunch(context: Context){
+        //генерируем пустой JSON
+        val dataListWorker = ArrayList<SearchItemWorker>()
+        val searchItemArrayList = SearchItemArrayList(dataListWorker)
+        FilesWorker().writeJSON(searchItemArrayList, ViewModelFunctions.FILE_SEARCH_ITEM, context)
+        Log.d(TAG_DEBUG, "$logNameClass >f firstLaunch === START / END")
+        Log.d(TAG_DATA, "$logNameClass >f firstLaunch > searchItemArrayList: $searchItemArrayList")
+        writeJSON(searchItemArrayList, Constants.FILE_SEARCH_ITEM, context)
     }
 
     //?? что за Any?

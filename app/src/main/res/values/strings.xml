@@ -4,8 +4,10 @@
     <!--UI-->
     <string name="uiMenu">Menu</string>
     <string name="uiAppName">App name</string>
-    <string name="uiSavedSearchActive">Saved Search Active</string>
+    <string name="uiSavedSearchActive">Active saved search</string>
     <string name="uiSavedSearches">Saved searches</string>
+    <string name="uiSaveNews">Save this news</string>
+    <string name="uiUnSaveNews">Delete this news from the saved</string>
 
 
 

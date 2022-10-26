@@ -46,12 +46,22 @@
             android:textSize="18sp" />
 
         <Button
-            android:id="@+id/buttonSaveSite"
+            android:id="@+id/buttonUnSaveNews"
             android:layout_width="44dp"
             android:layout_height="match_parent"
             android:background="@drawable/button_transparent"
-            android:text="saved searches"
+            android:text="@string/uiSaveNews"
             app:icon="@drawable/ic_save_search"
+            app:iconGravity="top" />
+
+        <Button
+            android:id="@+id/buttonSaveNews"
+            android:layout_width="44dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/button_transparent"
+            android:text="@string/uiUnSaveNews"
+            android:visibility="gone"
+            app:icon="@drawable/ic_star_select"
             app:iconGravity="top" />
 
     </LinearLayout>

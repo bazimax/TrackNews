@@ -1,61 +1,61 @@
 package com.example.tracknews
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.viewModels
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LifecycleOwner
 import com.example.tracknews.News.*
+import com.example.tracknews.classes.Constants
+import com.example.tracknews.classes.FragmentFunction
+import com.example.tracknews.classes.NameTab
 import com.example.tracknews.databinding.FragmentNewsBinding
 import com.google.android.material.tabs.TabLayoutMediator
 
 class NewsFragment : Fragment() {
-    private val fragList2: List<Fragment> = listOf(
-        NewsTodayFragment.newInstance(),
-        NewsWeekFragment.newInstance(),
-        NewsAllFragment.newInstance(),
-        NewsSavedFragment.newInstance()
-    )
+    private val logNameClass = "NewsFragment"
 
-    private val fragList = listOf(
-        NewsTodayFragment.newInstance(),
-        NewsWeekFragment.newInstance(),
-        NewsAllFragment.newInstance(),
-        NewsSavedFragment.newInstance()
-    )
-
-    /*private var fragListTitles = listOf(
-        //getString(R.string.news_today),
-        *//*getString(R.string.news_today),
-        getString(R.string.news_week),
-        getString(R.string.news_all),
-        getString(R.string.news_saved)*//*
-        "Today",
-        "Week",
-        "All Time",
-        "Saved"
-    )*/
-
-
+    private val vm: ViewModel by activityViewModels()
     private lateinit var binding: FragmentNewsBinding
-    //private val vm: ViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         binding = FragmentNewsBinding.inflate(inflater)
         return binding.root
-        //return inflater.inflate(R.layout.fragment_news, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        //Log.d("TAG1", "R string: ${getString(R.string.news_today)}")
+        //Log.d(Constants.TAG_DEBUG, "MainActivity > onViewCreated")
+        val nameTab = NameTab(vm)
 
-        val fragListTitles = listOf(
+        val adapter = ViewPager2Adapter(this, nameTab.listFragment)
+        binding.fragNewsViewPager2.adapter = adapter
+
+        /*vm.searchItemActive.observe(activity as LifecycleOwner) {
+            FragmentFunction(vm).nameTab(view ,binding.fragNewsTab, binding.fragNewsViewPager2)
+        }*/
+        vm.newsItemArrayAll.observe(activity as LifecycleOwner) {
+            FragmentFunction(vm).nameTab(view ,binding.fragNewsTab, binding.fragNewsViewPager2)
+        }
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance() = NewsFragment()
+    }
+
+}
+
+//BACKUP
+/*val fragListTitles = listOf(
             //getString(R.string.news_today),
-            getString(R.string.news_today),
+            getString(R.string.news_today) + "",
             getString(R.string.news_week),
             getString(R.string.news_all),
             getString(R.string.news_saved)
@@ -64,12 +64,13 @@ class NewsFragment : Fragment() {
         val adapter = ViewPager2Adapter(this, fragList2)
         binding.fragNewsViewPager2.adapter = adapter
         TabLayoutMediator(binding.fragNewsTab, binding.fragNewsViewPager2) {
-            tab, pos -> tab.text = fragListTitles[pos]
-        }.attach()
-    }
+                tab, pos -> tab.text = fragListTitles[pos]
+        }.attach()*/
 
-    companion object {
-        @JvmStatic
-        fun newInstance() = NewsFragment()
-    }
-}
+/*
+private val fragList2: List<Fragment> = listOf(
+    NewsTodayFragment.newInstance(),
+    NewsWeekFragment.newInstance(),
+    NewsAllFragment.newInstance(),
+    NewsSavedFragment.newInstance()
+)*/

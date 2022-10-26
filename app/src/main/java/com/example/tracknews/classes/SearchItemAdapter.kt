@@ -31,9 +31,9 @@ class SearchItemAdapter(private val listener: Listener): RecyclerView.Adapter<Se
             //Если есть хотя бы одна новость для данного "сохраненного поиска", то показываем количество всех его новостей
             //??
             if (searchItem.counterAllNews > 0) {
-                searchItemButton.text = searchItem.search + searchItem.counterAllNews
-                searchItemButtonActive.text = searchItem.search + searchItem.counterAllNews
-                searchItemButtonSelect.text = searchItem.search + searchItem.counterAllNews
+                searchItemButton.text = searchItem.search + " " + searchItem.counterAllNews
+                searchItemButtonActive.text = searchItem.search + " " + searchItem.counterAllNews
+                searchItemButtonSelect.text = searchItem.search + " " + searchItem.counterAllNews
             }
 
             searchItemButtonSelect.visibility = 4 //??

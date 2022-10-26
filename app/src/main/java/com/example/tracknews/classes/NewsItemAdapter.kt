@@ -48,8 +48,8 @@ class NewsItemAdapter(private val listener: Listener): RecyclerView.Adapter<News
                 //newsItemButtonSave.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star_select, 0, 0, 0)
             }
             else {
-                newsItemButtonSave.visibility = View.GONE
                 newsItemButtonUnSave.visibility = View.VISIBLE
+                newsItemButtonSave.visibility = View.GONE
                 //newsItemButtonSave.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star_unselect, 0, 0, 0)
             }
 
