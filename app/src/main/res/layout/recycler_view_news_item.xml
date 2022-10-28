@@ -101,6 +101,7 @@
                     android:text="@string/newsItemTitle"
                     android:textSize="16sp" />
 
+
                 <TextView
                     android:id="@+id/newsItemTextViewContent"
                     style="@style/BackgroundNewsItemTextContent"
@@ -113,7 +114,6 @@
                     android:stateListAnimator="@null"
                     android:text="@string/newsItemContent"
                     android:textSize="12sp" />
-
 
                 <TextView
                     android:id="@+id/newsItemTextViewLink"

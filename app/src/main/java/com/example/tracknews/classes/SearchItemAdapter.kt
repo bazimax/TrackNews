@@ -51,7 +51,7 @@ class SearchItemAdapter(private val listener: Listener): RecyclerView.Adapter<Se
             if(searchItem.counterNewNews > 0) {
                 searchItemCount.visibility = VISIBLE
             }
-            else searchItemCount.visibility = INVISIBLE
+            else searchItemCount.visibility = GONE
 
             //Log.d("TAG1", "SearchItemAdapter >f bind > searchItem: $searchItem")
             //Log.d("TAG1", "SearchItemAdapter >f bind > searchItemButtonSelect: ${searchItemButtonSelect.visibility}")

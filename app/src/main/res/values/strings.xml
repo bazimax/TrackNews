@@ -9,10 +9,23 @@
     <string name="uiSaveNews">Save this news</string>
     <string name="uiUnSaveNews">Delete this news from the saved</string>
 
-
+    <!--Instruction-->
+    <string name="instructionCancel">Skip tutorial</string>
+    <string name="instructionFinish">Finish tutorial</string>
+    <string name="instructionStart">Tutorial</string>
+    <string name="instructionUnHideSearch">Click to find news</string>
+    <string name="instructionEditText">Enter a search term</string>
+    <string name="instructionGo">Start your search</string>
+    <string name="instructionSaveSearch">Save your search. The program will notify you if it finds something.</string>
+    <string name="instructionSavedSearch">All saved searches are stored here.</string>
 
     <string name="search">Search</string>
     <string name="defaultTextView">///</string>
+
+    <!--messageLoadWebsite-->
+    <string name="messageFindNews">Looking for news...</string>
+    <string name="messageNoNews">No news</string>
+    <string name="messageStatusEthernet">No Internet</string>
 
     <!--time/date-->
     <string name="timeToday">Today</string>

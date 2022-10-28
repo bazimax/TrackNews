@@ -173,6 +173,217 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardViewInstructionFinish"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="@color/baseColorTextAccent"
+                    app:cardCornerRadius="16dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textViewInstructionFinish"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:padding="8dp"
+                            android:text="@string/instructionFinish"
+                            android:textColor="@color/baseColorAccent" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:padding="8dp"
+                            android:text="@string/instructionSavedSearch"
+                            android:textColor="@color/darkColorAccent2" />
+
+                        <View
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:foreground="@drawable/ic_arrow_bottom"
+                            android:foregroundTint="@color/darkColorAccent2"
+                            android:rotation="180" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardViewInstructionStartEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginStart="80dp"
+                    android:layout_marginEnd="80dp"
+                    android:layout_marginBottom="80dp"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="@color/baseColorTextAccent"
+                    app:cardCornerRadius="16dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:foreground="@drawable/ic_arrow_bottom"
+                            android:foregroundTint="@color/darkColorAccent2" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:padding="8dp"
+                            android:text="@string/instructionEditText"
+                            android:textColor="@color/darkColorAccent2" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardViewInstructionStartGo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginStart="160dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="80dp"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="@color/baseColorTextAccent"
+                    app:cardCornerRadius="16dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:padding="8dp"
+                            android:text="@string/instructionUnHideSearch"
+                            android:textColor="@color/darkColorAccent2" />
+
+                        <View
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:foreground="@drawable/ic_arrow_bottom"
+                            android:foregroundTint="@color/darkColorAccent2" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardViewInstructionSaveSearch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="80dp"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="@color/baseColorTextAccent"
+                    app:cardCornerRadius="16dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:foreground="@drawable/ic_arrow_bottom"
+                            android:foregroundTint="@color/darkColorAccent2" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:padding="8dp"
+                            android:text="@string/instructionSaveSearch"
+                            android:textColor="@color/darkColorAccent2" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardViewInstructionStart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginLeft="80dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="@color/baseColorTextAccent"
+                    app:cardCornerRadius="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:foreground="@drawable/ic_arrow_bottom"
+                            android:foregroundTint="@color/darkColorAccent2"
+                            android:rotation="90" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:padding="8dp"
+                            android:text="@string/instructionUnHideSearch"
+                            android:textColor="@color/darkColorAccent2" />
+
+                        <TextView
+                            android:id="@+id/textViewInstructionCancel"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:padding="8dp"
+                            android:text="@string/instructionCancel"
+                            android:textColor="@color/baseColorAccent" />
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+                <!--app:cardBackgroundColor="@android:color/transparent"-->
+                app:cardElevation="0dp"/>
+
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/fabButtonSearch"
                     android:layout_width="wrap_content"
@@ -189,21 +400,6 @@
                     android:translationZ="10dp"
                     app:srcCompat="?android:attr/actionModeWebSearchDrawable"
                     tools:visibility="visible" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fabButtonGO"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:clickable="true"
-                    android:elevation="8dp"
-                    android:stateListAnimator="@null"
-                    android:translationZ="8dp"
-                    android:visibility="invisible"
-                    app:srcCompat="@drawable/ic_arrow_forward" />
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardView"
@@ -281,8 +477,8 @@
     </FrameLayout>
 
     <LinearLayout
-        style="@style/Theme.BackgroundBase"
         android:id="@+id/activityMainDrawerLayout"
+        style="@style/Theme.BackgroundBase"
         android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
@@ -293,14 +489,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Button 1"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/testButton2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Button 2"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/textViewTheme"
@@ -352,6 +548,13 @@
                 android:text="@string/system_theme" /><!--style="@style/SecondaryText"-->
 
         </RadioGroup>
+
+        <Button
+            android:id="@+id/buttonInstruction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/instructionStart"
+            android:visibility="visible" />
     </LinearLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

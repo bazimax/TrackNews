@@ -104,6 +104,7 @@ class ParserSites() {
         //Log.d("TAG1", "!!Return:: : $siteTemp")
         return siteTemp
     }
+    //не актуально
     private fun parseYa(search: String):String {
         val correctSearch = search.replace(" ", "+", true)
         //Log.d("TAG1", "Start parseYa")
@@ -175,13 +176,10 @@ class ParserSites() {
         val correctSearch = search.replace(" ", "%20", true)
         Log.d(TAG_DATA, "$logNameClass >f parseP > correctSearch: $correctSearch")
 
-        //https://pikabu.ru/search?q=witcher&st=3&d=5347&D=5378
-        //val url = "https://pikabu.ru/search?q=$correctSearch&st=3&d=5347&D=5378" //...... по умолчанию
         val url = "https://pikabu.ru/search?q=$correctSearch&r=4" //рейтинг от 100
         //https://pikabu.ru/search?q=witcher&d=5347&D=5378 - по дате
         //https://pikabu.ru/search?q=witcher&st=2&d=5347&D=5378 - по рейтингу
-        //https://pikabu.ru/search?q=witcher&st=3&d=5347&D=5378 - по релевантности
-        //https://pikabu.ru/search?q=%D0%B2%D0%B5%D0%B4%D1%8C%D0%BC%D0%B0%D0%BA&r=4
+        //https://pikabu.ru/search?q=witcher&st=3&d=5347&D=5378 - по релевантности (по умолчанию)
         //https://pikabu.ru/search?q=witcher&r=4 - рейтинг от 100
 
 
@@ -196,27 +194,15 @@ class ParserSites() {
         if (siteTemp == "") {
             statusEthernet = false.toString() //"bad"
         }
+        Log.d(TAG_DATA, "$logNameClass >f parseP > statusEthernet: $statusEthernet")
 
         val doc = Jsoup.parse(siteTemp)
         val item = doc.select("article") //начали парсить
         newsItemList.clear()
 
-        //delete>
-        //statusEthernet = doc.toString() //test
-        //statusEthernet = siteTemp//doc.toString() //test
-        Log.d(TAG_DATA, "$logNameClass >f parseP > statusEthernet: $statusEthernet")
-        //delete^
-
-        //var testCount = 0
-        //Log.d("TAG1", ":::: item 1: ${doc.select("story__main").first()}")
-        Log.d(TAG_DATA_BIG, "$logNameClass >f parseP > item: ${item}")
+        Log.d(TAG_DATA_BIG, "$logNameClass >f parseP > item: $item")
         Log.d(TAG_DATA, "$logNameClass >f parseP > item size: ${item.size}")
         item.forEach {
-            /*Log.d("TAG1", "!! it0 size: ${it.select("div.story__content-inner").size}") //
-            Log.d("TAG1", "!! it0-1 size: ${it.select("div.story-block_type_text").size}") //
-            */
-
-
             //для каждого новостного элемента
             val id = 0
             val img = ""//it.select("href").first().toString() ?: "Img Error"
@@ -239,10 +225,10 @@ class ParserSites() {
             //Log.d("TAG1", "forEach newsItem: $newsItem")
             //Log.d("TAG1", "forEach newsItemList: $newsItemList")
 
-            if (link != "") {
+            if (newsItem.link.contains("https://")) {
                 newsItemList.add(newsItem)
 
-                Log.d(TAG_DATA_IF, "$logNameClass >f testParseP > item.forEach:\n" +
+                Log.d(TAG_DATA_IF, "$logNameClass >f ParseP > item.forEach:\n" +
                         "- id: $id\n" +
                         "- search: $search\n" +
                         "- img: $img\n" +

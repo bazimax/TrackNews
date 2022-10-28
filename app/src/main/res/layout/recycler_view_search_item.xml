@@ -61,23 +61,6 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="invisible" />
 
-        <TextView
-            android:id="@+id/searchItemCount"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:background="@drawable/round_button"
-            android:gravity="center"
-            android:shadowRadius="12"
-            android:stateListAnimator="@null"
-            android:text="@string/defaultTextView"
-            android:textColor="?attr/colorBackgroundFloating"
-            android:textSize="12sp"
-            android:translationZ="2dp"
-            android:visibility="invisible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <CheckBox
@@ -85,6 +68,21 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:visibility="gone"
+        tools:visibility="gone" />
+
+    <TextView
+        android:id="@+id/searchItemCount"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@drawable/round_button"
+        android:gravity="center"
+        android:shadowRadius="12"
+        android:stateListAnimator="@null"
+        android:text="@string/defaultTextView"
+        android:textColor="?attr/colorBackgroundFloating"
+        android:textSize="12sp"
+        android:translationZ="2dp"
+        android:visibility="invisible"
         tools:visibility="visible" />
 
 

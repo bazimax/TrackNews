@@ -4,6 +4,11 @@ import android.annotation.SuppressLint
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -31,43 +36,52 @@ class FragmentFunction(viewModel: ViewModel) {
     private val vm = viewModel
 
     fun nameTab(view: View, tabLayout: TabLayout, viewPager2: ViewPager2){
+        Log.d(TAG_DEBUG, "$logNameClass >f nameTab === START")
         val nameTab = NameTab(vm)
-        val listNameTab = nameTab.listName(view.context)
-        Log.d(Constants.TAG, "$logNameClass > nameTab: $listNameTab")
+        val listNameTab = nameTab.listName(view.context) //V1
+        //val listNameTab = nameTab.tabName(view.context)//V2 - мало полезен
+        Log.d(TAG_DATA, "$logNameClass > nameTab: $listNameTab")
 
-        /*val adapter = ViewPager2Adapter(this, nameTab.listFragment)
-        binding.fragNewsViewPager2.adapter = adapter*/
+        //V1
         TabLayoutMediator(tabLayout, viewPager2) {
                 tab, pos -> tab.text = nameTab.listName(view.context)[pos]
         }.attach()
+        //V2 - мало полезен
+        /*TabLayoutMediator(tabLayout, viewPager2) {
+                tab, pos -> tab.text = nameTab.tabName(view.context)[pos]
+        }.attach()*/
+        Log.d(TAG_DEBUG, "$logNameClass >f nameTab ----- END")
     }
 
     //загрузка интеренет страницы
     fun loadWebsiteFragment(newsItem: NewsItem, activity: MainActivity) {
         Log.d(TAG_DEBUG, "$logNameClass >f loadWebsiteFragment === START")
         Log.d(TAG_DATA, "$logNameClass >f loadWebsiteFragment > newsItem: $newsItem")
-        //vm.tempWebsiteLink.value = newsItem.link
-        vm.tempNewsItemOpenWebsite.value = newsItem
-        //vm.url2 = url
-        //Log.d("TAG1", "fragNewsSaved >f loadWebsite > url: $url")
-        //Log.d("TAG1", "fragNewsSaved >f loadWebsite > vm.tempUrl: ${vm.tempWebsiteLink.value}")
 
-        if (vm.statusLandscape.value == "true") {
-            //загрузка интернет страницы
-            //2й вариант - замена одного фрагмента на другой - WebSiteFragment
-            activity.supportFragmentManager
-                .beginTransaction()
-                .replace(com.example.tracknews.R.id.frameLayoutSuperMain, WebsiteFragment.newInstance())
-                .addToBackStack("main")
-                .commit()
+        if (newsItem.link.contains("https://")) {
+            vm.tempNewsItemOpenWebsite.value = newsItem
+            //Log.d("TAG1", "fragNewsSaved >f loadWebsite > url: $url")
+
+            if (vm.statusLandscape.value == "true") {
+                //загрузка интернет страницы
+                //2й вариант - замена одного фрагмента на другой - WebSiteFragment
+                activity.supportFragmentManager
+                    .beginTransaction()
+                    .replace(com.example.tracknews.R.id.frameLayoutSuperMain, WebsiteFragment.newInstance())
+                    .addToBackStack("main")
+                    .commit()
+            }
+            else {
+                activity.supportFragmentManager
+                    .beginTransaction()
+                    .replace(com.example.tracknews.R.id.frameLayoutMainFragmentLand, WebsiteFragment.newInstance())
+                    .commit()
+            }
         }
         else {
-            //bindingWeb.fragWebsiteWebView.loadUrl("https://www.google.ru/")
-            activity.supportFragmentManager
-                .beginTransaction()
-                .replace(com.example.tracknews.R.id.frameLayoutMainFragmentLand, WebsiteFragment.newInstance())
-                .commit()
+            Toast.makeText(activity, "Bad link", Toast.LENGTH_SHORT).show() //??
         }
+        Log.d(TAG_DEBUG, "$logNameClass >f loadWebsiteFragment ----- END")
     }
 
     //отслеживаем движение по экрану, чтобы скрывать форму поиска
@@ -95,6 +109,33 @@ class FragmentFunction(viewModel: ViewModel) {
 
         //Отслеживаем движение по экрану, чтобы скрывать форму поиска
         rcView.setOnTouchListener { _, event -> onTouch(event)}
+    }
+
+    //прогрессбар
+    fun progressBar(view: View) {
+        //vm.statusProgressBar.observe(owner) { }
+
+        if (vm.statusProgressBar.value == true) {
+            view.visibility = View.VISIBLE
+        }
+        else {
+            view.visibility = View.GONE
+        }
+    }
+
+    //сервисные сообщения
+    fun serviceMessage(view: TextView) {
+        //vm.serviceMessage.observe(owner) { }
+
+        Log.d(Constants.TAG_DEBUG, "$logNameClass >f serviceMessage >  ${vm.serviceMessage.value}")
+
+        if (vm.serviceMessage.value != "") {
+            view.visibility = View.VISIBLE
+            view.text = vm.serviceMessage.value
+        }
+        else {
+            view.visibility = View.GONE
+        }
     }
 }
 

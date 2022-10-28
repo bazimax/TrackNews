@@ -9,8 +9,23 @@
     <string name="uiSaveNews">Сохранить эту новость</string>
     <string name="uiUnSaveNews">Удалить эту новость из сохраненных</string>
 
+    <!--Instruction-->
+    <string name="instructionCancel">Пропустить обучение</string>
+    <string name="instructionFinish">Закончить обучение</string>
+    <string name="instructionStart">Пройти обучение</string>
+    <string name="instructionUnHideSearch">Нажмите для поиска новостей</string>
+    <string name="instructionEditText">Введите поисковой запрос</string>
+    <string name="instructionGo">Начните поиск</string>
+    <string name="instructionSaveSearch">Сохраните поисковой запрос. Программа уведомит если что-то найдет</string>
+    <string name="instructionSavedSearch">Тут хранятся все сохраненные поисковые запросы</string>
+
     <string name="search">Поиск</string>
     <string name="defaultTextView">///</string>
+
+    <!--messageLoadWebsite-->
+    <string name="messageFindNews">Ищем новости...</string>
+    <string name="messageNoNews">Новостей нет</string>
+    <string name="messageStatusEthernet">Нет интеренета</string>
 
     <!--time/date-->
     <string name="timeToday">Сегодня</string>

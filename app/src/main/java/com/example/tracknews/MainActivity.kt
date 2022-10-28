@@ -13,17 +13,17 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.work.*
 import com.example.tracknews.News.NewsTodayFragment
 import com.example.tracknews.classes.*
 import com.example.tracknews.databinding.ActivityMainBinding
 import com.example.tracknews.db.MainDbManager
-import com.example.tracknews.db.MainDbNameObject
-import com.example.tracknews.parseSite.ParserSites
 import com.example.tracknews.services.MainServices
+import com.example.tracknews.services.WorkerFindNews
 import com.example.tracknews.services.WorkerFindNewsFun
+import java.util.*
 
 
 class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
 
         //SharedPreferences
         const val SEARCH_ITEM = Constants.SEARCH_ITEM//"search"
+        const val SHARED_INSTRUCTION = Constants.SHARED_INSTRUCTION//"instruction"
 
         //Имена файлов
         const val FILE_SEARCH_ITEM = Constants.FILE_SEARCH_ITEM//"searchItems.json"
@@ -112,6 +113,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         //раскрываем меню поиска
         buttonSearch.setOnClickListener {
             Log.d(TAG_DEBUG, "$logNameClass >f CLICK_buttonSearch === START")
+
             if (vm.sizeFAButton == -99) {
                 vm.sizeFAButton = buttonSearch.width
             }
@@ -122,14 +124,25 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
                 //animationView.swapButton(buttonSearch, buttonGo, 200, 200,true, -120F)
             })
             vm.statusSearchMutable.value = true.toString()
+
+            //инструкция шаг 0 > 1
+            if (vm.statusInstruction.value !=null && vm.statusInstruction.value != "-1") {
+                vm.statusInstruction.value = "step1"
+            }
             Log.d(TAG_DEBUG, "$logNameClass >f CLICK_buttonSearch ----- END")
         }
 
         //GO - поиск новостей
         buttonGo.setOnClickListener {
             Log.d(TAG_DEBUG, "$logNameClass >f CLICK_buttonGo === START")
+
             val search = binding.editTextSearch.text.toString()
             ViewModelFunctions(vm).findNews(search, this)
+
+            //инструкция шаг 2 > 3
+            if (vm.statusInstruction.value == "step2") {
+                vm.statusInstruction.value = "step3"
+            }
             Log.d(TAG_DEBUG, "$logNameClass >f CLICK_buttonGo ----- END")
         }
 
@@ -142,6 +155,11 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             ViewModelFunctions(vm).saveSearch(search, this)
             buttonSaved.visibility = View.VISIBLE
             buttonSave.visibility = View.INVISIBLE
+
+            //инструкция шаг 3 > 4
+            if (vm.statusInstruction.value == "step3") {
+                vm.statusInstruction.value = "step4"
+            }
             Log.d(TAG_DEBUG, "$logNameClass >f CLICK_buttonSave ----- END")
         }
 
@@ -158,6 +176,11 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
                 else {
                     buttonSave.visibility = View.VISIBLE
                     buttonSaved.visibility = View.INVISIBLE
+                }
+
+                //инструкция шаг 1 > 2
+                if (vm.statusInstruction.value == "step1") {
+                    vm.statusInstruction.value = "step2"
                 }
             }
 
@@ -181,69 +204,27 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
 
         //временные кнопки >
         binding.testButton.setOnClickListener {
-            /*val testSiteString = filesWorker.readFromFile("testSite.txt", this)
-            Log.d(WorkerFindNews.TAG, "WorkerFindNews >f doWork > try > testSiteString: $testSiteString")
-            Log.d(WorkerFindNews.TAG, "WorkerFindNews >f doWork > try > testSiteString: ${vm.testSiteString.value.toString()}")*/
-
-            //... MainServices().notification(true, this)
-            //.. ViewModelFunctions(vm).testNameThisFun()
-
-            //Log.d(TAG_DATA, "$logNameClass >f CLICK_5 > ${vm.newsItemArrayAll.value}")
-
             Log.d(TAG, "$logNameClass >f CLICK_1 > =============================== >>>")
-            //Log.d(TAG, "$logNameClass >C MainDbManager > clearAllDataInDb: ${mainDbManager.clearAllDataInDb()}")
-            ViewModelFunctions(vm).updateNewsCountForEachSearchItem(mainDbManager, this)
-
-            //mainDbManager.clearAllDataInDb()
-            /*val site = FilesWorker().readFromFile(Constants.FILE_TEST_LOAD_SITE, this) //(siteTemp, Constants.FILE_TEST_LOAD_SITE, context)
-            ParserSites().testParse("ведьмак", site, this)*/
-
-            //читаем данные из JSON
-            /*val data = filesWorker.readJSONSearchItemArrayList(FILE_SEARCH_ITEM, this)
-
-            data.list.forEach {
-                //Log.d(TAG, "Main Activity >f writeJSON > json4: ${it.counterNewNews}")
-                Log.d(TAG, "Main Activity >f writeJSON > json4: ${it.searchItem.search}")
-            }
-            Log.d(TAG, "Main Activity >f writeJSON > json4: ${data.list}")*/
-            //val findNewsItem = mainDbManager.findItemInDb(MainDbNameObject.COLUMN_NAME_LINK, "someb") //Ищем напрямую в БД
-            //Log.d(TAG, "Main Activity > witcher: $findNewsItem")
+            testButton1()
         }
 
         binding.testButton2.setOnClickListener {
             Log.d(TAG, "$logNameClass >f CLICK_2 > =============================== >>>")
-            Log.d(TAG, "$logNameClass >C MainDbManager > readDbData: ${mainDbManager.readDbData()}")
-            val list = vm.searchItemActive.value?.let { it1 ->
-                mainDbManager.findItemInDb(MainDbNameObject.COLUMN_NAME_SEARCH, it1)
-            }
-
-            list?.forEach {
-                Log.d(Constants.TAG_DATA_IF, "$logNameClass >C MainDbManager >\n" +
-                        "- it.search: ${it.search}\n" +
-                        "- it.id: ${it.id}\n" +
-                        "- it.statusSaved: ${it.statusSaved}\n" +
-                        "- it.title: ${it.title}\n")
-            }
+            testButton2()
         }
         //временные кнопки ^
 
         //выдвигаем меню настроек
         binding.buttonHamburger.setOnClickListener {
-
             //Log.d("TAG1", "mDrawer Button Click")
             binding.actMainDrawer.openDrawer(GravityCompat.START)
-            //Log.d("TAG1", "end mDrawer Button ==============")
         }
 
         //раскрываем список "сохранненых поисков (подписок)"
         btnSavedSearches.setOnClickListener {
             frameLayoutSavedSearches.layoutParams = frameLayoutSavedSearches.layoutParams
             //binding.frameLayoutSavedSearches.layoutParams = binding.frameLayoutSavedSearches.layoutParams
-            //Log.d("TAG1", "save: ----- ${frameLayoutSavedSearches.layoutTransition} ")
-            //val animationView = AnimationView()
-            //(frameLayoutSavedSearches as ViewGroup).layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
-            //frameLayoutSavedSearches.layoutTransition.getAnimator(0)
-            //Log.d("TAG1", "save: 1 ")
+
             if (vm.statusSavedSearchesView) {
                 //startService(Intent(this, FindNews::class.java)) //запуск службы
                 //Log.d("TAG1", "save: 2 ")
@@ -266,6 +247,12 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
                 btnSavedSearches.animate().rotation(180F).duration = 200
                 vm.statusSavedSearchesView = true
                 //Log.d("TAG1", "save: 6 ")
+            }
+
+            //инструкция - финал
+            if (vm.statusInstruction.value == "step4") {
+                vm.statusInstruction.value = "-1"
+                sharedPrefs.edit().putString(SHARED_INSTRUCTION, "-1").apply() //инструкция больше не будет показываться
             }
         }
 
@@ -338,6 +325,9 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         //Delete??
         FilesWorker().checkStatusFirstLaunch(this) //проверка - первый ли это запуск. Для инструкции
 
+        //инструкция
+        instruction()
+
 
         val rcView = binding.actMainRecyclerViewSavedSearches
 
@@ -353,14 +343,18 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         }
 
         Log.d(TAG_DEBUG, "$logNameClass >f init > searchItemActive: ${vm.searchItemActive.value}")
-        //выбираем активный SearchItem
+        //если список <сохраненных поисков> не пустой
         if (vm.searchItemActive.value == null) {
+            //выбираем активный SearchItem
             ViewModelFunctions(vm).selectSearchItemActive(this)
+
+            //Worker - работа в фоне и отправка уведомлений //?? PENDING
+            //если задача не запущена - то запустить
+            val workerStatus = WorkManager.getInstance(this).getWorkInfosForUniqueWork(Constants.WORKER_UNIQUE_NAME_PARSER).get()[0].state
+            if (workerStatus != WorkInfo.State.ENQUEUED) {
+                WorkerFindNewsFun().workerFindNewsFirst(this)
+            }
         }
-
-        //Worker - работа в фоне и отправка уведомлений
-        WorkerFindNewsFun().workerFindNewsFirst(this)
-
 
         Log.d(TAG_DEBUG, "$logNameClass >f init ----- END")
     }
@@ -486,7 +480,138 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
     private fun getSavedTheme() = sharedPrefs.getInt(KEY_THEME, THEME_UNDEFINED)
     // //функции Выше ^ -> тема (светлая и темная). Чужой код
 
+    private fun instruction(){
+        val sharedInstruction = sharedPrefs.getString(SHARED_INSTRUCTION, "")
+
+        //если это первый запуск, то показываем инструкцию
+        if (sharedInstruction == "") {
+            vm.statusInstruction.value = "step0"
+        }
+        else {
+            vm.statusInstruction.value = "-1"
+        }
+        //инструкции
+        //observe
+        vm.statusInstruction.observe(this) {
+            val statusInstruction = vm.statusInstruction.value
+
+            binding.cardViewInstructionStart.visibility = View.GONE
+            binding.cardViewInstructionStartEditText.visibility = View.GONE
+            binding.cardViewInstructionStartGo.visibility = View.GONE
+            binding.cardViewInstructionSaveSearch.visibility = View.GONE
+            binding.cardViewInstructionFinish.visibility = View.GONE
+            when (statusInstruction) {
+                "step0" -> binding.cardViewInstructionStart.visibility = View.VISIBLE
+                "step1" -> binding.cardViewInstructionStartEditText.visibility = View.VISIBLE
+                "step2" -> binding.cardViewInstructionStartGo.visibility = View.VISIBLE
+                "step3" -> binding.cardViewInstructionSaveSearch.visibility = View.VISIBLE
+                "step4" -> binding.cardViewInstructionFinish.visibility = View.VISIBLE
+            }
+        }
+
+        //кнопки
+        //закончить начальное обучение
+        binding.textViewInstructionFinish.setOnClickListener {
+            vm.statusInstruction.value = "-1"
+            sharedPrefs.edit().putString(SHARED_INSTRUCTION, "-1").apply() //инструкция больше не будет показываться
+        }
+
+        //Пройти обучение заново
+        binding.buttonInstruction.setOnClickListener {
+            vm.statusInstruction.value = "step0"
+        }
+
+        //отменить начальное обучение
+        binding.textViewInstructionCancel.setOnClickListener {
+            vm.statusInstruction.value = "-1"
+            sharedPrefs.edit().putString(SHARED_INSTRUCTION, "-1").apply() //инструкция больше не будет показываться
+        }
+    }
+
     //BACKUP >
+    private fun testButton1(){
+        val  myWorkRequest = OneTimeWorkRequestBuilder<WorkerFindNews>()
+            .addTag(WorkerFindNews.WORKER_TAG_PARSER)
+            .build()
+
+        MainServices().notification(true, this)
+
+        //val outputData = WorkManager.getInstance(this).enqueueUniqueWork(Constants.WORKER_UNIQUE_NAME_PARSER, ExistingWorkPolicy.KEEP, myWorkRequest)//enqueueUniquePeriodicWork(TAG, ExistingPeriodicWorkPolicy.KEEP , photoCheckWork)
+        //val outputData2 = WorkManager.getInstance(this).getWorkInfosForUniqueWork(Constants.WORKER_UNIQUE_NAME_PARSER).get()[0]
+
+        val outputData2 = WorkManager.getInstance(this).getWorkInfosForUniqueWork(Constants.WORKER_UNIQUE_NAME_PARSER).get().forEach {
+            //Log.d(TAG, "$logNameClass >f CLICK_1 > testButton1 > worker > outputData: ${outputData.state}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > id: ${it.id}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > state: ${it.state}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > outputData: ${it.outputData}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > outputData.key: ${it.outputData.keyValueMap}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > outputData.size: ${it.outputData.size()}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > progress: ${it.progress}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > tags: ${it.tags}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > runAttemptCount: ${it.runAttemptCount}")
+        }
+
+        val outputData = WorkManager.getInstance(this).getWorkInfosForUniqueWork(Constants.WORKER_UNIQUE_NAME_PARSER)
+        Log.d(Constants.TAG_DATA, "$logNameClass >f CLICK_1 > testButton1 > worker > outputData: $outputData")
+        Log.d(Constants.TAG_DATA, "$logNameClass >f CLICK_1 > testButton1 > worker > outputData2: $outputData2")
+
+        /*fun getResult(context: Context, owner: LifecycleOwner, id: UUID) {
+            WorkManager.getInstance(context)
+                .getWorkInfoByIdLiveData(id)
+                .observe(owner, Observer {
+                    if (it.state == WorkInfo.State.SUCCEEDED) {
+                        val result = it.outputData.getInt(WORKER_RESULT_INT, 0)
+                        // do something with result
+                    }
+                })
+        }*/
+
+        /*val testSiteString = filesWorker.readFromFile("testSite.txt", this)
+        Log.d(WorkerFindNews.TAG, "WorkerFindNews >f doWork > try > testSiteString: $testSiteString")
+        Log.d(WorkerFindNews.TAG, "WorkerFindNews >f doWork > try > testSiteString: ${vm.testSiteString.value.toString()}")*/
+
+        //...MainServices().notification(true, this) //...
+        //.. ViewModelFunctions(vm).testNameThisFun()
+
+        //Log.d(TAG_DATA, "$logNameClass >f CLICK_5 > ${vm.newsItemArrayAll.value}")
+
+
+        //Log.d(TAG, "$logNameClass >C MainDbManager > clearAllDataInDb: ${mainDbManager.clearAllDataInDb()}")
+        //ViewModelFunctions(vm).updateNewsCountForEachSearchItem(mainDbManager, this)
+
+        //mainDbManager.clearAllDataInDb()
+        /*val site = FilesWorker().readFromFile(Constants.FILE_TEST_LOAD_SITE, this) //(siteTemp, Constants.FILE_TEST_LOAD_SITE, context)
+        ParserSites().testParse("ведьмак", site, this)*/
+
+        //читаем данные из JSON
+        /*val data = filesWorker.readJSONSearchItemArrayList(FILE_SEARCH_ITEM, this)
+
+        data.list.forEach {
+            //Log.d(TAG, "Main Activity >f writeJSON > json4: ${it.counterNewNews}")
+            Log.d(TAG, "Main Activity >f writeJSON > json4: ${it.searchItem.search}")
+        }
+        Log.d(TAG, "Main Activity >f writeJSON > json4: ${data.list}")*/
+        //val findNewsItem = mainDbManager.findItemInDb(MainDbNameObject.COLUMN_NAME_LINK, "someb") //Ищем напрямую в БД
+        //Log.d(TAG, "Main Activity > witcher: $findNewsItem")
+    }
+
+    private fun testButton2(){
+        WorkerFindNewsFun().workerFindNewsFirst(this)
+
+        //Log.d(TAG, "$logNameClass >C MainDbManager > readDbData: ${mainDbManager.readDbData()}")
+        /*val list = vm.searchItemActive.value?.let { it1 ->
+            mainDbManager.findItemInDb(MainDbNameObject.COLUMN_NAME_SEARCH, it1)
+        }
+
+        list?.forEach {
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >C MainDbManager >\n" +
+                    "- it.search: ${it.search}\n" +
+                    "- it.id: ${it.id}\n" +
+                    "- it.statusSaved: ${it.statusSaved}\n" +
+                    "- it.title: ${it.title}\n")
+        }*/
+    }
+
     fun generateSearchItemArrayList(){
         //записываем данные
         Log.d(TAG, "Main Activity >f writeJSON ======START")

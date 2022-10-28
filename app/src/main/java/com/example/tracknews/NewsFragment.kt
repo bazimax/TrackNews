@@ -31,10 +31,14 @@ class NewsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        //Log.d(Constants.TAG_DEBUG, "MainActivity > onViewCreated")
+        Log.d(Constants.TAG_DEBUG, "$logNameClass > onViewCreated")
         val nameTab = NameTab(vm)
+        Log.d(Constants.TAG_DEBUG, "$logNameClass > onViewCreated > listFragment: ${nameTab.listFragment}")
+        //Log.d(Constants.TAG_DEBUG, "$logNameClass > onViewCreated > fragmentName: ${nameTab.fragmentName()}")
+        //Log.d(Constants.TAG_DEBUG, "$logNameClass > onViewCreated > tabName: ${nameTab.tabName(view.context)}")
+        val adapter = ViewPager2Adapter(this, nameTab.listFragment) //?? old
 
-        val adapter = ViewPager2Adapter(this, nameTab.listFragment)
+        //val adapter = ViewPager2Adapter(this, nameTab.fragmentName())
         binding.fragNewsViewPager2.adapter = adapter
 
         /*vm.searchItemActive.observe(activity as LifecycleOwner) {
@@ -42,6 +46,10 @@ class NewsFragment : Fragment() {
         }*/
         vm.newsItemArrayAll.observe(activity as LifecycleOwner) {
             FragmentFunction(vm).nameTab(view ,binding.fragNewsTab, binding.fragNewsViewPager2)
+            Log.d(Constants.TAG_DEBUG, "$logNameClass > onViewCreated > newsItemArrayAll.OBSERVE === START")
+            Log.d(Constants.TAG_DEBUG, "$logNameClass > onViewCreated > listFragment: ${nameTab.listFragment}")
+            //Log.d(Constants.TAG_DEBUG, "$logNameClass > onViewCreated > fragmentName: ${nameTab.fragmentName()}")
+            //Log.d(Constants.TAG_DEBUG, "$logNameClass > onViewCreated > tabName: ${nameTab.tabName(view.context)}")
         }
     }
 

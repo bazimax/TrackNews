@@ -20,7 +20,6 @@ import java.io.IOException
 class WebsiteFragment : Fragment() {
     private val logNameClass = "WebsiteFragment"
 
-    lateinit var url: String
     lateinit var binding: FragmentWebsiteBinding
     private val vm: ViewModel by activityViewModels()
 
@@ -83,7 +82,7 @@ class WebsiteFragment : Fragment() {
         fun newInstance() = WebsiteFragment()
     }
 
-    fun swapButtonsSave(){
+    private fun swapButtonsSave(){
         if (vm.tempNewsItemOpenWebsite.value?.statusSaved == "true") {
             binding.buttonSaveNews?.visibility = View.VISIBLE
             binding.buttonUnSaveNews?.visibility = View.GONE
@@ -101,40 +100,13 @@ class WebsiteFragment : Fragment() {
         activity?.runOnUiThread(action)
     }
 
-    private fun init(){
-        //activity!!.findViewById<View>(R.id.fabButtonSearch).visibility = View.GONE
-        /*vm.newsItemUpdateItem.observe(activity as LifecycleOwner) {
-            if (vm.newsItemUpdateItem.value?.statusSaved == "true") {
-                binding.buttonSaveNews?.visibility = View.VISIBLE
-                binding.buttonUnSaveNews?.visibility = View.GONE
-            }
-            else {
-                binding.buttonSaveNews?.visibility = View.GONE
-                binding.buttonUnSaveNews?.visibility = View.VISIBLE
-            }
-        }*/
-
-    }
-
     private fun loadWebsite() {
         Log.d(Constants.TAG_DEBUG, "$logNameClass >f loadWebsite >  vm.newsItemUpdateItem.value: ${vm.tempNewsItemOpenWebsite.value}")
 
-        /*if (vm.tempNewsItemOpenWebsite.value?.statusSaved == "true") {
-            binding.buttonSaveNews?.visibility = View.VISIBLE
-            binding.buttonUnSaveNews?.visibility = View.GONE
-        }
-        else {
-            binding.buttonSaveNews?.visibility = View.GONE
-            binding.buttonUnSaveNews?.visibility = View.VISIBLE
-        }*/
-        //прогрессбар, продолжение
-        //val url = vm.tempWebsiteLink.value.toString()
-        //val url = vm.newsItemUpdateItem.value?.link ?: ""
-
-        //??
         val url = vm.tempNewsItemOpenWebsite.value?.link ?: ""
 
-        //Log.d("TAG1", "fragWebsite >f loadWebsite > url: $url")
+        Log.d(Constants.TAG_DATA, "$logNameClass >f loadWebsite > url: $url")
+        Log.d(Constants.TAG_DATA, "$logNameClass >f loadWebsite > urlCon: ${url.contains("https://")}")
         //Log.d("TAG1", "fragWebsite >f loadWebsite > vm.tempUrl: ${vm.tempWebsiteLink.value}")
         val messageLoadWebsite = resources.getString(com.example.tracknews.R.string.loadWebsiteFail)
 
@@ -144,7 +116,7 @@ class WebsiteFragment : Fragment() {
 
         //val testRequest: Request = Request.Builder().url("https://www.google.com/").build()
 
-        if (url != "") {
+        if (url.contains("https://")) {
             val request: Request = Request.Builder().url(url).build()
 
             okHttpClient.newCall(request).enqueue(object: Callback {
@@ -154,19 +126,19 @@ class WebsiteFragment : Fragment() {
                     binding.fragWebsiteTextView.text = messageLoadWebsite
                     binding.fragWebsiteTextView.visibility = View.VISIBLE
                     Toast.makeText(view?.context, "Bad connection", Toast.LENGTH_SHORT).show()
-                    //vm.messageFact.value = "Fail"
                 }
 
                 override fun onResponse(call: Call, response: Response) {
                     runOnUiThread {
                         binding.fragWebsiteProgressBar.visibility = View.GONE
                         binding.fragWebsiteWebView.loadUrl(url)
-                        //dataModel.messageFact.value = Html.fromHtml(txt).toString()
                         //vm.messageLoadWebsite.value = "Good"
-                        //Toast.makeText(view?.context, "website load", Toast.LENGTH_SHORT).show()
                     }
                 }
             })
+        }
+        else {
+            Toast.makeText(view?.context, "Bad link", Toast.LENGTH_SHORT).show()
         }
     }
 }

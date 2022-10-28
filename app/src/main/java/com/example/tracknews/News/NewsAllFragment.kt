@@ -25,7 +25,7 @@ class NewsAllFragment : Fragment(), NewsItemAdapter.Listener {
     lateinit var binding: FragmentNewsAllBinding
     private val vm: ViewModel by activityViewModels()
     private val newsItemAdapter = NewsItemAdapter(this)
-    var okHttpClient: OkHttpClient = OkHttpClient()
+    //var okHttpClient: OkHttpClient = OkHttpClient()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -80,38 +80,6 @@ class NewsAllFragment : Fragment(), NewsItemAdapter.Listener {
     //показываем полный текст NewsItem //??"в работе"
     override fun expandContent(newsItem: NewsItem) {
         Toast.makeText(view?.context, newsItem.content, Toast.LENGTH_SHORT).show()
-    }
-
-    fun Fragment?.runOnUiThread(action: () -> Unit) {
-        //прогрессбар
-        this ?: return
-        if (!isAdded) return // Fragment not attached to an Activity
-        activity?.runOnUiThread(action)
-    }
-
-    private fun loadProgressBar(url: String) {
-        //прогрессбар, продолжение
-        val mess = resources.getString(com.example.tracknews.R.string.loadWebsiteFail)
-
-        runOnUiThread {
-            binding.fragNewsSavedProgressBar.visibility = View.VISIBLE
-        }
-
-        val request: Request = Request.Builder().url(url).build()
-        okHttpClient.newCall(request).enqueue(object: Callback {
-            override fun onFailure(call: Call?, e: IOException?) {
-                vm.messageLoadWebsite.value = mess
-                //vm.messageFact.value = "Fail"
-            }
-
-            override fun onResponse(call: Call?, response: Response?) {
-                runOnUiThread {
-                    binding.fragNewsSavedProgressBar.visibility = View.GONE
-                    //dataModel.messageFact.value = Html.fromHtml(txt).toString()
-                    vm.messageLoadWebsite.value = "Good"
-                }
-            }
-        })
     }
     //одинаково во всех 4х фрагментах (today, week, all, saved) ^
 }

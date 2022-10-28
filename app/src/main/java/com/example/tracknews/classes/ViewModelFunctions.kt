@@ -127,6 +127,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
         //добавляем в соответствующие списки
         vm.newsItemArrayAll.value?.forEach {
             Log.d(TAG_DATA_IF, "$logNameClass >f sortNewsItemsByDate > newsItemArrayAll.forEach > it.date: ${it.date}")
+            Log.d(TAG_DATA_IF, "$logNameClass >f sortNewsItemsByDate > newsItemArrayAll.forEach > it.link: ${it.link}")
             Log.d(TAG_DATA_IF, "$logNameClass >f sortNewsItemsByDate > newsItemArrayAll.forEach > it.statusSaved: ${it.statusSaved}")
 
             //проверка минимальной версии. LocalDate и DateTimeFormatter работают с sdk26 и выше
@@ -186,6 +187,12 @@ class ViewModelFunctions(viewModel: ViewModel) {
     fun findNews(search: String, context: Context){
         Log.d(TAG_DEBUG, "$logNameClass >f findNews === START")
         Log.d(TAG_DEBUG, "$logNameClass >f findNews // поиск новостей через строку поиска")
+
+        /*//показываем прогрессбар и сообщение
+        vm.statusProgressBar.value = true
+        vm.serviceMessage.value = context.resources.getString(R.string.messageFindNews)*/
+
+
         //читаем сохраненный список SearchItem
         val searchItemArrayList = readSearchItemArrayList(context)
 
@@ -241,12 +248,18 @@ class ViewModelFunctions(viewModel: ViewModel) {
                 }
             }
         }
+        /*//скрываем прогрессбар и сообщение
+        vm.statusProgressBar.value = false
+        vm.serviceMessage.value = ""*/
+
+        Log.d(TAG_DEBUG, "$logNameClass >f findNews ----- END")
     }
 
     //сохраняем поисковой запрос
     fun saveSearch(search: String, context: Context) {
         Log.d(TAG_DEBUG, "$logNameClass >f saveSearch === START")
         Log.d(TAG_DEBUG, "$logNameClass >f saveSearch // сохраняем поисковой запрос")
+
         //если запрос не пустой
         if (search != "") {
             //читаем сохраненный список SearchItem
@@ -443,7 +456,6 @@ class ViewModelFunctions(viewModel: ViewModel) {
         //Записываем обновленный список "сохраненных поисков" (счетчики) обратно в JSON
         writeSearchItemArrayList(searchItemArrayList, context)
 
-
         //val index = searchItemArrayList.list.indexOfFirst { it.searchItem.search == searchItem.search }
 
         //выделяем элемент, меняя его состояние (active)
@@ -460,6 +472,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
         vm.searchItemList.value = vm.searchItemList.value
 
         vm.searchItemActive.value = searchItem.search
+
         Log.d(TAG_DEBUG, "$logNameClass >f clickOnSearchItem ----- END")
     }
 
@@ -618,8 +631,10 @@ class ViewModelFunctions(viewModel: ViewModel) {
     }
 }
 
+//имена для TabLayout (ViewPager2)
 class NameTab(viewModel: ViewModel, ) {
 
+    //V1
     val listFragment: List<Fragment> = listOf(
         NewsTodayFragment.newInstance(),
         NewsWeekFragment.newInstance(),
@@ -628,6 +643,7 @@ class NameTab(viewModel: ViewModel, ) {
     )
     private val vm = viewModel
 
+    //V1
     fun listName(context: Context): List<String> {
         var counterDay = ""
         var counterMonth = ""
@@ -662,6 +678,80 @@ class NameTab(viewModel: ViewModel, ) {
             context.getString(R.string.news_all) + counterAll,
             context.getString(R.string.news_saved) + counterSaved
         )
+    }
+
+    //V2 - мало полезен
+    fun fragmentName(): List<Fragment> {
+        //если новостей для определенных разделов нет то и не показываем их
+        val list = ArrayList<Fragment>()
+
+        if (vm.newsItemArrayDay.value != null) {
+            if (vm.newsItemArrayDay.value!!.size != 0) {
+                list.add(NewsTodayFragment.newInstance())
+            }
+        }
+        if (vm.newsItemArrayMonth.value != null) {
+            if (vm.newsItemArrayMonth.value!!.size != 0) {
+                list.add(NewsWeekFragment.newInstance())
+            }
+        }
+        if (vm.newsItemArrayAll.value != null) {
+            if (vm.newsItemArrayAll.value!!.size != 0) {
+                list.add(NewsAllFragment.newInstance())
+            }
+        }
+        if (vm.newsItemArraySaved.value != null) {
+            if (vm.newsItemArraySaved.value!!.size != 0) {
+                list.add(NewsSavedFragment.newInstance())
+            }
+        }
+
+        return list
+    }
+
+    //V2 - мало полезен
+    fun tabName(context: Context): List<String> {
+        //если новостей для определенных разделов нет то и не показываем их
+        val list = ArrayList<String>()
+
+        if (vm.newsItemArrayDay.value != null) {
+            if (vm.newsItemArrayDay.value!!.size != 0) {
+                val counterDay = " ${vm.newsItemArrayDay.value!!.size}"
+                list.add(context.getString(R.string.news_today) + counterDay)
+            }
+            else {
+                list.add("")
+            }
+        }
+        if (vm.newsItemArrayMonth.value != null) {
+            if (vm.newsItemArrayMonth.value!!.size != 0) {
+                val counterMonth = " ${vm.newsItemArrayMonth.value!!.size}"
+                list.add(context.getString(R.string.news_week) + counterMonth)
+            }
+            else {
+                list.add("")
+            }
+        }
+        if (vm.newsItemArrayAll.value != null) {
+            if (vm.newsItemArrayAll.value!!.size != 0) {
+                val counterAll = " ${vm.newsItemArrayAll.value!!.size}"
+                list.add(context.getString(R.string.news_all) + counterAll)
+            }
+            else {
+                list.add("")
+            }
+        }
+        if (vm.newsItemArraySaved.value != null) {
+            if (vm.newsItemArraySaved.value!!.size != 0) {
+                val counterSaved = " ${vm.newsItemArraySaved.value!!.size}"
+                list.add(context.getString(R.string.news_saved) + counterSaved)
+            }
+            else {
+                list.add("")
+            }
+        }
+
+        return list
     }
 }
 
