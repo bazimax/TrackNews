@@ -101,6 +101,10 @@ class ParserSites() {
             //Log.d("TAG1", "!!Global:: : $siteTemp")
         }
         Thread.sleep(2000L)
+        if (siteTemp == "") {
+            Log.d(TAG, "$logNameClass >f initFromParseHTML > Connection - Wait More")
+            Thread.sleep(6000L)
+        }
         //Log.d("TAG1", "!!Return:: : $siteTemp")
         return siteTemp
     }

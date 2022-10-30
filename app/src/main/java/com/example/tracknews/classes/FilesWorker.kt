@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tracknews.MainActivity
+import com.example.tracknews.services.WorkerFindNewsFun
 import com.google.gson.Gson
 import org.json.JSONException
 import java.io.*
@@ -145,6 +146,7 @@ class FilesWorker () {
         Log.d(TAG_DEBUG, "$logNameClass >f firstLaunch === START / END")
         Log.d(TAG_DATA, "$logNameClass >f firstLaunch > searchItemArrayList: $searchItemArrayList")
         writeJSON(searchItemArrayList, Constants.FILE_SEARCH_ITEM, context)
+        WorkerFindNewsFun().workerFindNewsFirst(context)
     }
 
     //?? что за Any?

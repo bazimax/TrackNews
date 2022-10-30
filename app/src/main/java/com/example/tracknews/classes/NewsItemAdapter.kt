@@ -32,6 +32,12 @@ class NewsItemAdapter(private val listener: Listener): RecyclerView.Adapter<News
         //val binding = RecyclerViewNewsItemV2Binding.bind(item) //использует linearLayout
         fun bind(newsItem: NewsItem, listener: Listener) = with (binding){
             val time = DateFunctions().parseNewsItemDate(newsItem.date, ctx)
+            Log.d(Constants.TAG_DATA_IF, "NewsItemAdapter >f bind > time: $time")
+            Log.d(Constants.TAG_DATA_IF, "NewsItemAdapter >f bind > time 0: ${time[0]}")
+            Log.d(Constants.TAG_DATA_IF, "NewsItemAdapter >f bind > time 1: ${time[1]}")
+            Log.d(Constants.TAG_DATA_IF, "NewsItemAdapter >f bind > time 2: ${time[2]}")
+            Log.d(Constants.TAG_DATA_IF, "NewsItemAdapter >f bind > time size: ${time.size}")
+
 
             newsItemTextViewTime.text = time[0]
             newsItemTextViewDayMonth.text = time[1]
@@ -40,6 +46,12 @@ class NewsItemAdapter(private val listener: Listener): RecyclerView.Adapter<News
             newsItemTextViewTitle.text = newsItem.title
             newsItemTextViewContent.text = newsItem.content
             newsItemTextViewLink.text = newsItem.link
+
+            //если года нет то скрываем поле
+            // (у xiaomi, при включении автоматической темной темы, отсусутсвующее поле года заливается ровным цветом и становится видимым)
+            if (time[2] == "") {
+                newsItemTextViewYear.visibility = View.GONE
+            }
 
             //Если новость сохранена ранее отмечаем соответсвтующей кнопкой. Если нет то по умолчанию
             if (newsItem.statusSaved == "true") {

@@ -136,8 +136,28 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         buttonGo.setOnClickListener {
             Log.d(TAG_DEBUG, "$logNameClass >f CLICK_buttonGo === START")
 
+            /*runOnUiThread {
+                buttonGo.visibility = View.GONE
+                binding.progressBar.visibility = View.VISIBLE
+            }*/
+
+            //animationView.swapButton(buttonGo, binding.progressBar)
+            Log.d(TAG_DEBUG, "$logNameClass >f CLICK_buttonGo > Swap 1")
+
             val search = binding.editTextSearch.text.toString()
             ViewModelFunctions(vm).findNews(search, this)
+
+            /*val runnable: Runnable = object : Runnable {
+                override fun run() {
+                    val search = binding.editTextSearch.text.toString()
+                    ViewModelFunctions(vm).findNews(search, this@MainActivity)
+                }
+            }
+            val thread = Thread(runnable)
+            thread.start()*/
+
+            //animationView.swapButton(binding.progressBar, buttonGo)
+            //Log.d(TAG_DEBUG, "$logNameClass >f CLICK_buttonGo > Swap 2")
 
             //инструкция шаг 2 > 3
             if (vm.statusInstruction.value == "step2") {
@@ -266,7 +286,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         //ViewModelFunctions(vm).saveSearchItemActive(this)
 
         //сбрасываем активный SearchItem на позицую 0
-        //ViewModelFunctions(vm).resetSearchItemActive(this)
+        ViewModelFunctions(vm).resetSearchItemActive(this)
         Log.d(TAG_DEBUG, "Pause program ------------------------------------------------------End")
     }
     override fun onDestroy() {
@@ -318,6 +338,8 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
 
     //стартовые функции
     private fun init() {
+
+
         //BACKUP//generateSearchItemArrayList() //
         Log.d(TAG_DEBUG, "$logNameClass >f init === START")
 
@@ -334,13 +356,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         Log.d(TAG_DEBUG, "$logNameClass >f init > startRecyclerViewActMain === START")
         ViewModelFunctions(vm).readSearchItemListToRcView(this)
 
-        //подключаем RecyclerView и отображаем данные из SQLite
-        binding.apply {
-            //fragTest2RecyclerView.setHasFixedSize(true) //для оптимизации?
-            //actMainRecyclerViewSavedSearches.layoutManager = LinearLayoutManager(view.context) //проверить
-            actMainRecyclerViewSavedSearches.layoutManager = GridLayoutManager(rcView.context, 3) //проверить
-            actMainRecyclerViewSavedSearches.adapter = searchItemAdapter
-        }
+
 
         Log.d(TAG_DEBUG, "$logNameClass >f init > searchItemActive: ${vm.searchItemActive.value}")
         //если список <сохраненных поисков> не пустой
@@ -354,6 +370,14 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             if (workerStatus != WorkInfo.State.ENQUEUED) {
                 WorkerFindNewsFun().workerFindNewsFirst(this)
             }
+        }
+
+        //подключаем RecyclerView и отображаем данные из SQLite
+        binding.apply {
+            //fragTest2RecyclerView.setHasFixedSize(true) //для оптимизации?
+            //actMainRecyclerViewSavedSearches.layoutManager = LinearLayoutManager(view.context) //проверить
+            actMainRecyclerViewSavedSearches.layoutManager = GridLayoutManager(rcView.context, 3) //проверить
+            actMainRecyclerViewSavedSearches.adapter = searchItemAdapter
         }
 
         Log.d(TAG_DEBUG, "$logNameClass >f init ----- END")
@@ -535,6 +559,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             .build()
 
         MainServices().notification(true, this)
+        //MainServices().notificationNew(true, this)
 
         //val outputData = WorkManager.getInstance(this).enqueueUniqueWork(Constants.WORKER_UNIQUE_NAME_PARSER, ExistingWorkPolicy.KEEP, myWorkRequest)//enqueueUniquePeriodicWork(TAG, ExistingPeriodicWorkPolicy.KEEP , photoCheckWork)
         //val outputData2 = WorkManager.getInstance(this).getWorkInfosForUniqueWork(Constants.WORKER_UNIQUE_NAME_PARSER).get()[0]

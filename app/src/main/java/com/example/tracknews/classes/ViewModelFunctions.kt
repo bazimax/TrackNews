@@ -62,7 +62,9 @@ class ViewModelFunctions(viewModel: ViewModel) {
         vm.searchItemActive.observe(owner) {
             Log.d(TAG_DEBUG, "$logNameClass >f searchItemActive.OBSERVE === START")
             Log.d(TAG_DEBUG, "$logNameClass >f searchItemActive.OBSERVE // отслеживаем изменения активного searchItem и обновляем отображаемые новости для конкретного <поискового запроса>")
-            vm.searchItemActive.value?.let { it1 -> loadSQLiteToViewModelActive(mainDbManager, it1) }
+            if (vm.searchItemActive.value != "") {
+                vm.searchItemActive.value?.let { it1 -> loadSQLiteToViewModelActive(mainDbManager, it1) }
+            }
             searchItemAdapter.notifyDataSetChanged()
         }
 
@@ -107,14 +109,6 @@ class ViewModelFunctions(viewModel: ViewModel) {
         vm.searchItemActive.value?.let { it1 -> loadSQLiteToViewModelActive(mainDbManager, it1) } //reload
         vm.searchItemActive.value = vm.searchItemActive.value //обновляем vm чтобы NewsFragment подхвватил изменения
         Log.d(TAG_DEBUG, "$logNameClass >f updateElementOfSQLite ----- END")
-    }
-
-    //Ищем все новости по данному запросу напрямую в БД и обновляем выводимый список новостей
-    private fun loadNewsItemsByActive(search: String, mainDbManager: MainDbManager){
-        vm.newsItemArrayAll.value = vm.searchItemActive.value?.let { it1 ->
-            mainDbManager.findItemInDb(MainDbNameObject.COLUMN_NAME_SEARCH, it1)
-        }
-        vm.newsItemArrayAll.value = mainDbManager.findItemInDb(MainDbNameObject.COLUMN_NAME_SEARCH, search)
     }
 
     //сортируем общий список элементов по дате для разных разделов (новости за сегодня, за месяц и тд)
@@ -211,7 +205,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
                 //если парсинг не удался
                 Log.d(TAG, "$logNameClass >f findNews > парсинг не удался")
                 val messageLoadWebsite = context.resources.getString(com.example.tracknews.R.string.loadWebsiteFail)
-                Toast.makeText(context, messageLoadWebsite, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, messageLoadWebsite, Toast.LENGTH_LONG).show()
             }
             else {
                 //если парсинг OK
@@ -242,8 +236,14 @@ class ViewModelFunctions(viewModel: ViewModel) {
                 } else {
                     Log.d(TAG_DATA_IF, "$logNameClass >f findNews > ELSE")
                     //показываем все новости без записи в БД
-                    vm.newsItemArrayAll.value = null
-                    vm.newsItemArrayAll.value = resultParse.list
+                    vm.newsItemArrayAll.postValue(null)
+                    vm.newsItemArrayAll.postValue(resultParse.list)
+                    //vm.newsItemArrayAll.value = null
+                    //vm.newsItemArrayAll.value = resultParse.list
+
+                    //снимаем выделение с активного <сохраненного поиска>
+                    notSavedSearchItemActive(context)
+                    readSearchItemListToRcView(context)
                     Log.d(TAG_DATA_IF, "$logNameClass >f findNews > vm.newsItemArrayAll.value: ${vm.newsItemArrayAll.value}")
                 }
             }
@@ -370,6 +370,27 @@ class ViewModelFunctions(viewModel: ViewModel) {
         //Записываем обновленный список "сохраненных поисков" (счетчики) обратно в JSON
         writeSearchItemArrayList(searchItemArrayList, context)
         Log.d(TAG_DEBUG, "$logNameClass >f resetSearchItemActive ----- END")
+    }
+
+    //если активен не сохраненный поиск
+    private fun notSavedSearchItemActive(context: Context){
+        Log.d(TAG_DEBUG, "$logNameClass >f notSavedSearchItemActive === START")
+        Log.d(TAG_DEBUG, "$logNameClass >f notSavedSearchItemActive // сбрасываем активный SearchItem на позицую 0")
+        //загружаем список "сохраненных поисков" (SearchItem)
+        val searchItemArrayList = readSearchItemArrayList(context)
+
+        vm.searchItemActive.value = ""
+
+        if (searchItemArrayList.list.size != 0) {
+            //обнуляем все значения кроме 0
+            searchItemArrayList.list.forEach {
+                it.searchItem.active = false
+            }
+
+        }
+        //Записываем обновленный список "сохраненных поисков" (счетчики) обратно в JSON
+        writeSearchItemArrayList(searchItemArrayList, context)
+        Log.d(TAG_DEBUG, "$logNameClass >f notSavedSearchItemActive ----- END")
     }
 
     //выбираем активный SearchItem если есть в

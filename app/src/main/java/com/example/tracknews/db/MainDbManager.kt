@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import com.example.tracknews.classes.Constants
 import com.example.tracknews.classes.NewsItem
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class MainDbManager(context: Context) {
     private val logNameClass = "MainDbManager" //для логов
@@ -161,6 +163,11 @@ class MainDbManager(context: Context) {
         }
         cursor.close()
         //Log.d("TAG1", "MainDbManager >f findItemInDb > dataList: ${dataList.toString()}")
+
+
+        //сортировка dataList
+        sortByDate(dataList)
+
         Log.d(TAG_DEBUG, "$logNameClass >f findItemInDb ----- END")
         return dataList
     }
@@ -198,6 +205,22 @@ class MainDbManager(context: Context) {
         db?.delete(MainDbNameObject.TABLE_NAME,"search=?", arrayOf(search))
         Log.d(TAG_DEBUG, "$logNameClass >f deleteDbElement === START / END")
         Log.d(TAG_DATA, "$logNameClass >f deleteDbElement > search: $search")
+    }
+
+    //сортируем массив по дате
+    private fun sortByDate(dataList: ArrayList<NewsItem>): ArrayList<NewsItem>{
+
+        dataList.forEach {
+            Log.d(TAG_DATA_IF, "$logNameClass >f sortByDate > START > dataList.forEach > date: ${it.date}")
+            Log.d(TAG_DATA_IF, "$logNameClass >f sortByDate > START > dataList.forEach > link: ${it.link}")
+        }
+        dataList.sortByDescending{it.date}
+
+        dataList.forEach {
+            Log.d(TAG_DATA_IF, "$logNameClass >f sortByDate > END > dataList.forEach > date: ${it.date}")
+            Log.d(TAG_DATA_IF, "$logNameClass >f sortByDate > END > dataList.forEach > link: ${it.link}")
+        }
+        return dataList
     }
 }
 

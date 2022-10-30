@@ -1,6 +1,7 @@
 package com.example.tracknews
 
 import android.util.Log
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -115,5 +116,13 @@ open class ViewModel : ViewModel() {
     /*class SavedStateViewModel(private val state: SavedStateHandle) : ViewModel() {
         //сохранение состояния
     }*/
+
+    //МАССИВЫ ПУСТЫЕ
+    //val searchItemDeleteArrayList = MutableLiveData<ArrayList<String>>()
+    //val list = ArrayList<Fragment>()
+    //val dataList = ArrayList<NewsItem>()
+    //val dataListWorker = ArrayList<SearchItemWorker>()
+    //val searchItemArrayList = SearchItemArrayList(dataListWorker)
+    //vm.searchItemDeleteArrayList.value = ArrayList()
 
 }

@@ -470,6 +470,16 @@
                         android:translationZ="4dp"
                         app:icon="@drawable/ic_arrow_forward" />
 
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center|end"
+                        android:layout_marginEnd="8dp"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
                 </androidx.cardview.widget.CardView>
 
             </FrameLayout>
