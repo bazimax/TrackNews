@@ -123,6 +123,19 @@ class FragmentFunction(viewModel: ViewModel) {
         }
     }
 
+    fun progressBarSwap(view: View, progressBar: View) {
+        //vm.statusProgressBar.observe(owner) { }
+
+        if (vm.statusProgressBar.value == true) {
+            progressBar.visibility = View.VISIBLE
+            view.visibility = View.GONE
+        }
+        else {
+            progressBar.visibility = View.GONE
+            view.visibility = View.VISIBLE
+        }
+    }
+
     //сервисные сообщения
     fun serviceMessage(view: TextView) {
         //vm.serviceMessage.observe(owner) { }

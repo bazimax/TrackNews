@@ -27,7 +27,7 @@ class NewsWeekFragment : Fragment(), NewsItemAdapter.Listener {
     lateinit var binding: FragmentNewsWeekBinding
     private val vm: ViewModel by activityViewModels()
     private val newsItemAdapter = NewsItemAdapter(this)
-    var okHttpClient: OkHttpClient = OkHttpClient()
+    //var okHttpClient: OkHttpClient = OkHttpClient()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

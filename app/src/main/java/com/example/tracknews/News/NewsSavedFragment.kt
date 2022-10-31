@@ -45,6 +45,8 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
         Log.d(Constants.TAG_DEBUG, "$logNameClass > start")
 
+        FragmentFunction(vm).progressBar(binding.fragNewsSavedProgressBar)
+
         val rcView = binding.fragNewsSavedRecyclerView
         FragmentFunction(vm).startRecyclerView(rcView, newsItemAdapter)
 
@@ -58,6 +60,8 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
 
     private fun init(){
         //запуск фрагмента
+
+        //FragmentFunction(vm).progressBar(binding.fragNewsSavedProgressBar)
 
         //отслеживаем изменения в данных для RecyclerView (SQLite > ViewModel)
         vm.newsItemArraySaved.value?.let { newsItemAdapter.addAllNews(it) }

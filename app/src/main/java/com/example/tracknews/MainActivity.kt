@@ -23,6 +23,8 @@ import com.example.tracknews.db.MainDbManager
 import com.example.tracknews.services.MainServices
 import com.example.tracknews.services.WorkerFindNews
 import com.example.tracknews.services.WorkerFindNewsFun
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 
 
@@ -136,28 +138,20 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         buttonGo.setOnClickListener {
             Log.d(TAG_DEBUG, "$logNameClass >f CLICK_buttonGo === START")
 
-            /*runOnUiThread {
-                buttonGo.visibility = View.GONE
-                binding.progressBar.visibility = View.VISIBLE
-            }*/
+            //опказываем прогрессбар (прогрессбар пропадет уже после выполнения поиска)
+            vm.statusProgressBar.value = true
 
-            //animationView.swapButton(buttonGo, binding.progressBar)
             Log.d(TAG_DEBUG, "$logNameClass >f CLICK_buttonGo > Swap 1")
 
+            //запускаем поиск
             val search = binding.editTextSearch.text.toString()
-            ViewModelFunctions(vm).findNews(search, this)
-
-            /*val runnable: Runnable = object : Runnable {
-                override fun run() {
-                    val search = binding.editTextSearch.text.toString()
-                    ViewModelFunctions(vm).findNews(search, this@MainActivity)
-                }
+            GlobalScope.launch {
+                ViewModelFunctions(vm).findNews(search, this@MainActivity)
+                /*runOnUiThread {
+                    buttonGo.visibility = View.VISIBLE
+                    binding.progressBar.visibility = View.GONE
+                }*/
             }
-            val thread = Thread(runnable)
-            thread.start()*/
-
-            //animationView.swapButton(binding.progressBar, buttonGo)
-            //Log.d(TAG_DEBUG, "$logNameClass >f CLICK_buttonGo > Swap 2")
 
             //инструкция шаг 2 > 3
             if (vm.statusInstruction.value == "step2") {
@@ -286,14 +280,14 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         //ViewModelFunctions(vm).saveSearchItemActive(this)
 
         //сбрасываем активный SearchItem на позицую 0
-        ViewModelFunctions(vm).resetSearchItemActive(this)
+        //ViewModelFunctions(vm).resetSearchItemActive(this)
         Log.d(TAG_DEBUG, "Pause program ------------------------------------------------------End")
     }
     override fun onDestroy() {
         super.onDestroy()
         //Log.d(TAG_DEBUG, "Destroy program ------------------------------=======================Start")
         //сбрасываем активный SearchItem на позицую 0
-        ViewModelFunctions(vm).resetSearchItemActive(this)
+        //ViewModelFunctions(vm).resetSearchItemActive(this)
 
         mainDbManager.closeDb() //закрываем БД (доступ к БД?)
         Log.d(TAG_DEBUG, "Destroy program ------------------------------=======================End")
@@ -316,6 +310,9 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+
+        //сохраняем активный SearchItem на время паузы приложения
+        ViewModelFunctions(vm).saveSearchItemActive(this)
 
         outState.putString(STATE_SEARCH_ITEM_ACTIVE, vm.searchItemActive.value)
     }
@@ -354,7 +351,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         val rcView = binding.actMainRecyclerViewSavedSearches
 
         Log.d(TAG_DEBUG, "$logNameClass >f init > startRecyclerViewActMain === START")
-        ViewModelFunctions(vm).readSearchItemListToRcView(this)
+        ViewModelFunctions(vm).readSearchItemListToRcView(this, false)
 
 
 
@@ -396,6 +393,11 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             Log.d(TAG, "MainActivity >f searchItemList.OBSERVE ${vm.searchItemList.value}")
             vm.searchItemList.value?.let { it1 -> searchItemAdapter.addAllSearch(it1) }
             searchItemAdapter.notifyDataSetChanged() //??!! //обновляем RcView с SearchItem
+        }
+
+        //кнопка GO и прогрессбар
+        vm.statusProgressBar.observe(this){
+            FragmentFunction(vm).progressBarSwap(binding.buttonGO, binding.progressBar)
         }
 
         //скрытие кнопок "удалить выделенные searchItem"

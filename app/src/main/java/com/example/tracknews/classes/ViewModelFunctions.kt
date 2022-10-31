@@ -4,6 +4,7 @@ import android.content.Context
 import android.icu.text.RelativeDateTimeFormatter
 import android.os.Build
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
@@ -178,7 +179,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
     }
 
     //поиск новостей через строку поиска ("НЕсохраненный поиск"(запрос/подписк))
-    fun findNews(search: String, context: Context){
+    fun findNews(search: String, context: Context) {
         Log.d(TAG_DEBUG, "$logNameClass >f findNews === START")
         Log.d(TAG_DEBUG, "$logNameClass >f findNews // поиск новостей через строку поиска")
 
@@ -221,8 +222,8 @@ class ViewModelFunctions(viewModel: ViewModel) {
                 if (findSameSearchItem(search)) {
                     Log.d(TAG_DATA_IF, "$logNameClass >f findNews > IF")
                     //полученные новости отправляем в ViewModel для последующей проверки и записи в БД
-                    vm.newsItemTempArrayInBd.value = null
-                    vm.newsItemTempArrayInBd.value = resultParse.list
+                    vm.newsItemTempArrayInBd.postValue(null)
+                    vm.newsItemTempArrayInBd.postValue(resultParse.list)
                     Log.d(TAG_DATA_IF, "$logNameClass >f findNews > vm.newsItemTempArrayInBd.value: ${vm.newsItemTempArrayInBd.value}")
 
                     //меняем активный searchItem на этот.
@@ -232,7 +233,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
                     //Записываем обновленный список "сохраненных поисков" обратно в JSON
                     writeSearchItemArrayList(searchItemArrayList, context)
                     //обновляем vm
-                    vm.searchItemActive.value = search
+                    vm.searchItemActive.postValue(search)
                 } else {
                     Log.d(TAG_DATA_IF, "$logNameClass >f findNews > ELSE")
                     //показываем все новости без записи в БД
@@ -243,14 +244,14 @@ class ViewModelFunctions(viewModel: ViewModel) {
 
                     //снимаем выделение с активного <сохраненного поиска>
                     notSavedSearchItemActive(context)
-                    readSearchItemListToRcView(context)
+                    readSearchItemListToRcView(context, true)
                     Log.d(TAG_DATA_IF, "$logNameClass >f findNews > vm.newsItemArrayAll.value: ${vm.newsItemArrayAll.value}")
                 }
             }
         }
-        /*//скрываем прогрессбар и сообщение
-        vm.statusProgressBar.value = false
-        vm.serviceMessage.value = ""*/
+        //скрываем прогрессбар и сообщение
+        vm.statusProgressBar.postValue(false)
+        vm.serviceMessage.postValue("")
 
         Log.d(TAG_DEBUG, "$logNameClass >f findNews ----- END")
     }
@@ -318,7 +319,8 @@ class ViewModelFunctions(viewModel: ViewModel) {
     }
 
     //обновляем список SearchItem в Recycler View
-    fun readSearchItemListToRcView(context: Context){
+    //!!связан с findNews (postValue)
+    fun readSearchItemListToRcView(context: Context, postValue: Boolean = false){
         Log.d(TAG_DEBUG, "$logNameClass >f readSearchItemListToRcView === START")
         Log.d(TAG_DEBUG, "$logNameClass >f readSearchItemListToRcView // обновляем список SearchItem в Recycler View")
         //читаем сохраненный список SearchItem
@@ -328,9 +330,16 @@ class ViewModelFunctions(viewModel: ViewModel) {
         searchItemArrayList.list.forEach {
             searchItemList.add(it.searchItem)
         }
-        vm.searchItemList.value = searchItemList
-        Log.d(TAG_DATA, "$logNameClass >f readSearchItemListToRcView > vm.searchItemList.value: ${vm.searchItemList.value}")
 
+        //нужен или нет postValue (для coroutines-GlobalScope)
+        if (postValue) {
+            vm.searchItemList.postValue(searchItemList)
+        }
+        else {
+            vm.searchItemList.value = searchItemList
+        }
+
+        Log.d(TAG_DATA, "$logNameClass >f readSearchItemListToRcView > vm.searchItemList.value: ${vm.searchItemList.value}")
         Log.d(TAG_DEBUG, "$logNameClass >f readSearchItemListToRcView ----- END")
     }
 
@@ -362,7 +371,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
                 it.searchItem.active = false
             }
             searchItemArrayList.list[0].searchItem.active = true
-            vm.searchItemActive.value = searchItemArrayList.list[0].searchItem.search
+            vm.searchItemActive.value = searchItemArrayList.list[0].searchItem.search //postValue(searchItemArrayList.list[0].searchItem.search)
         }
         else {
             vm.searchItemActive.value = ""
@@ -373,13 +382,14 @@ class ViewModelFunctions(viewModel: ViewModel) {
     }
 
     //если активен не сохраненный поиск
+    //!!связан с findNews (postValue)
     private fun notSavedSearchItemActive(context: Context){
         Log.d(TAG_DEBUG, "$logNameClass >f notSavedSearchItemActive === START")
         Log.d(TAG_DEBUG, "$logNameClass >f notSavedSearchItemActive // сбрасываем активный SearchItem на позицую 0")
         //загружаем список "сохраненных поисков" (SearchItem)
         val searchItemArrayList = readSearchItemArrayList(context)
 
-        vm.searchItemActive.value = ""
+        vm.searchItemActive.postValue("") //liveData.postValue(value)
 
         if (searchItemArrayList.list.size != 0) {
             //обнуляем все значения кроме 0
@@ -490,9 +500,9 @@ class ViewModelFunctions(viewModel: ViewModel) {
             //Log.d(TAG_DATA, "MainActivity >f clickOnSearchItem > it: ${it.active}")
         }
         //обновляем searchItemList, чтобы LiveData подхватила изменения и отобразила измененные кнопки
-        vm.searchItemList.value = vm.searchItemList.value
+        vm.searchItemList.value = vm.searchItemList.value //postValue(vm.searchItemList.value)
 
-        vm.searchItemActive.value = searchItem.search
+        vm.searchItemActive.value = searchItem.search //postValue(searchItem.search)
 
         Log.d(TAG_DEBUG, "$logNameClass >f clickOnSearchItem ----- END")
     }
@@ -630,6 +640,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
     }
 
     //проверяем есть ли совпадения с имеющимеся <сохраненными поисками>
+    //!!связан с findNews (postValue)
     fun findSameSearchItem(search: String): Boolean{
         var checkSame = false
         val searchItemList = vm.searchItemList.value
