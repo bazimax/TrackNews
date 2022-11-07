@@ -20,10 +20,10 @@
     <string name="instructionSavedSearch">All saved searches are stored here.</string>
     <string name="instructionDeviceOk">OK</string>
     <string name="instructionDevice"><b>Attention!</b>\n\n
-        On some devices of Xiaomi, OPPO, Huawei and others, due to hard power saving settings, the application may become unstable.\n
+        On some devices of Xiaomi, OPPO, Huawei and others, due to hard power saving settings, the application may become unstable.\n\n
         For the fully work of the application, do:\n
-        <b>- enable autostart.</b>\nPath example: Settings > Applications > All applications > select <b>the TrackNews</b> application > enable autostart\n
-        <b>- and set the power mode.</b>\nPath example: Settings > Battery > Activity control > select <b>the TrackNews</b> application > No restrictions</string>
+        <b>- enable autostart.</b>\n<i>path example</i>: Settings > Applications > All applications > select <b>the TrackNews</b> application > enable autostart\n
+        <b>- and set the power mode.</b>\n<i>path example</i>: Settings > Battery > Activity control > select <b>the TrackNews</b> application > No restrictions</string>
 
     <string name="search">Search</string>
     <string name="defaultTextView">///</string>
