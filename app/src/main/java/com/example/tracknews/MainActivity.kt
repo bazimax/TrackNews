@@ -15,7 +15,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.work.*
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.tracknews.News.NewsTodayFragment
 import com.example.tracknews.classes.*
 import com.example.tracknews.databinding.ActivityMainBinding
@@ -25,7 +26,6 @@ import com.example.tracknews.services.WorkerFindNews
 import com.example.tracknews.services.WorkerFindNewsFun
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.*
 
 
 class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         //SharedPreferences
         const val SEARCH_ITEM = Constants.SEARCH_ITEM//"search"
         const val SHARED_INSTRUCTION = Constants.SHARED_INSTRUCTION//"instruction"
+
 
         //Имена файлов
         const val FILE_SEARCH_ITEM = Constants.FILE_SEARCH_ITEM//"searchItems.json"
@@ -264,10 +265,10 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             }
 
             //инструкция - финал
-            if (vm.statusInstruction.value == "step4") {
-                vm.statusInstruction.value = "-1"
-                sharedPrefs.edit().putString(SHARED_INSTRUCTION, "-1").apply() //инструкция больше не будет показываться
-            }
+            /*if (vm.statusInstruction.value == "step4") {
+                vm.statusInstruction.value = "device"
+                sharedPrefs.edit().putString(SHARED_INSTRUCTION, "device").apply() //инструкция больше не будет показываться
+            }*/
         }
 
         //Log.d("TAG1", "Close program --------")
@@ -284,29 +285,18 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         Log.d(TAG_DEBUG, "Pause program ------------------------------------------------------End")
     }
     override fun onDestroy() {
-        super.onDestroy()
         //Log.d(TAG_DEBUG, "Destroy program ------------------------------=======================Start")
-        //сбрасываем активный SearchItem на позицую 0
-        //ViewModelFunctions(vm).resetSearchItemActive(this)
-
         mainDbManager.closeDb() //закрываем БД (доступ к БД?)
-        Log.d(TAG_DEBUG, "Destroy program ------------------------------=======================End")
-    }
 
-    /*override fun onResume() {
-        super.onResume()
         //сбрасываем активный SearchItem на позицую 0
-        ViewModelFunctions(vm).selectSearchItemActive(this)
-        Log.d("TAG1", "Resume program ------------------------------=============>>>>")
         //ViewModelFunctions(vm).resetSearchItemActive(this)
-    }*/
 
-    /*override fun onRestart() {
-        super.onRestart()
-        //Log.d("TAG1", "Restart program ------------------------------=============>>>> Start")
-        ViewModelFunctions(vm).selectSearchItemActive(this)
-        //Log.d("TAG1", "Restart program ------------------------------=============>>>> End")
-    }*/
+        Log.d(TAG_DEBUG, "Destroy program ------------------------------=======================End")
+        super.onDestroy()
+
+
+
+    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -360,14 +350,18 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         if (vm.searchItemActive.value == null) {
             //выбираем активный SearchItem
             ViewModelFunctions(vm).selectSearchItemActive(this)
-
-            //Worker - работа в фоне и отправка уведомлений //?? PENDING
-            //если задача не запущена - то запустить
-            val workerStatus = WorkManager.getInstance(this).getWorkInfosForUniqueWork(Constants.WORKER_UNIQUE_NAME_PARSER).get()[0].state
-            if (workerStatus != WorkInfo.State.ENQUEUED) {
-                WorkerFindNewsFun().workerFindNewsFirst(this)
-            }
         }
+
+        //Worker - работа в фоне и отправка уведомлений
+        worker()
+        //WorkerFindNewsFun().workerFindNewsFirst(this)
+
+        //Worker - работа в фоне и отправка уведомлений //?? PENDING
+        //если задача не запущена - то запустить
+        /*val workerStatus = WorkManager.getInstance(this).getWorkInfosForUniqueWork(Constants.WORKER_UNIQUE_NAME_PARSER).get()[0].state
+        if (workerStatus != WorkInfo.State.ENQUEUED) {
+            WorkerFindNewsFun().workerFindNewsFirst(this)
+        }*/
 
         //подключаем RecyclerView и отображаем данные из SQLite
         binding.apply {
@@ -416,6 +410,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
     }
 
     //загружаем фрагмент
+    //load fragment
     private fun loadFragment(idFrameLayoutFragment: Int, fragment: Fragment){
         supportFragmentManager
             .beginTransaction()
@@ -506,7 +501,10 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
     private fun getSavedTheme() = sharedPrefs.getInt(KEY_THEME, THEME_UNDEFINED)
     // //функции Выше ^ -> тема (светлая и темная). Чужой код
 
+    //Инструкции
     private fun instruction(){
+
+
         val sharedInstruction = sharedPrefs.getString(SHARED_INSTRUCTION, "")
 
         //если это первый запуск, то показываем инструкцию
@@ -526,18 +524,30 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             binding.cardViewInstructionStartGo.visibility = View.GONE
             binding.cardViewInstructionSaveSearch.visibility = View.GONE
             binding.cardViewInstructionFinish.visibility = View.GONE
+            binding.cardViewInstructionDevice.visibility = View.GONE //важное уведомление
             when (statusInstruction) {
                 "step0" -> binding.cardViewInstructionStart.visibility = View.VISIBLE
                 "step1" -> binding.cardViewInstructionStartEditText.visibility = View.VISIBLE
                 "step2" -> binding.cardViewInstructionStartGo.visibility = View.VISIBLE
                 "step3" -> binding.cardViewInstructionSaveSearch.visibility = View.VISIBLE
                 "step4" -> binding.cardViewInstructionFinish.visibility = View.VISIBLE
+                "device" -> binding.cardViewInstructionDevice.visibility = View.VISIBLE //важное уведомление
             }
         }
 
         //кнопки
         //закончить начальное обучение
         binding.textViewInstructionFinish.setOnClickListener {
+            // Device model
+            val phoneModel = Build.MODEL
+            val checkModelList = listOf("xiaomi", "mi", "redmi", "huawei", "oppo", "one+", "lenovo", "nokia")
+
+            vm.statusInstruction.value = "device"
+            sharedPrefs.edit().putString(SHARED_INSTRUCTION, "device").apply() //инструкция больше не будет показываться
+        }
+
+        //важное уведомление больше не будет показываться
+        binding.buttonInstructionDevice.setOnClickListener {
             vm.statusInstruction.value = "-1"
             sharedPrefs.edit().putString(SHARED_INSTRUCTION, "-1").apply() //инструкция больше не будет показываться
         }
@@ -552,6 +562,28 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
             vm.statusInstruction.value = "-1"
             sharedPrefs.edit().putString(SHARED_INSTRUCTION, "-1").apply() //инструкция больше не будет показываться
         }
+    }
+
+    //Worker - работа в фоне и отправка уведомлений
+    private fun worker(){
+        WorkerFindNewsFun().workerFindNewsFirst(this)
+
+        //разные проверки
+        val outputData2 = WorkManager.getInstance(this).getWorkInfosForUniqueWork(Constants.WORKER_UNIQUE_NAME_PARSER).get().forEach {
+            //Log.d(TAG, "$logNameClass >f CLICK_1 > testButton1 > worker > outputData: ${outputData.state}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > id: ${it.id}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > state: ${it.state}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > outputData: ${it.outputData}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > outputData.key: ${it.outputData.keyValueMap}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > outputData.size: ${it.outputData.size()}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > progress: ${it.progress}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > tags: ${it.tags}")
+            Log.d(Constants.TAG_DATA_IF, "$logNameClass >f CLICK_1 > testButton1 > worker > runAttemptCount: ${it.runAttemptCount}")
+        }
+
+        val outputData = WorkManager.getInstance(this).getWorkInfosForUniqueWork(Constants.WORKER_UNIQUE_NAME_PARSER)
+        Log.d(Constants.TAG_DATA, "$logNameClass >f CLICK_1 > testButton1 > worker > outputData: $outputData")
+        Log.d(Constants.TAG_DATA, "$logNameClass >f CLICK_1 > testButton1 > worker > outputData2: $outputData2")
     }
 
     //BACKUP >
@@ -624,6 +656,32 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
 
     private fun testButton2(){
         WorkerFindNewsFun().workerFindNewsFirst(this)
+
+        // Device model
+        val phoneModel = Build.MODEL
+        Log.d(Constants.TAG_DATA, "$logNameClass >f CLICK_2 > testButton2 > PhoneModel: $phoneModel")
+
+        // Android version
+        val androidVersion = Build.VERSION.RELEASE
+        Log.d(Constants.TAG_DATA, "$logNameClass >f CLICK_2 > testButton2 > AndroidVersion: $androidVersion")
+
+        var s = "Debug-info:"
+        s += """OS Version: ${System.getProperty("os.version")}(${Build.VERSION.INCREMENTAL})"""
+        s += """OS API Level: ${Build.VERSION.RELEASE}(${Build.VERSION.SDK_INT})"""
+        s += """Device: ${Build.DEVICE}"""
+        s += """Model (and Product): ${Build.MODEL} (${Build.PRODUCT})"""
+
+        Log.d(Constants.TAG_DATA, "$logNameClass >f CLICK_2 > testButton2 > s: $s")
+
+        var d = "Debug-info:"
+        d += "\n OS Version: " + System.getProperty("os.version") + "(" + Build.VERSION.INCREMENTAL + ")"
+        d += "\n OS API Level: " + Build.VERSION.RELEASE + "(" + Build.VERSION.SDK_INT + ")"
+        d += "\n Device: " + Build.DEVICE
+        d += "\n Model (and Product): " + Build.MODEL + " (" + Build.PRODUCT + ")"
+
+        Log.d(Constants.TAG_DATA, "$logNameClass >f CLICK_2 > testButton2 > d: $d")
+
+
 
         //Log.d(TAG, "$logNameClass >C MainDbManager > readDbData: ${mainDbManager.readDbData()}")
         /*val list = vm.searchItemActive.value?.let { it1 ->

@@ -128,16 +128,19 @@ class ViewModelFunctions(viewModel: ViewModel) {
             //проверка минимальной версии. LocalDate и DateTimeFormatter работают с sdk26 и выше
             //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){}
 
-            val dateNews = LocalDate.parse(it.date, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-            val dateNow = LocalDate.now()
+            //проверка даты
+            if (it.date != "") {
+                val dateNews = LocalDate.parse(it.date, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                val dateNow = LocalDate.now()
 
-            //если совпадает месяц
-            if (dateNews.month == dateNow.month) {
-                newsItemArrayMonth.add(it)
+                //если совпадает месяц
+                if (dateNews.month == dateNow.month) {
+                    newsItemArrayMonth.add(it)
 
-                //если совпадает и день
-                if (dateNews == dateNow) {
-                    newsItemArrayDay.add(it)
+                    //если совпадает и день
+                    if (dateNews == dateNow) {
+                        newsItemArrayDay.add(it)
+                    }
                 }
             }
 
@@ -243,7 +246,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
                     //vm.newsItemArrayAll.value = resultParse.list
 
                     //снимаем выделение с активного <сохраненного поиска>
-                    notSavedSearchItemActive(context)
+                    notSavedSearchItemActive(context, true)
                     readSearchItemListToRcView(context, true)
                     Log.d(TAG_DATA_IF, "$logNameClass >f findNews > vm.newsItemArrayAll.value: ${vm.newsItemArrayAll.value}")
                 }
@@ -383,13 +386,19 @@ class ViewModelFunctions(viewModel: ViewModel) {
 
     //если активен не сохраненный поиск
     //!!связан с findNews (postValue)
-    private fun notSavedSearchItemActive(context: Context){
+    private fun notSavedSearchItemActive(context: Context, postValue: Boolean = false){
         Log.d(TAG_DEBUG, "$logNameClass >f notSavedSearchItemActive === START")
         Log.d(TAG_DEBUG, "$logNameClass >f notSavedSearchItemActive // сбрасываем активный SearchItem на позицую 0")
         //загружаем список "сохраненных поисков" (SearchItem)
         val searchItemArrayList = readSearchItemArrayList(context)
 
-        vm.searchItemActive.postValue("") //liveData.postValue(value)
+        //нужен или нет postValue (для coroutines-GlobalScope)
+        if (postValue) {
+            vm.searchItemActive.postValue("")
+        }
+        else {
+            vm.searchItemActive.value = ""
+        }
 
         if (searchItemArrayList.list.size != 0) {
             //обнуляем все значения кроме 0

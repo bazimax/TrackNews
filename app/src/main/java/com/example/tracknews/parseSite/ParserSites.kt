@@ -58,6 +58,7 @@ class ParserSites() {
         //Log.d("TAG1", "$str")
     }
 
+
     private fun initFromParseHTML(url: String): String {
         Log.d(TAG_DEBUG, "$logNameClass >f initFromParseHTML === START")
         Log.d(TAG_DEBUG, "$logNameClass >f initFromParseHTML // открываем интернет страницу")
@@ -100,6 +101,7 @@ class ParserSites() {
             }
             //Log.d("TAG1", "!!Global:: : $siteTemp")
         }
+
         Thread.sleep(2000L)
         if (siteTemp == "") {
             Log.d(TAG, "$logNameClass >f initFromParseHTML > Connection - Wait More")
@@ -229,18 +231,22 @@ class ParserSites() {
             //Log.d("TAG1", "forEach newsItem: $newsItem")
             //Log.d("TAG1", "forEach newsItemList: $newsItemList")
 
+            //если есть ссылка
             if (newsItem.link.contains("https://")) {
-                newsItemList.add(newsItem)
+                //если есть дата
+                if (date != "") {
+                    newsItemList.add(newsItem)
 
-                Log.d(TAG_DATA_IF, "$logNameClass >f ParseP > item.forEach:\n" +
-                        "- id: $id\n" +
-                        "- search: $search\n" +
-                        "- img: $img\n" +
-                        "- date: $date\n" +
-                        "- title: $title\n" +
-                        "- content: $content\n" +
-                        "- link: $link\n" +
-                        "- statusSaved: $statusSaved")
+                    Log.d(TAG_DATA_IF, "$logNameClass >f ParseP > item.forEach:\n" +
+                            "- id: $id\n" +
+                            "- search: $search\n" +
+                            "- img: $img\n" +
+                            "- date: $date\n" +
+                            "- title: $title\n" +
+                            "- content: $content\n" +
+                            "- link: $link\n" +
+                            "- statusSaved: $statusSaved")
+                }
             }
             //Log.d("TAG1", "forEach newsItemList: $newsItemList")
             //Log.d("TAG1", "forEach Count: $testCount")
@@ -254,6 +260,7 @@ class ParserSites() {
         //https://www.baidu.com/s?ie=utf-8&f=3&rsv_bp=1&rsv_idx=1&tn=baidu&wd=witcher3
     }
 
+    //Delete //test
     private fun testParseP(site: String):String {
         Log.d(TAG_DEBUG, "$logNameClass >f testParseP === START")
         Log.d(TAG_DATA_BIG, "$logNameClass >f testParseP > site: $site")
@@ -291,9 +298,6 @@ class ParserSites() {
             val statusSaved = false.toString()
             val id = 0
             val search = "мобилизация"
-
-
-
 
             val newsItem = NewsItem(id, search ,img, date, title, content, link, statusSaved)
 

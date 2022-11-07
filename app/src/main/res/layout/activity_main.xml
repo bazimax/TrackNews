@@ -12,6 +12,74 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardViewInstructionDevice"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:elevation="10dp"
+            android:translationZ="10dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/baseColorTextAccent"
+            app:cardCornerRadius="16dp"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="16dp"
+                android:orientation="vertical">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:padding="8dp"
+                            android:text="@string/instructionDevice"
+                            android:textColor="@color/darkColorAccent2"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/textViewInstructionDevice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:padding="8dp"
+                            android:text="@string/instructionFinish"
+                            android:textColor="@color/baseColorAccent"
+                            android:visibility="gone" />
+
+                        <Button
+                            android:id="@+id/buttonInstructionDevice"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/instructionDeviceOk"
+                            android:visibility="visible" />
+                    </LinearLayout>
+                </ScrollView>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
         <LinearLayout
             android:id="@+id/actMainLinearLayout"
             style="@style/Theme.BackgroundBase"
@@ -183,7 +251,8 @@
                     android:layout_marginEnd="8dp"
                     android:visibility="gone"
                     app:cardBackgroundColor="@color/baseColorTextAccent"
-                    app:cardCornerRadius="16dp">
+                    app:cardCornerRadius="16dp"
+                    tools:visibility="visible">
 
                     <LinearLayout
                         android:layout_width="wrap_content"

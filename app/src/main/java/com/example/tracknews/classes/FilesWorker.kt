@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.tracknews.MainActivity
 import com.example.tracknews.services.WorkerFindNewsFun
 import com.google.gson.Gson
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import java.io.*
 import java.time.LocalDate
@@ -29,6 +31,7 @@ class FilesWorker () {
     //private val sharedPrefs: SharedPreferences? = ctx.getSharedPreferences("init", Context.MODE_PRIVATE) //getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE)
 
     //Записываем данные(data) в файл
+    //write data to a file
     fun writeToFile(data: String, nameFile: String, context: Context) {
         Log.d(TAG_DEBUG, "FilesWorker >f writeToFile === START")
         try {
@@ -42,6 +45,7 @@ class FilesWorker () {
     }
 
     //Читаем данные(data) из файла
+    //read data from file
     fun readFromFile(nameFile: String, context: Context): String {
         Log.d(TAG_DEBUG, "$logNameClass >f readFromFile === START")
         var data = ""
@@ -68,7 +72,8 @@ class FilesWorker () {
         return data
     }
 
-    //записывем данные в JSON
+    //записываем данные в JSON
+    //writing data in JSON
     fun writeJSON(data: Any, nameFile: String, context: Context) {
         Log.d(TAG_DEBUG, "$logNameClass >f writeJSON === START")
 
@@ -83,15 +88,18 @@ class FilesWorker () {
     }
 
     //читаем JSON - SearchItemArrayList
+    //read JSON - SearchItemArrayList
     fun readJSONSearchItemArrayList(nameFile: String, context: Context):  SearchItemArrayList {
         Log.d(TAG_DEBUG, "$logNameClass >f readJSONSearchItemArrayList === START")
         Log.d(TAG_DEBUG, "$logNameClass >f readJSONSearchItemArrayList // читаем JSON")
-        //читаем файл JSON
+        //читаем файл-JSON
+        //read file-JSON
         val searchItemListJSON = readFromFile(nameFile, context)
 
         Log.d(TAG_DATA, "$logNameClass >f readJSONSearchItemArrayList > searchItemListJSON: $searchItemListJSON")
 
         //десериализация
+        //deserialization
         var data = SearchItemArrayList(ArrayList())
         try {
             data = Gson().fromJson(searchItemListJSON, SearchItemArrayList::class.java)
@@ -120,14 +128,18 @@ class FilesWorker () {
     }*/
 
     //проверка первый ли это запуск приложения
+    //checking First Run
     fun checkStatusFirstLaunch(context: Context): Boolean {
-        //записываем строку в SharedPreferences
+        //получаем значение из SharedPreferences
+        //get status from SharedPreferences
         val sharedPrefs = context.getSharedPreferences("init", Context.MODE_PRIVATE)
         val statusFirstLaunch = sharedPrefs.getBoolean(Constants.SHARED_FIRST_LAUNCH, true)
 
         //если это первый запуск, то меняем true на false и записываем в SharedPreferences
+        //if this is the first run, then change TRUE to FALSE and write to SharedPreferences
         val statusOutput: Boolean = if (statusFirstLaunch) {
             //первый запуск приложения
+            //first run
             Log.d(TAG, "$logNameClass >f checkStatusFirstLaunch > IF > firstLaunch")
             sharedPrefs.edit().putBoolean(Constants.SHARED_FIRST_LAUNCH, false).apply()
             firstLaunch(context)
@@ -140,13 +152,18 @@ class FilesWorker () {
 
     private fun firstLaunch(context: Context){
         //генерируем пустой JSON
+        //generate empty JSON
         val dataListWorker = ArrayList<SearchItemWorker>()
         val searchItemArrayList = SearchItemArrayList(dataListWorker)
         FilesWorker().writeJSON(searchItemArrayList, ViewModelFunctions.FILE_SEARCH_ITEM, context)
         Log.d(TAG_DEBUG, "$logNameClass >f firstLaunch === START / END")
         Log.d(TAG_DATA, "$logNameClass >f firstLaunch > searchItemArrayList: $searchItemArrayList")
         writeJSON(searchItemArrayList, Constants.FILE_SEARCH_ITEM, context)
-        WorkerFindNewsFun().workerFindNewsFirst(context)
+        //run first Worker
+        GlobalScope.launch {
+            WorkerFindNewsFun().workerFindNewsFirst(context)
+        }
+        //WorkerFindNewsFun().workerFindNewsFirst(context)
     }
 
     //?? что за Any?

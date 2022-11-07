@@ -57,7 +57,7 @@ class MainServices {
                 .setLargeIcon(bitmap)
                 .setContentTitle("Find News")
                 .setContentText("Найдены новости")
-                .setAutoCancel(false)
+                .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)//.setPriority(PRIORITY_HIGH) //.setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
 
@@ -69,9 +69,6 @@ class MainServices {
             with(NotificationManagerCompat.from(context)) {
                 notify(Constants.NOTIFICATION_ID, builder.build())
             }
-
-
-
             Log.d(Constants.TAG, "$logNameClass >f notification > send")
         }
         Log.d(Constants.TAG_DEBUG, "$logNameClass >f notification ----- END")
@@ -90,7 +87,7 @@ class MainServices {
 
         val notificationBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(context, Constants.CHANNEL_ID)
-                .setAutoCancel(false)
+                .setAutoCancel(true)
                 .setSmallIcon(com.example.tracknews.R.drawable.ic_notification)
                 .setWhen(System.currentTimeMillis())
                 .setContentIntent(pendingIntent)

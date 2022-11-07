@@ -31,7 +31,14 @@ class NewsItemAdapter(private val listener: Listener): RecyclerView.Adapter<News
         val binding = RecyclerViewNewsItemBinding.bind(item) //использует cardView
         //val binding = RecyclerViewNewsItemV2Binding.bind(item) //использует linearLayout
         fun bind(newsItem: NewsItem, listener: Listener) = with (binding){
-            val time = DateFunctions().parseNewsItemDate(newsItem.date, ctx)
+
+            var date = "1985-10-26T09:00:00+03:00"
+
+            if (newsItem.date != "") {
+                date = newsItem.date
+            }
+
+            val time = DateFunctions().parseNewsItemDate(date, ctx)
             Log.d(Constants.TAG_DATA_IF, "NewsItemAdapter >f bind > time: $time")
             Log.d(Constants.TAG_DATA_IF, "NewsItemAdapter >f bind > time 0: ${time[0]}")
             Log.d(Constants.TAG_DATA_IF, "NewsItemAdapter >f bind > time 1: ${time[1]}")
