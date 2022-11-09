@@ -48,6 +48,7 @@ class NewsSavedFragment : Fragment(), NewsItemAdapter.Listener {
         FragmentFunction(vm).progressBar(binding.fragNewsSavedProgressBar)
 
         val rcView = binding.fragNewsSavedRecyclerView
+        //newsItemAdapter.setHasStableIds(true) //для плавной прокрутки
         FragmentFunction(vm).startRecyclerView(rcView, newsItemAdapter)
 
     }

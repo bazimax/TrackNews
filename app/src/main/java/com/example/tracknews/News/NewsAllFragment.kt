@@ -44,6 +44,7 @@ class NewsAllFragment : Fragment(), NewsItemAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
 
         val rcView = binding.fragNewsSavedRecyclerView
+        //newsItemAdapter.setHasStableIds(true) //для плавной прокрутки //?? не работает (появляются дубликаты новостей)
         FragmentFunction(vm).startRecyclerView(rcView, newsItemAdapter)
     }
 

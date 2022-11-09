@@ -13,6 +13,265 @@
         android:layout_height="match_parent">
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardViewInstructionSaveSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="80dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/baseColorTextAccent"
+            app:cardCornerRadius="16dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:foreground="@drawable/ic_arrow_bottom"
+                    android:foregroundTint="@color/darkColorAccent2" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:padding="8dp"
+                    android:text="@string/instructionSaveSearch"
+                    android:textColor="@color/darkColorAccent2" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardViewInstructionStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="80dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/baseColorTextAccent"
+            app:cardCornerRadius="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:foreground="@drawable/ic_arrow_bottom"
+                    android:foregroundTint="@color/darkColorAccent2"
+                    android:rotation="90" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:padding="8dp"
+                    android:text="@string/instructionUnHideSearch"
+                    android:textColor="@color/darkColorAccent2" />
+
+                <TextView
+                    android:id="@+id/textViewInstructionCancel"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="@string/instructionCancel"
+                    android:textColor="@color/baseColorAccent" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:animateLayoutChanges="true"
+            android:background="@drawable/round_button"
+            android:clipToOutline="true"
+            android:elevation="2dp"
+            android:stateListAnimator="@null"
+            android:translationZ="2dp"
+            android:visibility="visible"
+            app:cardBackgroundColor="@color/baseColorSecondary"
+            app:cardCornerRadius="28dp">
+
+            <Button
+                android:id="@+id/buttonSave"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/round_button"
+                android:elevation="4dp"
+                android:stateListAnimator="@null"
+                android:theme="@style/Theme.BackgroundSecondary"
+                android:translationZ="4dp"
+                app:icon="@drawable/ic_bookmark_border" /> <!--android:background="@drawable/round_button"-->
+            <Button
+                android:id="@+id/buttonSaved"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/round_button"
+                android:elevation="4dp"
+                android:stateListAnimator="@null"
+                android:theme="@style/Theme.BackgroundSecondary"
+                android:translationZ="4dp"
+                android:visibility="invisible"
+                app:icon="@drawable/ic_bookmark" />
+
+            <EditText
+                android:id="@+id/editTextSearch"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="56dp"
+                android:layout_marginRight="56dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/baseColorOnPrimary"
+                android:ems="10"
+                android:gravity="center"
+                android:hapticFeedbackEnabled="false"
+                android:hint="@string/search"
+                android:inputType="textPersonName"
+                android:textColor="@color/baseColorOnPrimary"
+                android:textColorHint="@color/baseColorOnPrimary" />
+
+            <Button
+                android:id="@+id/buttonGO"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="end"
+                android:background="@drawable/round_button"
+                android:elevation="4dp"
+                android:stateListAnimator="@null"
+                android:theme="@style/Theme.BackgroundSecondary"
+                android:translationZ="4dp"
+                app:icon="@drawable/ic_arrow_forward" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center|end"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardViewInstructionStartGo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginStart="160dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="80dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/baseColorTextAccent"
+            app:cardCornerRadius="16dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:padding="8dp"
+                    android:text="@string/instructionUnHideSearch"
+                    android:textColor="@color/darkColorAccent2" />
+
+                <View
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:foreground="@drawable/ic_arrow_bottom"
+                    android:foregroundTint="@color/darkColorAccent2" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardViewInstructionStartEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="80dp"
+            android:layout_marginEnd="80dp"
+            android:layout_marginBottom="80dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/baseColorTextAccent"
+            app:cardCornerRadius="16dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:foreground="@drawable/ic_arrow_bottom"
+                    android:foregroundTint="@color/darkColorAccent2" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:padding="8dp"
+                    android:text="@string/instructionEditText"
+                    android:textColor="@color/darkColorAccent2" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabButtonSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:contentDescription="@string/news_today"
+            android:elevation="8dp"
+            android:stateListAnimator="@null"
+            android:theme="@style/Theme.BackgroundSecondary"
+            android:translationZ="10dp"
+            app:srcCompat="?android:attr/actionModeWebSearchDrawable"
+            tools:visibility="visible" />
+
+        <androidx.cardview.widget.CardView
             android:id="@+id/cardViewInstructionDevice"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -25,8 +284,7 @@
             android:translationZ="10dp"
             android:visibility="gone"
             app:cardBackgroundColor="@color/baseColorTextAccent"
-            app:cardCornerRadius="16dp"
-            tools:visibility="visible">
+            app:cardCornerRadius="16dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -43,7 +301,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical" >
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -184,7 +442,7 @@
                     <LinearLayout
                         android:id="@+id/actMainSearchItemDelete"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginTop="4dp"
                         android:layout_marginRight="8dp"
@@ -241,6 +499,11 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
+                <!--app:cardBackgroundColor="@android:color/transparent"--><![CDATA[
+                app:cardElevation="0dp"/>
+
+                ]]>
+
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardViewInstructionFinish"
                     android:layout_width="wrap_content"
@@ -261,13 +524,16 @@
 
                         <TextView
                             android:id="@+id/textViewInstructionFinish"
+                            style="@style/Theme.BackgroundSecondary"
                             android:layout_width="100dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:layout_margin="4dp"
+                            android:background="@drawable/round_button_box"
                             android:gravity="center"
                             android:padding="8dp"
                             android:text="@string/instructionFinish"
-                            android:textColor="@color/baseColorAccent" />
+                            android:textColor="@color/baseWhite" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -289,268 +555,6 @@
                     </LinearLayout>
 
                 </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardViewInstructionStartEditText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_marginStart="80dp"
-                    android:layout_marginEnd="80dp"
-                    android:layout_marginBottom="80dp"
-                    android:visibility="gone"
-                    app:cardBackgroundColor="@color/baseColorTextAccent"
-                    app:cardCornerRadius="16dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <View
-                            android:layout_width="56dp"
-                            android:layout_height="56dp"
-                            android:foreground="@drawable/ic_arrow_bottom"
-                            android:foregroundTint="@color/darkColorAccent2" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginEnd="8dp"
-                            android:layout_weight="1"
-                            android:gravity="start"
-                            android:padding="8dp"
-                            android:text="@string/instructionEditText"
-                            android:textColor="@color/darkColorAccent2" />
-
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardViewInstructionStartGo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_marginStart="160dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="80dp"
-                    android:visibility="gone"
-                    app:cardBackgroundColor="@color/baseColorTextAccent"
-                    app:cardCornerRadius="16dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginStart="8dp"
-                            android:layout_weight="1"
-                            android:gravity="end"
-                            android:padding="8dp"
-                            android:text="@string/instructionUnHideSearch"
-                            android:textColor="@color/darkColorAccent2" />
-
-                        <View
-                            android:layout_width="56dp"
-                            android:layout_height="56dp"
-                            android:foreground="@drawable/ic_arrow_bottom"
-                            android:foregroundTint="@color/darkColorAccent2" />
-
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardViewInstructionSaveSearch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|start"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginBottom="80dp"
-                    android:visibility="gone"
-                    app:cardBackgroundColor="@color/baseColorTextAccent"
-                    app:cardCornerRadius="16dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <View
-                            android:layout_width="56dp"
-                            android:layout_height="56dp"
-                            android:foreground="@drawable/ic_arrow_bottom"
-                            android:foregroundTint="@color/darkColorAccent2" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginEnd="8dp"
-                            android:layout_weight="1"
-                            android:gravity="start"
-                            android:padding="8dp"
-                            android:text="@string/instructionSaveSearch"
-                            android:textColor="@color/darkColorAccent2" />
-
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardViewInstructionStart"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_marginLeft="80dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:visibility="gone"
-                    app:cardBackgroundColor="@color/baseColorTextAccent"
-                    app:cardCornerRadius="16dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
-
-                        <View
-                            android:layout_width="56dp"
-                            android:layout_height="56dp"
-                            android:foreground="@drawable/ic_arrow_bottom"
-                            android:foregroundTint="@color/darkColorAccent2"
-                            android:rotation="90" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_weight="1"
-                            android:gravity="start"
-                            android:padding="8dp"
-                            android:text="@string/instructionUnHideSearch"
-                            android:textColor="@color/darkColorAccent2" />
-
-                        <TextView
-                            android:id="@+id/textViewInstructionCancel"
-                            android:layout_width="100dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:padding="8dp"
-                            android:text="@string/instructionCancel"
-                            android:textColor="@color/baseColorAccent" />
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-                <!--app:cardBackgroundColor="@android:color/transparent"-->
-                app:cardElevation="0dp"/>
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fabButtonSearch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:clickable="true"
-                    android:contentDescription="@string/news_today"
-                    android:elevation="8dp"
-                    android:stateListAnimator="@null"
-                    android:theme="@style/Theme.BackgroundSecondary"
-                    android:translationZ="10dp"
-                    app:srcCompat="?android:attr/actionModeWebSearchDrawable"
-                    tools:visibility="visible" />
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardView"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:layout_gravity="bottom"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:animateLayoutChanges="true"
-                    android:background="@drawable/round_button"
-                    android:clipToOutline="true"
-                    android:elevation="2dp"
-                    android:stateListAnimator="@null"
-                    android:translationZ="2dp"
-                    android:visibility="visible"
-                    app:cardBackgroundColor="@color/baseColorSecondary"
-                    app:cardCornerRadius="28dp">
-
-                    <Button
-                        android:id="@+id/buttonSave"
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:background="@drawable/round_button"
-                        android:elevation="4dp"
-                        android:stateListAnimator="@null"
-                        android:theme="@style/Theme.BackgroundSecondary"
-                        android:translationZ="4dp"
-                        app:icon="@drawable/ic_bookmark_border" /> <!--android:background="@drawable/round_button"-->
-                    <Button
-                        android:id="@+id/buttonSaved"
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:background="@drawable/round_button"
-                        android:elevation="4dp"
-                        android:stateListAnimator="@null"
-                        android:theme="@style/Theme.BackgroundSecondary"
-                        android:translationZ="4dp"
-                        android:visibility="invisible"
-                        app:icon="@drawable/ic_bookmark" />
-
-                    <EditText
-                        android:id="@+id/editTextSearch"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="56dp"
-                        android:layout_marginRight="56dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/baseColorOnPrimary"
-                        android:ems="10"
-                        android:gravity="center"
-                        android:hapticFeedbackEnabled="false"
-                        android:hint="@string/search"
-                        android:inputType="textPersonName"
-                        android:textColor="@color/baseColorOnPrimary"
-                        android:textColorHint="@color/baseColorOnPrimary" />
-
-                    <Button
-                        android:id="@+id/buttonGO"
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:layout_gravity="end"
-                        android:background="@drawable/round_button"
-                        android:elevation="4dp"
-                        android:stateListAnimator="@null"
-                        android:theme="@style/Theme.BackgroundSecondary"
-                        android:translationZ="4dp"
-                        app:icon="@drawable/ic_arrow_forward" />
-
-                    <ProgressBar
-                        android:id="@+id/progressBar"
-                        style="?android:attr/progressBarStyle"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center|end"
-                        android:layout_marginEnd="8dp"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-
-                </androidx.cardview.widget.CardView>
-
             </FrameLayout>
         </LinearLayout>
     </FrameLayout>

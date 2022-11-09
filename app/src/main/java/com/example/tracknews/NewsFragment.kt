@@ -38,8 +38,12 @@ class NewsFragment : Fragment() {
         //Log.d(Constants.TAG_DEBUG, "$logNameClass > onViewCreated > tabName: ${nameTab.tabName(view.context)}")
         val adapter = ViewPager2Adapter(this, nameTab.listFragment) //?? old
 
+
+
         //val adapter = ViewPager2Adapter(this, nameTab.fragmentName())
         binding.fragNewsViewPager2.adapter = adapter
+
+
 
         /*vm.searchItemActive.observe(activity as LifecycleOwner) {
             FragmentFunction(vm).nameTab(view ,binding.fragNewsTab, binding.fragNewsViewPager2)

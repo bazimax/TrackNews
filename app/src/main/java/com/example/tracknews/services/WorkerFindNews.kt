@@ -343,8 +343,8 @@ class WorkerFindNewsFun(){
         val rndMinute = (10..59).random() // generated random from 10 to 59 included
         val rndSecond = (10..59).random() // generated random from 10 to 59 included
         val timeNight = LocalTime.parse("03:$rndMinute:$rndSecond") //Время ночного запуска - 03:XX:XX
-        //val timeNoon = LocalTime.parse("13:$rndMinute:$rndSecond") //Время дневного запуска - 13:XX:XX
-        val timeNoon = LocalTime.parse("11:35:38") //test
+        val timeNoon = LocalTime.parse("13:$rndMinute:$rndSecond") //Время дневного запуска - 13:XX:XX
+        //val timeNoon = LocalTime.parse("11:35:38") //test
 
         val timeDiff: Duration//Duration.ofHours(24).minus(Duration.between(timeNow, timeNight))
 

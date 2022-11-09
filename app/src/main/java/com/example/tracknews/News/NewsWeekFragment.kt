@@ -48,6 +48,7 @@ class NewsWeekFragment : Fragment(), NewsItemAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
 
         val rcView = binding.fragNewsSavedRecyclerView
+        //newsItemAdapter.setHasStableIds(true) //для плавной прокрутки
         FragmentFunction(vm).startRecyclerView(rcView, newsItemAdapter)
     }
 
