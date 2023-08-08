@@ -132,6 +132,8 @@ class MainDbManager(context: Context) {
         val tableName = MainDbNameObject.TABLE_NAME
         //val columns = arrayOf(MainDbNameObject.COLUMN_NAME_SEARCH, MainDbNameObject.COLUMN_NAME_LINK)
         val selection =  "$columnSearch LIKE '%' || ? || '%'"
+        //V2
+        //val selectQuery5 = "SELECT * FROM $tableName WHERE $column LIKE '%' || :string || '%'"
         val selectionArgs = arrayOf(search)//arrayOf("9422089")
 
         val dataList = ArrayList<NewsItem>()
@@ -237,3 +239,15 @@ class MainDbManager(context: Context) {
 
         val selectQuery6 = "SELECT * FROM $tableName WHERE $column LIKE '%' || ? || '%'"
         val cursor6 = db?.rawQuery(selectQuery6, selectionArgs)*/
+
+//info
+//https://habr.com/ru/articles/564390/#%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80%D1%8B
+//https://stackoverflow.com/questions/44184769/android-room-select-query-with-like
+
+/*
+//сторонний пример (данные из SQL) (table temperature)
+insert into temperature (planet, time, value) values
+('Mercury', 1672563600, 360),
+('Venus', 1672563600, 692)...
+//Запрос в SQL
+SELECT planet,avg(value) FROM temperature GROUP BY planet*/

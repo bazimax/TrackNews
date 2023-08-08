@@ -21,8 +21,6 @@ import com.example.tracknews.classes.Constants
 class MainServices {
     private val logNameClass = "MainServices" //для логов
 
-
-
     //Уведомления
     fun notification(checkStart: Boolean, context: Context){
         Log.d(Constants.TAG_DEBUG, "$logNameClass >f notification === START")

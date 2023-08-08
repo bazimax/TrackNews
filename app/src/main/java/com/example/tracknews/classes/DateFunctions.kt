@@ -46,7 +46,7 @@ class DateFunctions {
         dateMonth = dateMonth.removeRange(3, dateMonth.toString().length)
 
         //День и месяц
-        //Меняем положение дня и месяца в зависимости от языка
+        //меняем положение дня и месяца в зависимости от языка
         var dateDDmm: String = when(locale) {
             "en" -> "$dateMonth ${dateParse.dayOfMonth}"
             "ru" -> "${dateParse.dayOfMonth} $dateMonth"
@@ -57,7 +57,7 @@ class DateFunctions {
         val outputDateTime = arrayOf("00:00", "Jan 1", "2012")
 
         //Собираем дату и время
-        //Проверяем насколько актуальная дата
+        //проверяем насколько актуальная дата
         dateDDmm = when (dateParse) {
             dateNow -> textToday //сегодня
             dateNow.minusDays(1) -> textYesterday //вчера

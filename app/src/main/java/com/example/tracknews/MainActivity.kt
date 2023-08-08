@@ -112,7 +112,6 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         cardView.alpha = 0F
         cardViewVisibility(cardView, buttonSearch) //отслеживаем видимость cardView
 
-
         //раскрываем меню поиска
         buttonSearch.setOnClickListener {
             Log.d(TAG_DEBUG, "$logNameClass >f CLICK_buttonSearch === START")
@@ -293,10 +292,8 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
 
         Log.d(TAG_DEBUG, "Destroy program ------------------------------=======================End")
         super.onDestroy()
-
-
-
     }
+
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -308,6 +305,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
     }
 
     //кнопка назад
+    //Back button
     private var backPressed: Long = 0
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount == 0) {
@@ -585,6 +583,7 @@ class MainActivity : AppCompatActivity(), SearchItemAdapter.Listener {
         Log.d(Constants.TAG_DATA, "$logNameClass >f CLICK_1 > testButton1 > worker > outputData: $outputData")
         Log.d(Constants.TAG_DATA, "$logNameClass >f CLICK_1 > testButton1 > worker > outputData2: $outputData2")
     }
+
 
     //BACKUP >
     private fun testButton1(){

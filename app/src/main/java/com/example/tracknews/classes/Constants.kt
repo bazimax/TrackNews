@@ -1,12 +1,14 @@
 package com.example.tracknews.classes
 
 import android.content.Context
+import android.util.Log
 import androidx.fragment.app.Fragment
 import com.example.tracknews.News.NewsAllFragment
 import com.example.tracknews.News.NewsSavedFragment
 import com.example.tracknews.News.NewsTodayFragment
 import com.example.tracknews.News.NewsWeekFragment
 import com.example.tracknews.R
+import com.example.tracknews.classes.Constants.TAG_DEBUG
 
 object Constants {
     //log
@@ -55,4 +57,7 @@ object Constants {
     //savedInstanceState
     const val STATE_SEARCH_ITEM_ACTIVE = "stateSearchItemActive"
 }
+
+
+
 
