@@ -1,4 +1,4 @@
-package com.example.tracknews.News
+package com.example.tracknews.news
 
 import android.os.Bundle
 import android.util.Log
@@ -16,8 +16,7 @@ import com.example.tracknews.classes.FragmentFunction
 import com.example.tracknews.classes.NewsItem
 import com.example.tracknews.classes.NewsItemAdapter
 import com.example.tracknews.databinding.FragmentNewsAllBinding
-import okhttp3.*
-import java.io.IOException
+
 
 class NewsAllFragment : Fragment(), NewsItemAdapter.Listener {
     private val logNameClass = "NewsAllFragment"
@@ -25,7 +24,6 @@ class NewsAllFragment : Fragment(), NewsItemAdapter.Listener {
     lateinit var binding: FragmentNewsAllBinding
     private val vm: ViewModel by activityViewModels()
     private val newsItemAdapter = NewsItemAdapter(this)
-    //var okHttpClient: OkHttpClient = OkHttpClient()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,7 +42,6 @@ class NewsAllFragment : Fragment(), NewsItemAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
 
         val rcView = binding.fragNewsSavedRecyclerView
-        //newsItemAdapter.setHasStableIds(true) //для плавной прокрутки //?? не работает (появляются дубликаты новостей)
         FragmentFunction(vm).startRecyclerView(rcView, newsItemAdapter)
     }
 
@@ -59,18 +56,16 @@ class NewsAllFragment : Fragment(), NewsItemAdapter.Listener {
         //отслеживаем изменения в данных для RecyclerView (SQLite > ViewModel)
         vm.newsItemArrayAll.value?.let { newsItemAdapter.addAllNews(it) }
         vm.newsItemArrayAll.observe(activity as LifecycleOwner) {
-            //Log.d(MainActivity.TAG, "NewsAllFragment >f newsItemArray.OBSERVE > value: ${vm.newsItemArray.value}")
             vm.newsItemArrayAll.value?.let { it1 -> newsItemAdapter.addAllNews(it1) }
         }
     }
 
 
-    //одинаково во всех 4х фрагментах (today, week, all, saved) >
-    //При клике на элемент > загрузка интеренет страницы
+    //одинаково во всех 4-х фрагментах (today, week, all, saved) >
+    //При клике на элемент > загрузка интернет страницы
     override fun runWebsite(newsItem: NewsItem) {
         Log.d(Constants.TAG_DEBUG, "$logNameClass >f runWebsite")
-        //loadProgressBar(newsItem.link) //прогрессбар
-        FragmentFunction(vm).loadWebsiteFragment(newsItem, activity as MainActivity) //загрузка интеренет страницы
+        FragmentFunction(vm).loadWebsiteFragment(newsItem, activity as MainActivity) //загрузка интернет страницы
     }
 
     //сохраняем новость (отмечаем звездочкой)

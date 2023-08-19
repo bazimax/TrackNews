@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.example.tracknews"
-        minSdk 21
+        minSdk 26
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -48,7 +48,7 @@ dependencies {
     //implementation 'android.arch.work:work-runtime-ktx:1.0.1' //worker
     // implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.19.3' //coroutines
 
-    implementation 'com.google.code.gson:gson:2.9.1' //JSON сериализауия и десериализация
+    implementation 'com.google.code.gson:gson:2.9.1' //JSON сериализация и десериализация
 
     //implementation 'kotlinx.android.synthetic.main.activity_main.*'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0' //сеть

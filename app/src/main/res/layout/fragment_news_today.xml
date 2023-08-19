@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:layout_margin="8dp"
     android:orientation="vertical"
-    tools:context=".News.NewsTodayFragment">
+    tools:context=".news.NewsTodayFragment">
     <ScrollView
         android:id="@+id/testScrollView"
         android:layout_width="match_parent"

@@ -1,18 +1,14 @@
 package com.example.tracknews.classes
 
 import android.content.Context
-import android.icu.text.RelativeDateTimeFormatter
-import android.os.Build
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
-import com.example.tracknews.MainActivity
-import com.example.tracknews.News.NewsAllFragment
-import com.example.tracknews.News.NewsSavedFragment
-import com.example.tracknews.News.NewsTodayFragment
-import com.example.tracknews.News.NewsWeekFragment
+import com.example.tracknews.news.NewsAllFragment
+import com.example.tracknews.news.NewsSavedFragment
+import com.example.tracknews.news.NewsTodayFragment
+import com.example.tracknews.news.NewsWeekFragment
 import com.example.tracknews.R
 import com.example.tracknews.ViewModel
 import com.example.tracknews.db.MainDbManager
@@ -25,12 +21,11 @@ import java.time.format.DateTimeFormatter
 //Основная логика приложения завязанная на ViewModel
 class ViewModelFunctions(viewModel: ViewModel) {
     private val logNameClass = "ViewModelFunctions" //для логов
-    //private val logFunName = Throwable().stackTrace[0].methodName//object{}.javaClass.enclosingMethod?.name //для логов
 
     companion object {
         //log
         const val TAG = Constants.TAG //разное
-        const val TAG_DEBUG = Constants.TAG_DEBUG //запуск функция, активити и тд
+        const val TAG_DEBUG = Constants.TAG_DEBUG //запуск функция, activity и тд
         const val TAG_DATA = Constants.TAG_DATA //переменные и данные
         const val TAG_DATA_BIG = Constants.TAG_DATA_BIG//объемные данные
         const val TAG_DATA_IF = Constants.TAG_DATA_IF //переменные и данные в циклах
@@ -83,9 +78,6 @@ class ViewModelFunctions(viewModel: ViewModel) {
         Log.d(TAG_DEBUG, "$logNameClass >f loadSQLiteToViewModelActive // Ищем все новости по данному запросу напрямую в БД и обновляем выводимый список новостей")
 
         vm.newsItemArrayAll.value = mainDbManager.findItemInDb(MainDbNameObject.COLUMN_NAME_SEARCH, search) //search
-        //val counter = vm.newsItemArrayAll.value!!.size
-        //Log.d(TAG_DATA, "ViewModelFunctions >f loadSQLiteToViewModel > vm.newsItemArray > Size: ${vm.newsItemArray.value!!.size}")
-        //Log.d(TAG_DATA, "Activity >f loadSQLiteToViewModel > vm.newsItemArray: ${vm.newsItemArray.value}")
 
         Log.d(TAG_DEBUG, "$logNameClass >f loadSQLiteToViewModelActive ----- END")
     }
@@ -94,21 +86,20 @@ class ViewModelFunctions(viewModel: ViewModel) {
     private fun updateElementOfSQLite(mainDbManager: MainDbManager){
         Log.d(TAG_DEBUG, "$logNameClass >f updateElementOfSQLite === START")
         Log.d(TAG_DEBUG, "$logNameClass >f updateElementOfSQLite // изменяем элементы БД")
-        //обновляем статус у новости (сохранено или нет) ////удалем элемент/строку из Базы Данных
+        //обновляем статус у новости (сохранено или нет) ////удаляем элемент/строку из Базы Данных
         Log.d(TAG_DATA, "$logNameClass >f updateElementOfSQLite > vm.newsItemUpdateItem.value: ${vm.newsItemUpdateItem.value}")
         val statusSaved = vm.newsItemUpdateItem.value?.statusSaved
-        val id = vm.newsItemUpdateItem.value?.id
+
         val link = vm.newsItemUpdateItem.value?.link
         if (statusSaved != null) {
             if (link != null) {
                 mainDbManager.updateDbElementStatusSaved(statusSaved, link)
-                //mainDbManager.deleteDbElement(link, "link")
             }
         }
 
         //читаем Базу Данных учитывая Активный "поиск"
         vm.searchItemActive.value?.let { it1 -> loadSQLiteToViewModelActive(mainDbManager, it1) } //reload
-        vm.searchItemActive.value = vm.searchItemActive.value //обновляем vm чтобы NewsFragment подхвватил изменения
+        vm.searchItemActive.value = vm.searchItemActive.value //обновляем vm чтобы NewsFragment подхватил изменения
         Log.d(TAG_DEBUG, "$logNameClass >f updateElementOfSQLite ----- END")
     }
 
@@ -160,7 +151,6 @@ class ViewModelFunctions(viewModel: ViewModel) {
         //Получили новые новости
 
         //полученные временные данные отправляем в ViewModel для последующей записи в БД
-        //Log.d(TAG_DEBUG, "$logNameClass >f viewModelToSQLite > newsItemTempYa.OBSERVE === START")
         if (vm.newsItemTempArrayInBd.value != null) {
             vm.newsItemTempArrayInBd.value!!.forEach {
                 //записываем найденные новости в БД если они не совпадают со старыми
@@ -181,23 +171,16 @@ class ViewModelFunctions(viewModel: ViewModel) {
         Log.d(TAG_DEBUG, "$logNameClass >f viewModelToSQLite ----- END")
     }
 
-    //поиск новостей через строку поиска ("НЕсохраненный поиск"(запрос/подписк))
+    //поиск новостей через строку поиска ("НЕ-сохраненный поиск"(запрос/подписка))
     fun findNews(search: String, context: Context) {
         Log.d(TAG_DEBUG, "$logNameClass >f findNews === START")
         Log.d(TAG_DEBUG, "$logNameClass >f findNews // поиск новостей через строку поиска")
-
-        /*//показываем прогрессбар и сообщение
-        vm.statusProgressBar.value = true
-        vm.serviceMessage.value = context.resources.getString(R.string.messageFindNews)*/
-
 
         //читаем сохраненный список SearchItem
         val searchItemArrayList = readSearchItemArrayList(context)
 
         //если строка поиска не пустая. Иначе ничего не делать
         if (search != "") {
-            //проверка интернета //??
-            //val testRequest: Request = Request.Builder().url("https://www.ya.ru/").build()
 
             //запускаем парсинг новостных сайтов/сайта
             val resultParse = parserSites.parse(search, context)
@@ -208,7 +191,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
             if (resultParse.statusEthernet == false.toString()) {
                 //если парсинг не удался
                 Log.d(TAG, "$logNameClass >f findNews > парсинг не удался")
-                val messageLoadWebsite = context.resources.getString(com.example.tracknews.R.string.loadWebsiteFail)
+                val messageLoadWebsite = context.resources.getString(R.string.loadWebsiteFail)
                 Toast.makeText(context, messageLoadWebsite, Toast.LENGTH_LONG).show()
             }
             else {
@@ -220,7 +203,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
                     it.searchItem.active = false
                 }
 
-                //проверка "нового поиска" на совпадение с ранее "сохранеными поисками" в searchItemArrayList
+                //проверка "нового поиска" на совпадение с ранее "сохраненными поисками" в searchItemArrayList
                 //если совпадения есть, то меняем активный searchItem на этот и обновляем БД. Иначе показываем все новости без записи в БД
                 if (findSameSearchItem(search)) {
                     Log.d(TAG_DATA_IF, "$logNameClass >f findNews > IF")
@@ -242,8 +225,6 @@ class ViewModelFunctions(viewModel: ViewModel) {
                     //показываем все новости без записи в БД
                     vm.newsItemArrayAll.postValue(null)
                     vm.newsItemArrayAll.postValue(resultParse.list)
-                    //vm.newsItemArrayAll.value = null
-                    //vm.newsItemArrayAll.value = resultParse.list
 
                     //снимаем выделение с активного <сохраненного поиска>
                     notSavedSearchItemActive(context, true)
@@ -252,7 +233,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
                 }
             }
         }
-        //скрываем прогрессбар и сообщение
+        //скрываем прогресс-бар и сообщение
         vm.statusProgressBar.postValue(false)
         vm.serviceMessage.postValue("")
 
@@ -284,10 +265,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
                 //создаем новый элемент, добавляем в список и делаем активным
                 val searchItemWorker = SearchItemWorker(SearchItem(search, 0, 0, true))
                 searchItemArrayList.list.add(searchItemWorker)
-                //??
-                /*if (searchItemArrayList.list.size != 0) {
-                    searchItemArrayList.list.add(searchItemWorker)
-                }*/
+
                 Log.d(TAG_DATA, "$logNameClass >f saveSearch > ADD > searchItemArrayList: $searchItemArrayList")
 
                 //проверяем newsItemArrayAll - если там есть новости с тем же тегом записываем их в бд
@@ -309,8 +287,8 @@ class ViewModelFunctions(viewModel: ViewModel) {
                 //обновляем список SearchItem в Recycler View
                 readSearchItemListToRcView(context)
 
-                //сообщение с подверждением
-                val messageLoadWebsite = context.resources.getString(com.example.tracknews.R.string.searchItemSave)
+                //сообщение с подтверждением
+                val messageLoadWebsite = context.resources.getString(R.string.searchItemSave)
                 Toast.makeText(context, messageLoadWebsite, Toast.LENGTH_SHORT).show()
 
                 //??
@@ -346,14 +324,13 @@ class ViewModelFunctions(viewModel: ViewModel) {
         Log.d(TAG_DEBUG, "$logNameClass >f readSearchItemListToRcView ----- END")
     }
 
-    //в процессе пеереключения между "сохраненными поисками" мы не сохраняем это в JSON. Поэтому при onPause->onDestroy мы можем сохранить
+    //В процессе переключения между "сохраненными поисками" мы не сохраняем это в JSON. Поэтому при onPause->onDestroy мы можем сохранить
     //сохраняем активный SearchItem на время паузы приложения
     fun saveSearchItemActive(context: Context){
         //загружаем список "сохраненных поисков" (SearchItem)
         val searchItemArrayList = readSearchItemArrayList(context)
-        //Log.d(TAG_DATA, "ViewModelFunctions >f saveSearchItemActive > forEach > active: ${vm.searchItemActive.value}")
+
         searchItemArrayList.list.forEach {
-            //Log.d(TAG_DATA, "ViewModelFunctions >f saveSearchItemActive > forEach > it: ${it.searchItem.search}, ${it.searchItem.active}")
             it.searchItem.active = it.searchItem.search == vm.searchItemActive.value
         }
 
@@ -361,10 +338,10 @@ class ViewModelFunctions(viewModel: ViewModel) {
         writeSearchItemArrayList(searchItemArrayList, context)
     }
 
-    //сбрасываем активный SearchItem на позицую 0
-    fun resetSearchItemActive(context: Context){
+    //сбрасываем активный SearchItem на позицию 0
+    private fun resetSearchItemActive(context: Context){
         Log.d(TAG_DEBUG, "$logNameClass >f resetSearchItemActive === START")
-        Log.d(TAG_DEBUG, "$logNameClass >f resetSearchItemActive // сбрасываем активный SearchItem на позицую 0")
+        Log.d(TAG_DEBUG, "$logNameClass >f resetSearchItemActive // сбрасываем активный SearchItem на позицию 0")
         //загружаем список "сохраненных поисков" (SearchItem)
         val searchItemArrayList = readSearchItemArrayList(context)
 
@@ -388,7 +365,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
     //!!связан с findNews (postValue)
     private fun notSavedSearchItemActive(context: Context, postValue: Boolean = false){
         Log.d(TAG_DEBUG, "$logNameClass >f notSavedSearchItemActive === START")
-        Log.d(TAG_DEBUG, "$logNameClass >f notSavedSearchItemActive // сбрасываем активный SearchItem на позицую 0")
+        Log.d(TAG_DEBUG, "$logNameClass >f notSavedSearchItemActive // сбрасываем активный SearchItem на позицию 0")
         //загружаем список "сохраненных поисков" (SearchItem)
         val searchItemArrayList = readSearchItemArrayList(context)
 
@@ -458,23 +435,6 @@ class ViewModelFunctions(viewModel: ViewModel) {
         Log.d(TAG_DEBUG, "$logNameClass >f sortSearchItemArrayList ----- END")
     }
 
-    //обновляем счетчики новостей для всех searchItem
-    fun updateNewsCountForEachSearchItem(mainDbManager: MainDbManager, context: Context){
-        Log.d(TAG_DEBUG, "$logNameClass >f updateNewsCountForEachSearchItem === START")
-        //загружаем список "сохраненных поисков" (SearchItem)
-        val searchItemArrayList = readSearchItemArrayList(context)
-
-        //для каждого searchItem считаем количество новстей
-        searchItemArrayList.list.forEach {
-            it.searchItem.counterAllNews = mainDbManager.findItemInDb(MainDbNameObject.COLUMN_NAME_SEARCH, it.searchItem.search).size
-        }
-
-        //Записываем обновленный список "сохраненных поисков" (счетчики) обратно в JSON
-        writeSearchItemArrayList(searchItemArrayList, context)
-        Log.d(TAG_DATA, "$logNameClass >f updateNewsCountForEachSearchItem > searchItemArrayList: $searchItemArrayList")
-        Log.d(TAG_DEBUG, "$logNameClass >f updateNewsCountForEachSearchItem ----- END")
-    }
-
     //обрабатываем нажатия на searchItems >
     //при клике на элемент searchItem в recycler view -> он становится активным -> из БД загружаются все новости с этим именем
     fun clickOnSearchItem(searchItem: SearchItem, context: Context) {
@@ -485,7 +445,6 @@ class ViewModelFunctions(viewModel: ViewModel) {
 
         //загружаем список "сохраненных поисков" (SearchItem)
         val searchItemArrayList = readSearchItemArrayList(context)
-        //Log.d(TAG_DEBUG, "$logNameClass >f clickOnSearchItem > searchItemArrayList: ${searchItemArrayList.list}")
 
         //узнаем индекс элемента
         val index = searchItemArrayList.list.indexOfFirst { it.searchItem.search == searchItem.search }
@@ -496,8 +455,6 @@ class ViewModelFunctions(viewModel: ViewModel) {
         //Записываем обновленный список "сохраненных поисков" (счетчики) обратно в JSON
         writeSearchItemArrayList(searchItemArrayList, context)
 
-        //val index = searchItemArrayList.list.indexOfFirst { it.searchItem.search == searchItem.search }
-
         //выделяем элемент, меняя его состояние (active)
         vm.searchItemList.value?.forEach {
             it.active = false
@@ -505,8 +462,6 @@ class ViewModelFunctions(viewModel: ViewModel) {
                 it.active = true
                 it.counterNewNews = 0
             }
-            //Log.d(TAG_DATA, "MainActivity >f clickOnSearchItem > it Active: ${it.search}")
-            //Log.d(TAG_DATA, "MainActivity >f clickOnSearchItem > it: ${it.active}")
         }
         //обновляем searchItemList, чтобы LiveData подхватила изменения и отобразила измененные кнопки
         vm.searchItemList.value = vm.searchItemList.value //postValue(vm.searchItemList.value)
@@ -528,7 +483,6 @@ class ViewModelFunctions(viewModel: ViewModel) {
 
         vm.searchItemDeleteArrayList.value?.add(searchItem.search)
 
-        //Log.d(TAG_DATA, "Main Activity >f selectSearchItem >  Count: ${vm.searchItemDeleteCount.value}")
         Log.d(TAG_DATA, "$logNameClass >f selectSearchItem >  Delete: ${vm.searchItemDeleteArrayList.value}")
         Log.d(TAG_DEBUG, "$logNameClass >f selectSearchItem ----- END")
     }
@@ -543,10 +497,8 @@ class ViewModelFunctions(viewModel: ViewModel) {
         }
         vm.searchItemDeleteCount.value = a
 
-        //val idUnselect = vm.searchItemDeleteArrayList.value?.indexOf(searchItem.search)
         vm.searchItemDeleteArrayList.value?.remove(searchItem.search)
 
-        //Log.d(TAG_DATA, "Main Activity >f unSelectSearchItem >  Count: ${vm.searchItemDeleteCount.value}")
         Log.d(TAG_DATA, "$logNameClass >f unSelectSearchItem >  Delete: ${vm.searchItemDeleteArrayList.value}")
         Log.d(TAG_DEBUG, "$logNameClass >f unSelectSearchItem ----- END")
     }
@@ -558,7 +510,6 @@ class ViewModelFunctions(viewModel: ViewModel) {
         //загружаем список "сохраненных поисков" (SearchItem)
         val searchItemArrayListOld = readSearchItemArrayList(context)
         val dataListWorker = ArrayList<SearchItemWorker>()
-        //val searchItemArrayListDelete = vm.searchItemDeleteArrayList.value
         var checkDeleteActiveSearchItem = false
 
         Log.d(TAG_DATA, "$logNameClass >f deleteSelectSearchItemAndNews > начало обработки\n" +
@@ -648,7 +599,7 @@ class ViewModelFunctions(viewModel: ViewModel) {
         Log.d(TAG_DEBUG, "$logNameClass >f writeSearchItemArrayList // записываем обновленный список <сохраненных поисков> обратно в JSON")
     }
 
-    //проверяем есть ли совпадения с имеющимеся <сохраненными поисками>
+    //проверяем есть ли совпадения с имеющимися <сохраненными поисками>
     //!!связан с findNews (postValue)
     fun findSameSearchItem(search: String): Boolean{
         var checkSame = false
@@ -659,21 +610,14 @@ class ViewModelFunctions(viewModel: ViewModel) {
             }
         }
         Log.d(TAG_DEBUG, "$logNameClass >f findSameSearchItem === START / END")
-        Log.d(TAG_DEBUG, "$logNameClass >f findSameSearchItem // проверяем есть ли совпадения с имеющимеся <сохраненными поисками>")
+        Log.d(TAG_DEBUG, "$logNameClass >f findSameSearchItem // проверяем есть ли совпадения с имеющимися <сохраненными поисками>")
         Log.d(TAG_DATA, "$logNameClass >f findSameSearchItem > searchItemArrayList: $checkSame")
         return checkSame
-    }
-
-    //тестирование получения имен функции и класса
-    fun testNameThisFun(){
-        val name = object{}.javaClass.enclosingMethod?.name
-        Log.d(TAG_DATA, "$logNameClass >f testNameThisFun >  nameFun: $name")
-        //Log.d(TAG_DATA, "$logNameClass >f testNameThisFun >  nameFun2: ${logFunName}")
     }
 }
 
 //имена для TabLayout (ViewPager2)
-class NameTab(viewModel: ViewModel, ) {
+class NameTab(viewModel: ViewModel) {
 
     //V1
     val listFragment: List<Fragment> = listOf(
@@ -719,80 +663,6 @@ class NameTab(viewModel: ViewModel, ) {
             context.getString(R.string.news_all) + counterAll,
             context.getString(R.string.news_saved) + counterSaved
         )
-    }
-
-    //V2 - мало полезен
-    fun fragmentName(): List<Fragment> {
-        //если новостей для определенных разделов нет то и не показываем их
-        val list = ArrayList<Fragment>()
-
-        if (vm.newsItemArrayDay.value != null) {
-            if (vm.newsItemArrayDay.value!!.size != 0) {
-                list.add(NewsTodayFragment.newInstance())
-            }
-        }
-        if (vm.newsItemArrayMonth.value != null) {
-            if (vm.newsItemArrayMonth.value!!.size != 0) {
-                list.add(NewsWeekFragment.newInstance())
-            }
-        }
-        if (vm.newsItemArrayAll.value != null) {
-            if (vm.newsItemArrayAll.value!!.size != 0) {
-                list.add(NewsAllFragment.newInstance())
-            }
-        }
-        if (vm.newsItemArraySaved.value != null) {
-            if (vm.newsItemArraySaved.value!!.size != 0) {
-                list.add(NewsSavedFragment.newInstance())
-            }
-        }
-
-        return list
-    }
-
-    //V2 - мало полезен
-    fun tabName(context: Context): List<String> {
-        //если новостей для определенных разделов нет то и не показываем их
-        val list = ArrayList<String>()
-
-        if (vm.newsItemArrayDay.value != null) {
-            if (vm.newsItemArrayDay.value!!.size != 0) {
-                val counterDay = " ${vm.newsItemArrayDay.value!!.size}"
-                list.add(context.getString(R.string.news_today) + counterDay)
-            }
-            else {
-                list.add("")
-            }
-        }
-        if (vm.newsItemArrayMonth.value != null) {
-            if (vm.newsItemArrayMonth.value!!.size != 0) {
-                val counterMonth = " ${vm.newsItemArrayMonth.value!!.size}"
-                list.add(context.getString(R.string.news_week) + counterMonth)
-            }
-            else {
-                list.add("")
-            }
-        }
-        if (vm.newsItemArrayAll.value != null) {
-            if (vm.newsItemArrayAll.value!!.size != 0) {
-                val counterAll = " ${vm.newsItemArrayAll.value!!.size}"
-                list.add(context.getString(R.string.news_all) + counterAll)
-            }
-            else {
-                list.add("")
-            }
-        }
-        if (vm.newsItemArraySaved.value != null) {
-            if (vm.newsItemArraySaved.value!!.size != 0) {
-                val counterSaved = " ${vm.newsItemArraySaved.value!!.size}"
-                list.add(context.getString(R.string.news_saved) + counterSaved)
-            }
-            else {
-                list.add("")
-            }
-        }
-
-        return list
     }
 }
 

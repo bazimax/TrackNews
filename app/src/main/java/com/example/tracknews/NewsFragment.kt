@@ -6,15 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
-import com.example.tracknews.News.*
+import com.example.tracknews.news.*
 import com.example.tracknews.classes.Constants
 import com.example.tracknews.classes.FragmentFunction
 import com.example.tracknews.classes.NameTab
 import com.example.tracknews.databinding.FragmentNewsBinding
-import com.google.android.material.tabs.TabLayoutMediator
 
 class NewsFragment : Fragment() {
     private val logNameClass = "NewsFragment"

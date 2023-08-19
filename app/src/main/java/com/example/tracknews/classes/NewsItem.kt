@@ -1,9 +1,5 @@
 package com.example.tracknews.classes
 
-data class NewsItemArrayList(
-    val list: ArrayList<NewsItem>
-)
-
 data class NewsItem(
     var id: Int = 0,
     val search: String = "",

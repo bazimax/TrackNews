@@ -567,20 +567,6 @@
         android:layout_gravity="start"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/testButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button 1"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/testButton2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button 2"
-            android:visibility="gone" />
-
         <TextView
             android:id="@+id/textViewTheme"
             android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package com.example.tracknews.News
+package com.example.tracknews.news
 
 import android.os.Bundle
 import android.util.Log
@@ -9,34 +9,27 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
-import com.example.tracknews.MainActivity
 import com.example.tracknews.ViewModel
+import com.example.tracknews.MainActivity
 import com.example.tracknews.classes.Constants
 import com.example.tracknews.classes.FragmentFunction
 import com.example.tracknews.classes.NewsItem
 import com.example.tracknews.classes.NewsItemAdapter
-import com.example.tracknews.databinding.FragmentNewsWeekBinding
-import okhttp3.*
+import com.example.tracknews.databinding.FragmentNewsTodayBinding
 
-import java.io.IOException
+class NewsTodayFragment : Fragment(), NewsItemAdapter.Listener {
+    private val logNameClass = "NewsTodayFragment"
 
-
-class NewsWeekFragment : Fragment(), NewsItemAdapter.Listener {
-    private val logNameClass = "NewsWeekFragment"
-
-    lateinit var binding: FragmentNewsWeekBinding
+    private lateinit var binding: FragmentNewsTodayBinding
     private val vm: ViewModel by activityViewModels()
     private val newsItemAdapter = NewsItemAdapter(this)
-    //var okHttpClient: OkHttpClient = OkHttpClient()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
-        binding = FragmentNewsWeekBinding.inflate(inflater)
+        binding = FragmentNewsTodayBinding.inflate(inflater)
         return binding.root
-        //return inflater.inflate(R.layout.fragment_news_week, container, false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,32 +41,31 @@ class NewsWeekFragment : Fragment(), NewsItemAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
 
         val rcView = binding.fragNewsSavedRecyclerView
-        //newsItemAdapter.setHasStableIds(true) //для плавной прокрутки
         FragmentFunction(vm).startRecyclerView(rcView, newsItemAdapter)
     }
 
     companion object {
         @JvmStatic
-        fun newInstance() = NewsWeekFragment()
+        fun newInstance() = NewsTodayFragment()
     }
 
     private fun init(){
         //запуск фрагмента
 
         //отслеживаем изменения в данных для RecyclerView (SQLite > ViewModel)
-        vm.newsItemArrayMonth.value?.let { newsItemAdapter.addAllNews(it) }
-        vm.newsItemArrayMonth.observe(activity as LifecycleOwner) {
-            //Log.d(MainActivity.TAG, "NewsWeekFragment >f newsItemArrayMonth.OBSERVE > value: ${vm.newsItemArrayMonth.value}")
-            vm.newsItemArrayMonth.value?.let { it1 -> newsItemAdapter.addAllNews(it1) }
+        vm.newsItemArrayDay.value?.let { newsItemAdapter.addAllNews(it) }
+        vm.newsItemArrayDay.observe(activity as LifecycleOwner) {
+            vm.newsItemArrayDay.value?.let { it1 -> newsItemAdapter.addAllNews(it1) }
         }
     }
 
 
-    //одинаково во всех 4х фрагментах (today, week, all, saved) >
-    //При клике на элемент > загрузка интеренет страницы
+    //одинаково во всех 4-х фрагментах (today, week, all, saved) >
+    //При клике на элемент > загрузка интернет страницы
     override fun runWebsite(newsItem: NewsItem) {
         Log.d(Constants.TAG_DEBUG, "$logNameClass >f runWebsite")
-        FragmentFunction(vm).loadWebsiteFragment(newsItem, activity as MainActivity) //загрузка интеренет страницы
+
+        FragmentFunction(vm).loadWebsiteFragment(newsItem, activity as MainActivity) //загрузка интернет страницы
     }
 
     //сохраняем новость (отмечаем звездочкой)
@@ -87,3 +79,4 @@ class NewsWeekFragment : Fragment(), NewsItemAdapter.Listener {
     }
     //одинаково во всех 4х фрагментах (today, week, all, saved) ^
 }
+
